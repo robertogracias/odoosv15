@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+      <!-- Modificaciones a la pantalla de empleado -->
+      <record id="fiaes_employee_form" model="ir.ui.view">
+        <field name="name">fiaes employee form</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="arch" type="xml">
+          <xpath expr="//field[@name='gender']" position="attributes">
+            <attribute name="widget">radio</attribute>
+          </xpath>
+        </field>
+      </record>
+
+  </data>
+</odoo>
