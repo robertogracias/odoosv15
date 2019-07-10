@@ -6,12 +6,19 @@ from odoo import SUPERUSER_ID
 
 class cuenta(models.Model):
     _inherit = 'account.account'
-    tipo_de_cuenta=fields.Selection(selection=[('Activo','Activo')
-                                                ,('Pasivo','Pasivo')
-                                                ,('Capital','Capital')
-                                                ,('Resultado Deudor','Resultado Deudor')
-                                                ,('Resultado Acreedor','Resultado Acreedor')
-                                                ,('Cuenta Liquidadora','Cuenta Liquidadora')
-                                                ,('Cuenta de Orden','Cuenta de Orden')],string='Tipo de cuenta')
     tipo_de_aplicacion=fields.Selection(selection=[('General','General'),('Detall','Detalle')])
     tipo_de_saldo=fields.Selection(selection=[('Deudor','Deudor'),('Acreedor','Acreedor')])
+
+class proyecto(models.Model):
+    _inherit='project.project'
+    fuentes_ids=fields.One2many('fiaes.fuente','proyecto_id','Fuentes')
+
+class costo(models.Model):
+    _name = "fiaes.costo"
+    _description='Centro de costo'
+    name = fields.Char('Centro de costo')
+
+class territorio(models.Model):
+    _name = "fiaes.territorio"
+    _description = "Territorios"
+    name = fields.Char('Territorio')
