@@ -17,6 +17,7 @@
     "data": [
         'security/ir.model.access.csv'
         ,'views/catalogos.xml'
+        ,'views/catalogos_d.xml'
     ],
     "installable": True,
     "application": True,
