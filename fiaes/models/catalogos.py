@@ -78,6 +78,35 @@ class fuente(models.Model):
 
 class contrato(models.Model):
     _inherit = 'hr.contract'
-    sueldo_mes= fields.Float("Sueldo por mes")
     sueldo_dia= fields.Float("Sueldo por dia")
     sueldo_hora=fields.Float("Sueldo por hora")
+    fuente_id=fields.Many2one(comodel_name='fiaes.fuente', string='Fuente')
+
+
+
+
+class contacto(models.Model):
+    _inherit = 'res.partner'
+    nombres=fields.Char("Nombres")
+    apellidos=fields.Char("Apellidos")
+    nombre_comercial=fields.Char("Nombre comercial")
+    nit=fields.Char("NIT")
+    nrc=fields.Char("NRC")
+    representante_nombre=fields.Char("Representante legal")
+    representante_nit=fields.Char("NIT del representante")
+    representante_dui=fields.Char("NRC del representante")
+    giro=fields.Char("Giro")
+
+
+class usovehiculo(models.Model):
+    _inherit = 'fleet.vehicle.odometer'
+    solicitante_id=fields.Many2one(comodel_name='hr.employee', string='Solicitante')
+    fecha_solicitud=fields.Date("Fecha Solicitud")
+    destino=fields.Char("Destino")
+    mision_oficial=fields.Char("Mision Oficial")
+    fecha_salida=fields.Date("Fecha Salida")
+    fecha_regreso=fields.Date("Fecha Regreso")
+    odometro_regreso=fields.Integer("Kilometraje de regreso")
+    asistieron_ids=fields.Many2many(comodel_name='hr.employee', string='Asistieron')
+    encargado_revision_id=fields.Many2one(comodel_name='hr.employee', string='Encargado de revision')
+    encargado_autorizacion_id=fields.Many2one(comodel_name='hr.employee', string='Encargado de autorizacion')

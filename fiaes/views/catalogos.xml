@@ -7,8 +7,120 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form" />
         <field name="arch" type="xml">
-          <xpath expr="//field[@name='gender']" position="attributes">
-            <attribute name="widget">radio</attribute>
+
+
+          <xpath expr="//page[@name='public']" position="replace">
+            <page name="public" string="Información Laboral">
+              <group>
+                <group string="Position">
+                  <field name="codigo"/>
+                  <field name="department_id"/>
+                  <field name="job_id"/>
+                  <field name="job_title"/>
+                  <field name="parent_id"/>
+                  <field name="resource_calendar_id" required="1"/>
+                  <field name="tz"/>
+                </group>
+                <group string="Ingreso/Retiro">
+                  <field name="fecha_ingreso"/>
+                  <field name="fecha_retiro"/>
+                  <field name="causas_despido"/>
+                </group>
+              </group>
+              <field name="notes" placeholder="Other Information ..." colspan="4"/>
+            </page>
+          </xpath>
+          <xpath expr="//page[@name='personal_information']" position="replace">
+             <page name="Información personal" string="Información personal" groups="hr.group_hr_user">
+            <group>
+              <group string="Informacion Personal">
+                  <field name="nombres"/>
+                  <field name="apellidos"/>
+                  <field name="birthday"/>
+                  <field name="gender" widget="radio"/>
+                  <field name="marital"/>
+                  <field name="country_id"/>
+                  <field name="tipo_sangre"/>
+                  <field name="profesion_id"/>
+              </group>
+              <group string="Documentos">
+                <field name="dui"/>
+                <field name="nit"/>
+                <field name="passport_id"/>
+                <field name="licencia"/>
+                <field name="fecha_licencia"/>
+              </group>
+              <group string="Direccion">
+                <field name="departamento_id"/>
+                <field name="municipio_id"/>
+                <field name="direccion"/>
+              </group>
+              <group string="Informacion de contacto">
+                <field name="work_email" widget="email"/>
+                <field name="mobile_phone" widget="phone"/>
+                <field name="work_phone" widget="phone"/>
+                <field name="emergency_contact"/>
+                <field name="emergency_phone"/>
+              </group>
+              <group string="Cuenta Bancaria">
+                <field name="cuenta_bancaria" />
+                <field name="cuenta_tipo" />
+                <field name="cuenta_banco_id"/>
+              </group>
+              <label for="beneficiarios_ids" colspan="2"/>
+              <field name="beneficiarios_ids" nolabel="1" colspan="2" context="{'default_empleado_id': id}">>
+                <tree  editable="bottom">
+                  <field name="name" />
+                  <field name="parentesco" />
+                </tree>
+              </field>
+            </group>
+          </page>
+          </xpath>
+        </field>
+      </record>
+
+      <record id="fiaes_contract_form" model="ir.ui.view">
+        <field name="name">fiaes contract form</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
+        <field name="arch" type="xml">
+          <xpath expr="//group[@name='salary_and_advantages']" position="inside">
+            <label for="sueldo_dia"/>
+            <div class="o_row" name="sueldo_dia">
+              <field name="sueldo_dia" nolabel="1"/>
+              <span>/ dia</span>
+            </div>
+            <label for="sueldo_hora"/>
+            <div class="o_row" name="sueldo_hora">
+              <field name="sueldo_hora" nolabel="1"/>
+              <span>/ hora</span>
+            </div>
+          </xpath>
+          <xpath expr="//field[@name='reported_to_secretariat']" position="replace">
+              <field name="fuente_id" />
+          </xpath>
+
+        </field>
+      </record>
+
+
+
+      <record id="fiaes_partnert_form" model="ir.ui.view">
+        <field name="name">fiaes partner form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+          <xpath expr="//field[@name='vat']" position="replace">
+              <field name="nombres" attrs="{'invisible':[('company_type', '!=', 'person')]}"/>
+              <field name="apellidos"  attrs="{'invisible':[('company_type', '!=', 'person')]}"/>
+              <field name="nombre_comercial"  attrs="{'invisible':[('company_type', '=', 'person')]}"/>
+              <field name="nit" />
+              <field name="nrc" />
+              <field name="representante_nombre"  attrs="{'invisible':[('company_type', '=', 'person')]}"/>
+              <field name="representante_nit"  attrs="{'invisible':[('company_type', '=', 'person')]}"/>
+              <field name="representante_dui"  attrs="{'invisible':[('company_type', '=', 'person')]}"/>
+              <field name="giro" />
           </xpath>
         </field>
       </record>
