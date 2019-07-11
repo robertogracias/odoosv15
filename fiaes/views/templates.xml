@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+      <record id="SolicitudVehiculo" model="mail.template">
+          <field name="name">SolicitudVehiculo</field>
+          <field name="email_from">${object.source_email or ''}</field>
+          <field name="subject">Solicitud de vehiculo</field>
+          <field name="email_to">${object.encargado_autorizacion_id.email}</field>
+          <field name="lang">${encargado_autorizacion_id.lang}</field>
+          <field name="model_id" ref="fiaes.model_fiaes_solicitud_vehiculo"/>
+          <field name="auto_delete" eval="True"/>
+	  <field name="body_html">
+            <![CDATA[
+
+	    ]]>
+	  </field>
+       </record>
+
+    </data>
+</odoo>

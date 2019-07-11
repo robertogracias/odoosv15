@@ -191,7 +191,6 @@
                             <field name="placa"/>
                             <field name="cost_subtype_id" string="Service Type" domain="['|',('category','=','service'),('category','=','both')]" required="1"/>
                             <field name="amount"/>
-                            <field name="purchase_order_id"/>
                             <field name="odometer_unit"/>
                         </group>
                         <group string="Taller">
@@ -578,14 +577,6 @@ groups="account.group_account_manager"/>
             <field name="tarjeta" widget="image" />
           </group>
           <group>
-            <label for="servicios_km_ids" />
-            <field name="servicios_km_ids" nolabel="1" context="{'default_vehicle_id':id}">
-              <tree string="Kilometraje por servicio"  editable="bottom" >
-                <field name="name" />
-                <field name="servicio" />
-                <field name="kilometraje"/>
-             </tree>
-            </field>
           </group>
         </group>
 
@@ -616,7 +607,6 @@ groups="account.group_account_manager"/>
              </div>
              <group>
                  <group string="Solcitud" >
-                     <field name="programada"/>
                      <field name="solicitante_tipo" attrs="{'readonly':[('state', '!=', 'Borrador')]}"/>
                      <field name="solicitante_employee_id"  attrs="{'invisible':[('solicitante_tipo', '!=', 'Empleado')],'readonly':[('state', '!=', 'Borrador')]}"/>
                      <field name="solicitante_partner_id"  attrs="{'invisible':[('solicitante_tipo', '!=', 'Contacto')],'readonly':[('state', '!=', 'Borrador')]}"/>
@@ -631,7 +621,7 @@ groups="account.group_account_manager"/>
                 </group>
                 <group string="Asignacion" >
                      <field name="vehicle_id" groups="fiaes.asigna_vehiculo" attrs="{'invisible':[('state', '!=', 'Autorizado')]}" />
-                     <field name="vehicle_name"  attrs="{'invisible':[('state', '=', 'Autorizado')]}" />
+                     <field name="vehicle_id" readonly="1" />
                      <field name="encargado_revision_id"  attrs="{'readonly':[('state', '!=', 'Autorizado')]}"/>
                </group>
                    <group string="Salida" >
@@ -640,13 +630,10 @@ groups="account.group_account_manager"/>
                         <field name="conductor_id"  attrs="{'readonly':[('state', '!=', 'Asignado')]}" />
                       </group>
                 <group string="Proceso" >
-                     <label for="odometros_ids"  />
-                     <field name="odometros_ids" attrs="{'readonly':[('state', '!=', 'En curso')]}" nolabel="1" context="{'default_driver_id': conductor_id,'default_vehicle_id':vehicle_id}">
-                       <tree string="Registro del odometro"  editable="bottom" >
-                         <field name="fecha_salida" />
-                         <field name="odometro_salida"/>
-                         <field name="fecha_regreso" />
-                         <field name="odometro_regreso"/>
+                     <field name="odometros_ids" attrs="{'readonly':[('state', '!=', 'En curso')]}">
+                       <tree string="Registro del odometro" >
+                         <field name="date" />
+                         <field name="value"/>
                          <field name="comentario"/>
                       </tree>
                      </field>
@@ -655,10 +642,6 @@ groups="account.group_account_manager"/>
              </group>
 
          </sheet>
-         <div class="oe_chatter">
-           <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
-                      <field name="message_ids" widget="mail_thread"/>
-</div>
          </form>
 </field>
 </record>
@@ -692,15 +675,11 @@ groups="account.group_account_manager"/>
   </field>
 </record>
 
-
-
-
 <record model="ir.actions.act_window" id="fiaes.solicitud_vehiculo_action">
 <field name="name">Solicitudes</field>
 <field name="res_model">fiaes.solicitud_vehiculo</field>
 <field name="view_type">form</field>
-<field name="view_mode">calendar,tree,form</field>
-<field name="domain">[('state','!=','Cancelado')]</field>
+<field name="view_mode">tree,form,calendar</field>
 <field name="help" type="html">
 <p class="oe_view_nocontent_create">Solicitudes</p>
 </field>
@@ -729,43 +708,7 @@ groups="base.group_user"/>
 </record>
 
 
-<record id="view_tree_odometers" model="ir.ui.view">
-  <field name="model">fleet.vehicle.odometer</field>
-    <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_view_tree" />
-    <field name="arch" type="xml">
-      <xpath expr="//field[@name='value']" position="replace">
-          <field name="solicitud_id"/>
-          <field name="solicitante"/>
-          <field name="destino"/>
-          <field name="mision_oficial"/>
-          <field name="driver_id"/>
-          <field name="fecha_salida"/>
-          <field name="odometro_salida"/>
-          <field name="fecha_regreso"/>
-          <field name="odometro_regreso"/>
-      </xpath>
-  </field>
-</record>
 
-<record id="view_form_odometers" model="ir.ui.view">
-  <field name="model">fleet.vehicle.odometer</field>
-    <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_view_form" />
-    <field name="arch" type="xml">
-      <xpath expr="//field[@name='value']" position="replace">
-          <field name="solicitud_id"/>
-          <field name="solicitante"/>
-          <field name="destino"/>
-          <field name="mision_oficial"/>
-          <field name="driver_id"/>
-          <field name="fecha_salida"/>
-          <field name="odometro_salida"/>
-          <field name="fecha_regreso"/>
-          <field name="odometro_regreso"/>
-      </xpath>
-      <xpath expr="//field[@name='date']" position="replace">
-      </xpath>
-  </field>
-</record>
 
 
 

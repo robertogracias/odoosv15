@@ -7,3 +7,4 @@ alter table res_partner add representante_nombre varchar(250);
 alter table res_partner add representante_nit varchar(250);
 alter table res_partner add representante_dui varchar(250);
 alter table res_partner add giro varchar(250);
+alter table res_partner add tipo varchar(250);

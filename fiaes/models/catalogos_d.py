@@ -10,15 +10,46 @@ class cuenta(models.Model):
     tipo_de_saldo=fields.Selection(selection=[('Deudor','Deudor'),('Acreedor','Acreedor')])
 
 class proyecto(models.Model):
-    _inherit='project.project'
-    fuentes_ids=fields.One2many('fiaes.fuente','proyecto_id','Fuentes')
+    _name = "fiaes.proyecto"
+    _description='Proyecto Compensacion'
+    name=fields.Char("Proyecto")
+    fuentes_ids=fields.Many2many('fiaes.fuente','Fuentes')
+    codigo=fields.Char("Codigo")
+    departamento_id=fields.Many2one(comodel_name='fiaes.departamento', string='Departamento')
+    municipio_id=fields.Many2one(comodel_name='fiaes.municipio', string='Municipio')
+    coordenadas_latitud=fields.Float("Latitud",digits=(20,7))
+    coordenadas_longitud=fields.Float("Longitud",digits=(20,7))
+    afectacion=fields.Text("Tipo de afectacion")
+    ejecutora=fields.Many2one(comodel_name='res.partner', string='Ejecutora')
+    contrapartida=fields.Float("Contrapartida")
+    aliados=fields.Many2many('res.partner','Aliados')
+    estado=fields.Selection(selection=[('Estado1', 'Estado1')
+                                        ,('Estado2', 'Estado2')]
+                                        , string='Estado')
+
+
 
 class costo(models.Model):
     _name = "fiaes.costo"
     _description='Centro de costo'
     name = fields.Char('Centro de costo')
 
+class territorio_cordenadas(models.Model):
+    _name = "fiaes.territorio_cordenadas"
+    _description = "Cordenadas del poligo que define a cada rerritorio"
+    name = fields.Char('Descripcion')
+    coordenadas_latitud=fields.Float("Latitud",digits=(20,7))
+    coordenadas_longitud=fields.Float("Longitud",digits=(20,7))
+    territorio_id=fields.Many2one(comodel_name='fiaes.territorio', string='Territorio')
+
+
 class territorio(models.Model):
     _name = "fiaes.territorio"
     _description = "Territorios"
     name = fields.Char('Territorio')
+    codigo = fields.Char('Codigo')
+    descripcion=fields.Text("Descripcion")
+    cordenada_ids=fields.One2many('fiaes.territorio_cordenadas','territorio_id', 'Cordenadas')
+    contacto_ids=fields.Many2many(comodel_name='res.partner', relation='territorio_contacto_rel', string='Contactos')
+    responsable_ids=fields.Many2many(comodel_name='hr.employee', relation='territorio_responsable_rel', string='Responsable')
+    unidades_ids=fields.Many2many(comodel_name='hr.department', relation='territorio_deparment_rel', string='Unidades')
