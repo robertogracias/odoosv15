@@ -3,3 +3,6 @@ fiaes_beneficiario,fiaes_beneficiario,model_fiaes_beneficiario,base.group_user,1
 fiaes_departamento,fiaes_departamento,model_fiaes_departamento,base.group_user,1,1,1,1
 fiaes_municipio,fiaes_municipio,model_fiaes_municipio,base.group_user,1,1,1,1
 fiaes_fuente,fiaes_fuente,model_fiaes_fuente,base.group_user,1,1,1,1
+fiaes_vehiculo_aspecto,fiaes_vehiculo_aspecto,model_fiaes_vehiculo_aspecto,base.group_user,1,1,1,1
+fiaes_territorio,fiaes_territorio,model_fiaes_territorio,base.group_user,1,1,1,1
+fiaes_proyecto,fiaes_proyecto,model_fiaes_proyecto,base.group_user,1,1,1,1

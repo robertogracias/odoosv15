@@ -24,7 +24,7 @@
     </record>
 
     <!--Modificacion del formulario de proyecto-->
-    <record id="fiaes_account_form" model="ir.ui.view">
+    <!--record id="fiaes_project_form" model="ir.ui.view">
       <field name="name">fiaes project form</field>
       <field name="model">project.project</field>
       <field name="inherit_id" ref="project.project_project_view_form_simplified" />
@@ -36,7 +36,7 @@
           <attribute name="widget">many2many_tags</attribute>
         </xpath>
       </field>
-    </record>
+    </record-->
 
 
   </data>

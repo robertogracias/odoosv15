@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+      <!-- Modificaciones a la pantalla de empleado -->
+      <template id="assets_backend" inherit_id="web.assets_backend">
+     <xpath expr="." position="inside">
+         <link rel="stylesheet" href="/fiaes/static/src/css/fiaes.css"/>
+     </xpath>
+    </template>
+
+
+
+    <menuitem name="Fiaes"
+    id="fiaes.fiaes"
+    sequence="30"
+    groups="base.group_user"/>
+
+  </data>
+</odoo>
