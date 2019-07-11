@@ -18,13 +18,7 @@
         'security/ir.model.access.csv'
         ,'views/fiaes.xml'
         ,'views/catalogos.xml'
-<<<<<<< HEAD
         ,'views/account_account.xml'
-        ,'views/project_project.xml'
-=======
-        ,'views/catalogos_d.xml'
-
->>>>>>> c1457555fd61701c34d840386ebdcdd6c91d76e3
     ],
     "installable": True,
     "application": True,

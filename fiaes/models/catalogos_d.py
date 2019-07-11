@@ -32,11 +32,13 @@ class proyecto(models.Model):
 class costo(models.Model):
     _name = "fiaes.costo"
     _description='Centro de costo'
+    codigo = fields.Char("Codigo")
     name = fields.Char('Centro de costo')
 
 class territorio(models.Model):
     _name = "fiaes.territorio"
     _description = "Territorios"
+    codigo = fields.Char('Codigo')
     name = fields.Char('Territorio')
     descripcion=fields.Text("Descripcion")
     coordenadas_latitud=fields.Float("Latitud",digits=(20,7))

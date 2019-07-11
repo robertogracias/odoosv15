@@ -23,24 +23,6 @@
       </field>
     </record>
 
-<<<<<<< HEAD:fiaes/views/account_account.xml
-=======
-    <!--Modificacion del formulario de proyecto-->
-    <!--record id="fiaes_project_form" model="ir.ui.view">
-      <field name="name">fiaes project form</field>
-      <field name="model">project.project</field>
-      <field name="inherit_id" ref="project.project_project_view_form_simplified" />
-      <field name="arch" type="xml">
-        <xpath expr="//field[@name='name']" position="after">
-          <field name="fuentes_ids" string='Fuentes de Financiamiento'/>
-        </xpath>
-        <xpath expr="//field[@name='fuentes_ids']" position="attributes">
-          <attribute name="widget">many2many_tags</attribute>
-        </xpath>
-      </field>
-    </record-->
-
->>>>>>> c1457555fd61701c34d840386ebdcdd6c91d76e3:fiaes/views/catalogos_d.xml
 
   </data>
 </odoo>
