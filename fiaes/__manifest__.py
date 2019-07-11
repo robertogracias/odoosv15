@@ -17,7 +17,8 @@
     "data": [
         'security/ir.model.access.csv'
         ,'views/catalogos.xml'
-        ,'views/catalogos_d.xml'
+        ,'views/account_account.xml'
+        ,'views/project_project.xml'
     ],
     "installable": True,
     "application": True,
