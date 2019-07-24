@@ -248,7 +248,7 @@ class usovehiculo(models.Model):
             if record.solicitante_tipo=='Empleado':
                 if record.solicitante_employee_id:
                     record.solicitante=record.solicitante_employee_id.name
-                    record.source_email=record.solicitante_employee_id.email
+                    record.source_email=record.solicitante_employee_id.work_email
             else:
                 if record.solicitante_partner_id:
                     record.solicitante=record.solicitante_partner_id.name
