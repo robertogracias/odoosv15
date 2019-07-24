@@ -207,8 +207,8 @@ class usovehiculo(models.Model):
     def solicitar(self):
         for record in self:
             record.state='Solicitado'
-            #template = self.env.ref('fiaes.SolicitudVehiculo', False)
-            #template.send_mail(record)
+        template = self.env.ref('fiaes.SolicitudVehiculo', False)
+        self.env['mail.template'].browse(template.id).send_mail(self[0])
 
     def autorizar(self):
         for record in self:
