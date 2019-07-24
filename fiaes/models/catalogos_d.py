@@ -49,15 +49,9 @@ class territorio(models.Model):
     _description = "Territorios"
     codigo = fields.Char('Codigo')
     name = fields.Char('Territorio')
-<<<<<<< HEAD
     codigo = fields.Char('Codigo')
     descripcion=fields.Text("Descripcion")
     cordenada_ids=fields.One2many('fiaes.territorio_cordenadas','territorio_id', 'Cordenadas')
     contacto_ids=fields.Many2many(comodel_name='res.partner', relation='territorio_contacto_rel', string='Contactos')
     responsable_ids=fields.Many2many(comodel_name='hr.employee', relation='territorio_responsable_rel', string='Responsable')
     unidades_ids=fields.Many2many(comodel_name='hr.department', relation='territorio_deparment_rel', string='Unidades')
-=======
-    descripcion=fields.Text("Descripcion")
-    coordenadas_latitud=fields.Float("Latitud",digits=(20,7))
-    coordenadas_longitud=fields.Float("Longitud",digits=(20,7))
->>>>>>> branch 'develop' of https://github.com/robertogracias/fiaes-dev.git

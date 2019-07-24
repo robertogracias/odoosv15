@@ -83,7 +83,6 @@ class fuente(models.Model):
     _name='fiaes.fuente'
     _description='Fuente de financiamiento'
     name= fields.Char("Fuente")
-<<<<<<< HEAD
     codigo= fields.Char("Codigo")
     account_id=fields.Many2one(comodel_name='account.account', string='Cuenta asociada')
     cuentabancaria_id=fields.Many2one(comodel_name='res.partner.bank', string='Cuenta bancaria asociada asociada')
@@ -97,9 +96,6 @@ class fuente_empleado(models.Model):
     fuente_id=fields.Many2one(comodel_name='fiaes.fuente', string='Fuente')
     contrato_id=fields.Many2one(comodel_name='hr.contract', string='Contrato')
     porcentaje=fields.Float("Combustible de salida",digits=(20,10))
-=======
-    account_id=fields.Many2one(comodel_name='account.account', string='Cuenta asociada')
->>>>>>> branch 'develop' of https://github.com/robertogracias/fiaes-dev.git
 
 
 class contrato(models.Model):
@@ -172,7 +168,6 @@ class vehiculo(models.Model):
 
 
 class usovehiculo(models.Model):
-<<<<<<< HEAD
     _name = 'fiaes.solicitud_vehiculo'
     _inherit= ['mail.thread']
     _description= 'Solicitud de vehiculo'
@@ -186,11 +181,6 @@ class usovehiculo(models.Model):
     vehicle_name=fields.Char("Vehiculo",compute='get_vehicle')
     solicitante=fields.Char(string='Solicitante',compute='get_solicitante')
     source_email=fields.Char(string='Email',compute='get_solicitante')
-=======
-    _inherit = 'fleet.vehicle.odometer'
-    solicitante_id=fields.Many2one(comodel_name='hr.employee', string='Solicitante')
-    conductor_id=fields.Many2one(comodel_name='hr.employee', string='Conductor')
->>>>>>> branch 'develop' of https://github.com/robertogracias/fiaes-dev.git
     fecha_solicitud=fields.Date("Fecha Solicitud")
     destino=fields.Char("Destino")
     mision_oficial=fields.Char("Mision Oficial",track_visibilty='always')
@@ -202,7 +192,6 @@ class usovehiculo(models.Model):
     fecha_regreso_esperada=fields.Datetime("Fecha Regreso estimado")
     fecha_regreso=fields.Datetime("Fecha Regreso")
     asistieron_ids=fields.Many2many(comodel_name='hr.employee', string='Asistieron')
-<<<<<<< HEAD
     encargado_revision_id=fields.Many2one(comodel_name='res.users', string='Encargado de revision')
     encargado_autorizacion_id=fields.Many2one(comodel_name='res.users', string='Encargado de autorizacion')
     conductor_id=fields.Many2one(comodel_name='hr.employee', string='Conductor')
@@ -512,69 +501,3 @@ class task_recursos(models.Model):
 class unidad(models.Model):
     _inherit='hr.department'
     codigo=fields.Char("Codigo")
-=======
-    encargado_revision_id=fields.Many2one(comodel_name='hr.employee', string='Encargado de revision')
-    encargado_autorizacion_id=fields.Many2one(comodel_name='hr.employee', string='Encargado de autorizacion')
-
-class aspectorevisar(models.Model):
-    _name='fiaes.vehiculo_aspecto'
-    _description='Aspecto a Revisar'
-    name=fields.Char("Aspecto a revisar")
-
-class mantenimiento(models.Model):
-    _inherit='fleet.vehicle.log.services'
-    solicitante_id=fields.Many2one(comodel_name='hr.employee', string='Solicitante')
-    descripcion=fields.Text('Descripcion')
-    marca=fields.Many2one(comodel_name='fleet.vehicle.model.brand', related='vehicle_id.marca_id',string='Marca',store='false')
-    modelo=fields.Many2one(comodel_name='fleet.vehicle.model', related='vehicle_id.model_id',string='Model',store='false')
-    placa=fields.Char(related='vehicle_id.license_plate',string='Placa',store='false')
-    taller_id=fields.Many2one(comodel_name='res.partner', string='Taller')
-    taller_contacto=fields.Char(related='taller_id.contacto',string='Contacto del taller',store='false')
-    taller_direccion=fields.Char(related='taller_id.street',string='Contacto del taller',store='false')
-    taller_telefono=fields.Char(related='taller_id.phone',string='Contacto del taller',store='false')
-    salida_fecha=fields.Date("Fecha salida")
-    salida_km=fields.Integer("Kilometraje de salida")
-    salida_gas=fields.Float("Combustible de salida")
-    retorno_fecha=fields.Date("Fecha retorno")
-    retorno_km=fields.Integer("Kilometraje de retorno")
-    retorno_gas=fields.Float("Combustible de retorno")
-    diagnostico=fields.Text("Diagnostico")
-    apecto_ids=fields.Many2many(comodel_name='fiaes.vehiculo_aspecto', string='Aspectos a revisar')
-    salida_encargado_id=fields.Many2one(comodel_name='hr.employee', string='Encargado de salida')
-    retorno_encargado_id=fields.Many2one(comodel_name='hr.employee', string='Encargado de recepcion')
-
-
-class activofijo(models.Model):
-    _inherit='account.asset.asset'
-    responsable_id=fields.Many2one(comodel_name='hr.employee', string='Responsable')
-    ubicacion_id=fields.Many2one(comodel_name='stock.location', string='Ubicacion')
-
-class documento(models.Model):
-    _inherit='ir.attachment'
-    version=fields.Integer("Version")
-
-class compensacion(models.Model):
-    _inherit='sale.order'
-    nombre_comercial=fields.Char("Nombre comercial",related='partner_id.nombre_comercial',store='fase')
-    nit=fields.Char("NIT",related='partner_id.nit',store='fase')
-    representante_nombre=fields.Char("Representante legal",related='partner_id.representante_nombre',store='fase')
-    representante_nit=fields.Char("NIT del representante",related='partner_id.representante_nit',store='fase')
-    representante_dui=fields.Char("NRC del representante",related='partner_id.representante_dui',store='fase')
-    representante_nacionalidad=fields.Many2one(comodel_name='res.country', string='Nacionalidad del representante',related='partner_id.representante_nacionalidad',store='fase')
-    representante_nacimiento=fields.Date("Fecha de nacimiento del representante legal",related='partner_id.representante_nacimiento',store='fase')
-    representante_profesion=fields.Char("Profesion del representante legal",related='partner_id.representante_profesion',store='fase')
-    departamento_id=fields.Many2one(comodel_name='fiaes.departamento', string='Departamento',related='partner_id.departamento_id',store='fase')
-    municipio_id=fields.Many2one(comodel_name='fiaes.municipio', string='Municipio',related='partner_id.municipio_id',store='fase')
-    poryecto_ambiental=fields.Char("Nombre del proyecto de compensacion ambiental")
-    resolucion_marn=fields.Char("Numero de resolucion del MARN")
-    resolucion_fecha=fields.Date("Fecha de resolucion del MARN")
-    proyecto_direcion=fields.Char("Direccion del proyecto de compensacion ambiental")
-    proyecto_departamento_id=fields.Many2one(comodel_name='fiaes.departamento', string='Departamento del proyecto de compensacion ambiental')
-    proyecto_municipio_id=fields.Many2one(comodel_name='fiaes.municipio', string='Municipio del proyecto de compensacion ambiental')
-    descripcion=fields.Text("Descripcion de la afectacion de la compensacion ambiental")
-    rubro=fields.Char("Rubro de afectacion de la compensacion ambiental")
-    area=fields.Char("Area strategica del FIAES a trabajar")
-    valor=fields.Float("Valor del convenio")
-    desembolsos=fields.Float("Numero de desembolsos")
-    fianza=fields.Float("Monto de fianza de fiel cumplimento")
->>>>>>> branch 'develop' of https://github.com/robertogracias/fiaes-dev.git

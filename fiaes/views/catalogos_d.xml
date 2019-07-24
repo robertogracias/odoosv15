@@ -7,11 +7,7 @@
       <field name="name">fiaes account form</field>
       <field name="model">account.account</field>
       <field name="inherit_id" ref="account.view_account_form" />
-      <field name="arch" type="xml">
-        <xpath expr="//field[@name='deprecated']" position="after">
-          <field name="tipo_de_aplicacion" string="Tipo de aplicación" widget="radio" required="1"/>
-          <field name="tipo_de_saldo" string="Tipo de saldo"  widget="radio" required="1"/>
-        </xpath>
+      <field name="arch" type="xml">        
         <xpath expr="//field[@name='group_id']" position="attributes">
           <attribute name="required">1</attribute>
           <attribute name="String">Cuenta de acumulacion</attribute>
@@ -79,8 +75,8 @@
           <page string="Actividades FIAES"  >
               <group>
                 <field name="tipo" invisible="1"/>
-                <field name="codigo" required="1"  attrs="{'invisible':[('tipo', '=', 'Institucional')],'required':[('tipo', '!=', 'Institucional')] }"/>
-                <field name="objetivo_id" required="1"  attrs="{'invisible':[('tipo', '=', 'Institucional')],'required':[('tipo', '!=', 'Institucional')] }"/>
+                <field name="codigo"  attrs="{'invisible':[('tipo', '=', 'Institucional')],'required':[('tipo', '!=', 'Institucional')] }"/>
+                <field name="objetivo_id"   attrs="{'invisible':[('tipo', '=', 'Institucional')],'required':[('tipo', '!=', 'Institucional')] }"/>
                 <field name="inicio" required="1"/>
                 <field name="fin"  required="1"/>
                 <field name="responsable_ids"  required="1"/>

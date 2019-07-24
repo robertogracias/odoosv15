@@ -6,7 +6,6 @@ fiaes_fuente,fiaes_fuente,model_fiaes_fuente,base.group_user,1,1,1,1
 fiaes_vehiculo_aspecto,fiaes_vehiculo_aspecto,model_fiaes_vehiculo_aspecto,base.group_user,1,1,1,1
 fiaes_territorio,fiaes_territorio,model_fiaes_territorio,base.group_user,1,1,1,1
 fiaes_proyecto,fiaes_proyecto,model_fiaes_proyecto,base.group_user,1,1,1,1
-<<<<<<< HEAD
 fiaes_fuente_empleado,fiaes_fuente_empleado,model_fiaes_fuente_empleado,base.group_user,1,1,1,1
 fiaes_afp,fiaes_afp,model_fiaes_afp,base.group_user,1,1,1,1
 fiaes_solicitud_vehiculo,fiaes_solicitud_vehiculo,model_fiaes_solicitud_vehiculo,base.group_user,1,1,1,1
@@ -21,5 +20,3 @@ fiaes_task_cordenadas,fiaes_task_cordenadas,model_fiaes_task_cordenadas,base.gro
 fiaes_task_recurso,fiaes_task_recurso,model_fiaes_task_recurso,base.group_user,1,1,1,1
 fiaes_proyecto_objetivo,fiaes_proyecto_objetivo,model_fiaes_proyecto_objetivo,base.group_user,1,1,1,1
 fiaes_vehiculo_servicio,fiaes_vehiculo_servicio,model_fiaes_vehiculo_servicio,base.group_user,1,1,1,1
-=======
->>>>>>> branch 'develop' of https://github.com/robertogracias/fiaes-dev.git
