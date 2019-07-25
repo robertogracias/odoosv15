@@ -158,13 +158,7 @@ class servicio_kilometraje(models.Model):
     servicio=fields.Many2one(comodel_name='fleet.service.type', string='Servicio')
     kilometraje=fields.Integer("Kilometraje entre servicios")
     vehicle_id=fields.Many2one(comodel_name='fleet.vehicle', string='Vehiculo')
-
-
-
-class vehiculo(models.Model):
-    _inherit='fleet.vehicle'
-    marca_id=fields.Many2one(comodel_name='fleet.vehicle.model.brand', related='model_id.brand_id',string='Marca',store='false')
-
+    ultimo_kilometraje=fields.Integer("Kilometraje entre servicios")
 
 
 class usovehiculo(models.Model):
@@ -178,7 +172,7 @@ class usovehiculo(models.Model):
     solicitante_employee_id=fields.Many2one(comodel_name='hr.employee', string='Solicitante')
     solicitante_partner_id=fields.Many2one(comodel_name='res.partner', string='Solicitante')
     vehicle_id=fields.Many2one(comodel_name='fleet.vehicle', string='Vehiculo')
-    vehicle_name=fields.Char("Vehiculo",compute='get_vehicle')
+    vehicle_name=fields.Char("Vehiculo",compute='get_vehicle',store=False)
     solicitante=fields.Char(string='Solicitante',compute='get_solicitante')
     source_email=fields.Char(string='Email',compute='get_solicitante')
     fecha_solicitud=fields.Date("Fecha Solicitud")
@@ -207,8 +201,8 @@ class usovehiculo(models.Model):
     def solicitar(self):
         for record in self:
             record.state='Solicitado'
-        #template = self.env.ref('fiaes.SolicitudVehiculo', False)
-        #self.env['mail.template'].browse(template.id).send_mail(self[0])
+            template = self.env.ref('fiaes.SolicitudVehiculo', False)
+            self.env['mail.template'].browse(template.id).send_mail(record.id)
 
     def autorizar(self):
         for record in self:
@@ -239,7 +233,7 @@ class usovehiculo(models.Model):
     def get_vehicle(self):
         for record in self:
             if record.vehicle_id:
-                vehicle_name=record.vehicle_id.model.name + record.vehicle_id.license_plate
+                record.vehicle_name=record.vehicle_id.model_id.name + record.vehicle_id.license_plate
 
     @api.one
     @api.depends('solicitante_tipo','solicitante_employee_id','solicitante_partner_id')
@@ -271,6 +265,18 @@ class usovehiculo_detalle(models.Model):
     programada=fields.Selection(selection=[('Programada', 'Programada')
                                         ,('No Programada', 'No Programada')]
                                         , string='Tipo de solicitud',related='solicitud_id.programada')
+    @api.model
+    def create(self, values):
+        # Override the original create function for the res.partner model
+        record = super(usovehiculo_detalle, self).create(values)
+        #buscando registro de kilometraje
+        list=self.env['fiaes.vehiculo_servicio'].search([('vehicle_id','=',record.vehicle_id.id)])
+        for servicio in list:
+            kmrecorridos=record.odometro_regreso-servicio.ultimo_kilometraje
+            if kmrecorridos>servicio.kilometraje:
+                template = self.env.ref('fiaes.MantenimientoVehiculo', False)
+                self.env['mail.template'].browse(template.id).send_mail(servicio.id)
+        return record
 
 
 class vehiculo_clase(models.Model):
