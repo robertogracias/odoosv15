@@ -603,7 +603,6 @@ groups="account.group_account_manager"/>
 <field name="name">fiaes.solicitud_vehiculo_form</field>
 <field name="model">fiaes.solicitud_vehiculo</field>
 <field name="arch" type="xml">
-  <?xml version="1.0"?>
  <form>
          <header>
            <button name="solicitar" string="Solicitar" type="object" class="oe_highlight" attrs="{'invisible':[('state', '!=', 'Borrador')]}"/>
