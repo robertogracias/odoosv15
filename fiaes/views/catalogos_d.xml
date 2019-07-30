@@ -7,7 +7,7 @@
       <field name="name">fiaes account form</field>
       <field name="model">account.account</field>
       <field name="inherit_id" ref="account.view_account_form" />
-      <field name="arch" type="xml">        
+      <field name="arch" type="xml">
         <xpath expr="//field[@name='group_id']" position="attributes">
           <attribute name="required">1</attribute>
           <attribute name="String">Cuenta de acumulacion</attribute>
@@ -33,7 +33,7 @@
           <page string="Proyectos FIAES" name="institucional" >
               <group>
                 <field name="codigo" />
-                <field name="territorio_id" attrs="{'invisible':[('tipo', '=', 'Institucional')]}"/>
+                <field name="territorio_ids" />
                 <field name="fuente_ids"/>
                 <field name="contacto_ids" />
                 <field name="responsable_ids" />
@@ -75,12 +75,14 @@
           <page string="Actividades FIAES"  >
               <group>
                 <field name="tipo" invisible="1"/>
+                <field name="has_childs" />
                 <field name="codigo"  attrs="{'invisible':[('tipo', '=', 'Institucional')],'required':[('tipo', '!=', 'Institucional')] }"/>
                 <field name="objetivo_id"   attrs="{'invisible':[('tipo', '=', 'Institucional')],'required':[('tipo', '!=', 'Institucional')] }"/>
                 <field name="inicio" required="1"/>
                 <field name="fin"  required="1"/>
                 <field name="responsable_ids"  required="1"/>
                 <field name="cordinacion_ids"  required="1"/>
+                <field name="territorio_ids" />
                 <field name="cordenada_ids"  required="1" context="{'default_task_id': id}">
                   <tree string="Cordenadas" editable="bottom">
                     <field name="name" />
@@ -95,8 +97,18 @@
           </xpath>
 
           <page string="Recursos institucionales" >
-                <field name="recurso_ids"  required="1" context="{'default_task_id': id}">
+                <field name="recurso_ids" attrs="{'invisible':[('has_childs', '=', True)] }"  required="1" context="{'default_task_id': id}">
                   <tree string="Cordenadas" editable="bottom">
+                    <field name="name" />
+                    <field name="tipo" invisible="1" />
+                    <field name="descripcion" />
+                    <field name="cantidad"  attrs="{'invisible':[('tipo', '!=', 'Institucional')]}"/>
+                    <field name="account_id" />
+                    <field name="valor" />
+                  </tree>
+                </field>
+                <field name="recurso_child_ids" attrs="{'invisible':[('has_childs', '=', False)] }" readonly="1"  required="1" context="{'default_task_id': id}">
+                  <tree string="Cordenadas" >
                     <field name="name" />
                     <field name="tipo" invisible="1" />
                     <field name="descripcion" />

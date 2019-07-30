@@ -87,6 +87,7 @@
         </field>
       </record>
 
+
       <record id="fiaes_contract_form" model="ir.ui.view">
         <field name="name">fiaes contract form</field>
         <field name="model">hr.contract</field>
@@ -112,6 +113,7 @@
           <xpath expr="//field[@name='reported_to_secretariat']" position="replace">
               <field name="fuente_ids" >
                 <tree string="Fuentes" editable="bottom">
+                  <field name="proyecto_id" />
                   <field name="fuente_id" />
                   <field name="porcentaje" />
                 </tree>
@@ -122,6 +124,19 @@
       </record>
 
 
+      <record id="fiaes_partnert_2_form" model="ir.ui.view">
+        <field name="name">fiaes partner2 form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form" />
+        <field name="arch" type="xml">
+          <xpath expr="//field[@name='property_payment_term_id']" position="attributes">
+            <attribute name="widget">Many2one</attribute>
+          </xpath>
+          <xpath expr="//field[@name='property_supplier_payment_term_id']" position="attributes">
+            <attribute name="widget">Many2one</attribute>
+          </xpath>
+        </field>
+      </record>
 
       <record id="fiaes_partnert_form" model="ir.ui.view">
         <field name="name">fiaes partner form</field>
@@ -272,7 +287,7 @@
 
           <page string="Componentes">
           <field name="child_ids" context="{'default_parent_id': id}">
-            <tree string="Componentes" editable="bottom">
+            <tree string="Componentes">
               <field name="name"  required="1"/>
               <field name="code"  required="1"/>
             </tree>
@@ -312,16 +327,7 @@
       </record>
 
 
-      <record id="fiaes_documento_form" model="ir.ui.view">
-        <field name="name">fiaes documento form</field>
-        <field name="model">ir.attachment</field>
-        <field name="inherit_id" ref="documents.documents_view_kanban" />
-        <field name="arch" type="xml">
-          <xpath expr="//field[@name='name']" position="after">
-              <field name="version" />
-          </xpath>
-        </field>
-      </record>
+
 
 
       <record id="fiaes_compensacion_form" model="ir.ui.view">
@@ -514,8 +520,9 @@ groups="account.group_account_manager"/>
                      <field name="codigo" required="1"/>
                      <field name="name"  required="1"/>
                      <field name="account_id"  required="1"/>
-                     <field name="cuentabancaria_id"  required="1"/>
                  </group>
+                 <label for="cuentabancaria_ids" />
+                 <field name="cuentabancaria_ids"  required="1"/>
              </group>
          </sheet>
          </form>
@@ -649,7 +656,7 @@ groups="account.group_account_manager"/>
                    <label for="odometros_ids"/>
                    <field name="odometros_ids" attrs="{'readonly':[('state', '!=', 'En curso')]}" nolabel="1" context="{'default_driver_id': conductor_id,'default_vehicle_id':vehicle_id}">
                      <tree string="Registro del odometro" editable="bottom">
-                       <field name="vehicle_id" readonly="1"/>
+                       <field name="vehicle_id" invisible="1"/>
                        <field name="driver_id"/>
                        <field name="fecha_salida"/>
                        <field name="odometro_salida"/>
@@ -796,10 +803,11 @@ groups="base.group_user"/>
                    <field name="correo"  required="1"/>
                    <field name="telefono"  required="1"/>
                    <field name="direccion" />
-                   <field name="miembros" widget="many2many_tags"/>
                    <field name="sede" />
                    <field name="estado" required="1"/>
                  </group>
+                 <label for="miembros"/>
+                 <field name="miembros" nolabel="1" widget="many2many"/>
              </group>
 
          </sheet>
@@ -851,6 +859,21 @@ groups="account.group_account_manager"/>
     <xpath expr="//field[@name='parent_id']" position="after">
         <field name="child_ids" />
     </xpath>
+  </field>
+</record>
+
+
+<record id="fiaes_bank_form" model="ir.ui.view">
+  <field name="name">fiaes bank form</field>
+  <field name="model">res.bank</field>
+  <field name="inherit_id" ref="base.view_res_bank_form" />
+  <field name="arch" type="xml">
+    <xpath expr="//field[@name='bic']" position="after">
+        <field name="abba" />
+        <field name="bank_id" />
+        <field name="cuenta_intermedio" />
+    </xpath>
+
   </field>
 </record>
 
