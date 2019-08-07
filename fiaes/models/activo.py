@@ -22,6 +22,10 @@ class activo_property(models.Model):
     _inherit='account.asset.category'
     codigo=fields.Char("Codigo")
 
+class activo_mantenimiento(models.Model):
+    _inherit='maintenance.equipment'
+    activo_id=fields.Many2one(comodel_name='account.asset.asset', string='Activo asociado')
+
 class activofijo(models.Model):
     _inherit='account.asset.asset'
     responsable_id=fields.Many2one(comodel_name='hr.employee', string='Responsable')
@@ -34,6 +38,10 @@ class activofijo(models.Model):
     capitalizable=fields.Selection(selection=[('Capitalizable', 'Capitalizable')
                                         ,('No Capitalizable', 'No Capitalizable')]
                                         , string='Tipo de Activo',default='Capitalizable')
+    def create_equipo(self):
+        for record in self:
+            self.env['maintenance.equipment'].create({'name':record.name,'effective_date':record.date,'equipment_assign_to':'employee','active':True})
+
 
 
     def set_codigo(self):

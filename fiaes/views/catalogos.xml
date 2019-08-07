@@ -144,7 +144,7 @@
         <field name="inherit_id" ref="base.view_partner_form" />
         <field name="arch" type="xml">
           <xpath expr="//field[@name='vat']" position="replace">
-              <field name="nit" />
+              <field name="tipo" />
               <field name="nombres" attrs="{'invisible':[('company_type', '!=', 'person')],'required':[('company_type', '=', 'person')]}"/>
               <field name="apellidos"  attrs="{'invisible':[('company_type', '!=', 'person')],'required':[('company_type', '=', 'person')]}"/>
               <field name="nombre_comercial"  attrs="{'invisible':[('company_type', '=', 'person')],'required':[('company_type', '!=', 'person')]}"/>
@@ -158,7 +158,7 @@
               <field name="representante_nacimiento"  attrs="{'invisible':[('company_type', '=', 'person')],'required':[('company_type', '!=', 'person')]}"/>
               <field name="giro" />
               <field name="departamento_id" />
-              <field name="municipio_id" />
+              <field name="municipio_id" domain="[('departamento.id','=',departamento_id)]"/>
           </xpath>
           <xpath expr="//field[@name='email']" position="attributes">
               <attribute name="required">1</attribute>
@@ -265,6 +265,7 @@
         <field name="arch" type="xml">
           <xpath expr="//button[@name='validate']" position="before">
             <button name="set_codigo" states="draft" string="Asignar codigo" type="object" class="oe_highlight"/>
+            <button name="create_equipo" states="open" string="Crear Equipo" type="object" class="oe_highlight"/>
           </xpath>
           <xpath expr="//field[@name='account_analytic_id']" position="after">
               <field name="responsable_id" required="1"/>
@@ -341,7 +342,7 @@
                 <group string="Empresa" >
                   <field name="nombre_comercial" class="width300" />
                   <field name="departamento_id"   class="width300"  />
-                  <field name="municipio_id"  class="width300" />
+                  <field name="municipio_id"  class="width300" domain="[('departamento.id','=',departamento_id)]"/>
                   <field name="nit"    class="width300" />
                   <field name="representante_nombre"    class="width300" />
                   <field name="representante_nit"   class="width300" />
@@ -357,7 +358,7 @@
                   <field name="resolucion_fecha"   class="width300"  />
                   <field name="proyecto_direcion"   class="width300"  />
                   <field name="proyecto_departamento_id"   class="width300"  />
-                  <field name="proyecto_municipio_id"   class="width300"  />
+                  <field name="proyecto_municipio_id"   class="width300"  domain="[('departamento.id','=',proyecto_departamento_id)]"/>
                   <field name="descripcion"  class="width300"  />
                   <field name="rubro"   class="width300"  />
                   <field name="area"   class="width300"  />
@@ -648,16 +649,17 @@ groups="account.group_account_manager"/>
                     <group string="Salida">
                          <field name="fecha_salida_real" attrs="{'readonly':[('state', '!=', 'Asignado')],'required':[('state', '=', 'Asignado')]}"/>
                          <field name="asistieron_ids" widget="many2many_tags" attrs="{'readonly':[('state', '!=', 'Asignado')],'required':[('state', '=', 'Asignado')]}"/>
-                         <field name="conductor_id" attrs="{'readonly':[('state', '!=', 'Asignado')],'required':[('state', '=', 'Asignado')]}"/>
+                         <field name="conductor_ids" widget="many2many_tags" attrs="{'readonly':[('state', '!=', 'Asignado')],'required':[('state', '=', 'Asignado')]}"/>
                          <field name="fecha_regreso" attrs="{'readonly':[('state', '!=', 'En curso')]}"/>
                        </group>
 
               </group>
                    <label for="odometros_ids"/>
-                   <field name="odometros_ids" attrs="{'readonly':[('state', '!=', 'En curso')]}" nolabel="1" context="{'default_driver_id': conductor_id,'default_vehicle_id':vehicle_id}">
+                   <field name="odometros_ids" attrs="{'readonly':[('state', '!=', 'En curso')]}" nolabel="1" context="{'default_vehicle_id':vehicle_id}">
                      <tree string="Registro del odometro" editable="bottom">
+                       <field name="solicitud_id" invisible="1"/>
                        <field name="vehicle_id" invisible="1"/>
-                       <field name="driver_id"/>
+                       <field name="driver_id" />
                        <field name="fecha_salida"/>
                        <field name="odometro_salida"/>
                        <field name="fecha_regreso"/>
@@ -697,7 +699,7 @@ groups="account.group_account_manager"/>
 <record id="view_calendar_solicitudes" model="ir.ui.view">
   <field name="model">fiaes.solicitud_vehiculo</field>
   <field name="arch" type="xml">
-    <calendar date_start="fecha_salida" date_stop="fecha_regreso_esperada" color="vehicle_id" >
+    <calendar date_start="fecha_salida" date_stop="fecha_regreso_esperada" color="vehicle_id" mode="month" >
       <!-- Fields used for the display text -->
       <field name="solicitante" />
       <field name="vehicle_id" />

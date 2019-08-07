@@ -54,10 +54,10 @@ class usovehiculo(models.Model):
     fecha_salida_real=fields.Datetime("Fecha y hora de Salida Real")
     fecha_regreso_esperada=fields.Datetime("Fecha Regreso estimado")
     fecha_regreso=fields.Datetime("Fecha Regreso")
-    asistieron_ids=fields.Many2many(comodel_name='hr.employee', string='Asistieron')
+    asistieron_ids=fields.Many2many(comodel_name='res.partner', string='Asistieron')
     encargado_revision_id=fields.Many2one(comodel_name='res.users', string='Encargado de revision')
     encargado_autorizacion_id=fields.Many2one(comodel_name='res.users', string='Encargado de autorizacion')
-    conductor_id=fields.Many2one(comodel_name='hr.employee', string='Conductor')
+    conductor_ids=fields.Many2many(comodel_name='res.users', string='Conductores')
     odometros_ids=fields.One2many('fleet.vehicle.odometer','solicitud_id', 'Marcaciones')
     state=fields.Selection(selection=[('Borrador', 'Borrador')
                                         ,('Solicitado', 'Solicitado')
@@ -70,13 +70,15 @@ class usovehiculo(models.Model):
     def solicitar(self):
         for record in self:
             record.state='Solicitado'
-            template = self.env.ref('fiaes.SolicitudVehiculo', False)
+            template = self.env.ref('fiaes.SolicitudVehiculo_solicitud', False)
             self.env['mail.template'].browse(template.id).send_mail(record.id)
 
     def autorizar(self):
         for record in self:
             record.state='Autorizado'
             record.encargado_revision_id=self.env.user.id
+            template = self.env.ref('fiaes.SolicitudVehiculo_autorizado', False)
+            self.env['mail.template'].browse(template.id).send_mail(record.id)
 
     def asignar(self):
         for record in self:
@@ -84,6 +86,8 @@ class usovehiculo(models.Model):
             record.encargado_revision_id=self.env.user.id
             if not record.vehicle_id:
                 raise ValidationError("Debe especificar el vehiculo asignado")
+            template = self.env.ref('fiaes.SolicitudVehiculo_asignado', False)
+            self.env['mail.template'].browse(template.id).send_mail(record.id)
 
     def iniciar(self):
         for record in self:
@@ -91,11 +95,19 @@ class usovehiculo(models.Model):
 
     def finalizar(self):
         for record in self:
-            record.state='Finalizado'
+            i=0
+            for detalle in record.odometros_ids:
+                i=i+1
+            if i>1:
+                record.state='Finalizado'
+            else:
+                raise ValidationError('deben haber al menos dos registros')
 
     def cancelar(self):
         for record in self:
             record.state='Cancelado'
+        template = self.env.ref('fiaes.SolicitudVehiculo_cancelado', False)
+        self.env['mail.template'].browse(template.id).send_mail(record.id)
 
     @api.one
     @api.depends('vehicle_id')
@@ -121,16 +133,16 @@ class usovehiculo(models.Model):
 
 class usovehiculo_detalle(models.Model):
     _inherit = 'fleet.vehicle.odometer'
-    odometro_regreso=fields.Integer("Kilometraje de regreso")
+    odometro_regreso=fields.Integer("Kilometraje de llegada")
     odometro_salida=fields.Integer("Kilometraje de salida")
-    fecha_salida=fields.Datetime("Fecha Salida")
-    fecha_regreso=fields.Datetime("Fecha Regreso")
+    fecha_salida=fields.Datetime("Fecha y hora de salida")
+    fecha_regreso=fields.Datetime("Fecha y hora de llegada")
     comentario=fields.Char("Comentario")
     solicitud_id=fields.Many2one(comodel_name='fiaes.solicitud_vehiculo', string='Solicitud')
     solicitante=fields.Char(string='Solicitante',compute='get_solicitante',related='solicitud_id.solicitante')
     destino=fields.Char("Destino",related='solicitud_id.destino')
     mision_oficial=fields.Char("Mision Oficial",track_visibilty='always',related='solicitud_id.mision_oficial')
-    conductor_id=fields.Many2one(comodel_name='hr.employee', string='Conductor',related='solicitud_id.conductor_id')
+    conductor_id=fields.Many2one(comodel_name='res.users', string='Conductor')
     programada=fields.Selection(selection=[('Programada', 'Programada')
                                         ,('No Programada', 'No Programada')]
                                         , string='Tipo de solicitud',related='solicitud_id.programada')

@@ -13,7 +13,7 @@
     "author": "Strategi-k",
     "website": "http://strategi-k.com",
     "version": '12.0.0.4',
-    "depends": ['stock','purchase','hr','fleet','sale_management','account_asset','survey'],
+    "depends": ['stock','purchase','hr','fleet','sale_management','account_asset','survey','maintenance'],
     "data": [
         'security/ir.model.access.csv'
         ,'views/fiaes.xml'
