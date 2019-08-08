@@ -623,7 +623,7 @@ groups="account.group_account_manager"/>
          </header>
           <sheet>
               <div class="oe_title oe_inline">
-                  <label for="name" class="oe_edit_only"/>
+                  <label for="name" string="Evento" class="oe_edit_only"/>
                   <h1><field name="name"/></h1>
               </div>
               <group>
@@ -655,11 +655,12 @@ groups="account.group_account_manager"/>
 
               </group>
                    <label for="odometros_ids"/>
-                   <field name="odometros_ids" attrs="{'readonly':[('state', '!=', 'En curso')]}" nolabel="1" context="{'default_vehicle_id':vehicle_id}">
+                   <field name="odometros_ids" attrs="{'readonly':[('state', '!=', 'En curso')]}" nolabel="1" context="{'default_vehicle_id':vehicle_id,'default_solicitud_id':active_id}">
                      <tree string="Registro del odometro" editable="bottom">
                        <field name="solicitud_id" invisible="1"/>
+                       <field name="conductor_ids" invisible="1" widget="many2many_tags" />
                        <field name="vehicle_id" invisible="1"/>
-                       <field name="driver_id" />
+                       <field name="conductor_id"  domain="[('id','in',conductor_ids)]"/>
                        <field name="fecha_salida"/>
                        <field name="odometro_salida"/>
                        <field name="fecha_regreso"/>
@@ -707,6 +708,18 @@ groups="account.group_account_manager"/>
   </field>
 </record>
 
+<record id="view_form_fuel" model="ir.ui.view">
+  <field name="model">fleet.vehicle.log.fuel</field>
+  <field name="inherit_id" ref="fleet.fleet_vehicle_log_fuel_view_form" />
+  <field name="arch" type="xml">
+    <xpath expr="//field[@name='liter']" position="attributes">
+        <attribute name="string">Galon</attribute>
+    </xpath>
+    <xpath expr="//field[@name='price_per_liter']" position="attributes">
+        <attribute name="string">Precio por galon</attribute>
+    </xpath>
+  </field>
+</record>
 
 
 
@@ -753,7 +766,7 @@ groups="base.group_user"/>
           <field name="solicitante"/>
           <field name="destino"/>
           <field name="mision_oficial"/>
-          <field name="driver_id"/>
+          <field name="conductor_id"/>
           <field name="fecha_salida"/>
           <field name="odometro_salida"/>
           <field name="fecha_regreso"/>
@@ -771,7 +784,7 @@ groups="base.group_user"/>
           <field name="solicitante"/>
           <field name="destino"/>
           <field name="mision_oficial"/>
-          <field name="driver_id"/>
+          <field name="conductor_id"/>
           <field name="fecha_salida"/>
           <field name="odometro_salida"/>
           <field name="fecha_regreso"/>

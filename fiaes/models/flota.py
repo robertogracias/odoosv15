@@ -91,6 +91,12 @@ class usovehiculo(models.Model):
 
     def iniciar(self):
         for record in self:
+            if not record.fecha_salida_real:
+                raise ValidationError("Debe especificar una fecha de salida")
+            if not record.asistieron_ids:
+                raise ValidationError("Debe especificar quienes asisten")
+            if not record.conductor_ids:
+                raise ValidationError("Debe especificar quienes son los responsables")
             record.state='En curso'
 
     def finalizar(self):
@@ -139,13 +145,36 @@ class usovehiculo_detalle(models.Model):
     fecha_regreso=fields.Datetime("Fecha y hora de llegada")
     comentario=fields.Char("Comentario")
     solicitud_id=fields.Many2one(comodel_name='fiaes.solicitud_vehiculo', string='Solicitud')
-    solicitante=fields.Char(string='Solicitante',compute='get_solicitante',related='solicitud_id.solicitante')
+    solicitante=fields.Char(string='Solicitante',related='solicitud_id.solicitante')
     destino=fields.Char("Destino",related='solicitud_id.destino')
     mision_oficial=fields.Char("Mision Oficial",track_visibilty='always',related='solicitud_id.mision_oficial')
     conductor_id=fields.Many2one(comodel_name='res.users', string='Conductor')
+    conductor_ids=fields.Many2many(comodel_name='res.users', string='Conductores',related='solicitud_id.conductor_ids')
     programada=fields.Selection(selection=[('Programada', 'Programada')
                                         ,('No Programada', 'No Programada')]
                                         , string='Tipo de solicitud',related='solicitud_id.programada')
+    @api.depends('solicitud_id')
+    def get_conductores(self):
+        for record in self:
+            i=0
+            start1="["
+            start2="['|',"
+            separator=""
+            dominio=""
+            if record.solicitud_id:
+                if record.solicitud_id.conductor_ids:
+                    for conductor in record.solicitud_id.conductor_ids:
+                        dominio=separator+"('id','=',"+str(conductor.id)+")"
+                        separator=","
+                        i=i+1
+            if i==0:
+                dominio=""
+            if i==1:
+                dominio=start1+dominio+"]"
+            if i==2:
+                dominio=start2+dominio+"]"
+            record.conductor_ids = dominio
+
     @api.model
     def create(self, values):
         # Override the original create function for the res.partner model
