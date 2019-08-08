@@ -34,22 +34,22 @@ class usovehiculo(models.Model):
     _name = 'fiaes.solicitud_vehiculo'
     _inherit= ['mail.thread']
     _description= 'Solicitud de vehiculo'
-    name=fields.Char("Referencia")
+    name=fields.Char("Evento",required=True)
     solicitante_tipo=fields.Selection(selection=[('Empleado', 'Empleado')
                                         ,('Contacto', 'Contacto')]
-                                        , string='Tipo de solicitante')
+                                        , string='Tipo de solicitante',required=True)
     solicitante_employee_id=fields.Many2one(comodel_name='hr.employee', string='Solicitante')
     solicitante_partner_id=fields.Many2one(comodel_name='res.partner', string='Solicitante')
     vehicle_id=fields.Many2one(comodel_name='fleet.vehicle', string='Vehiculo')
     vehicle_name=fields.Char("Vehiculo",compute='get_vehicle',store=False)
     solicitante=fields.Char(string='Solicitante',compute='get_solicitante')
     source_email=fields.Char(string='Email',compute='get_solicitante')
-    fecha_solicitud=fields.Date("Fecha Solicitud")
-    destino=fields.Char("Destino")
-    mision_oficial=fields.Char("Mision Oficial",track_visibilty='always')
+    fecha_solicitud=fields.Date("Fecha Solicitud",required=True)
+    destino=fields.Char("Destino",required=True)
+    mision_oficial=fields.Char("Mision Oficial",track_visibilty='always',required=True)
     programada=fields.Selection(selection=[('Programada', 'Programada')
                                         ,('No Programada', 'No Programada')]
-                                        , string='Tipo de solicitud')
+                                        , string='Tipo de solicitud',required=True)
     fecha_salida=fields.Datetime("Fecha Salida")
     fecha_salida_real=fields.Datetime("Fecha y hora de Salida Real")
     fecha_regreso_esperada=fields.Datetime("Fecha Regreso estimado")
@@ -71,14 +71,22 @@ class usovehiculo(models.Model):
         for record in self:
             record.state='Solicitado'
             template = self.env.ref('fiaes.SolicitudVehiculo_solicitud', False)
-            self.env['mail.template'].browse(template.id).send_mail(record.id)
+            x=self.env['mail.template'].browse(template.id).send_mail(record.id)
+            mail=self.env['mail.mail'].search([('id','=',x)])
+            if mail:
+                mail.write({'failure_reason':''})
+                mail.send()
 
     def autorizar(self):
         for record in self:
             record.state='Autorizado'
             record.encargado_revision_id=self.env.user.id
             template = self.env.ref('fiaes.SolicitudVehiculo_autorizado', False)
-            self.env['mail.template'].browse(template.id).send_mail(record.id)
+            x=self.env['mail.template'].browse(template.id).send_mail(record.id)
+            mail=self.env['mail.mail'].search([('id','=',x)])
+            if mail:
+                mail.write({'failure_reason':''})
+                mail.send()
 
     def asignar(self):
         for record in self:
@@ -87,7 +95,11 @@ class usovehiculo(models.Model):
             if not record.vehicle_id:
                 raise ValidationError("Debe especificar el vehiculo asignado")
             template = self.env.ref('fiaes.SolicitudVehiculo_asignado', False)
-            self.env['mail.template'].browse(template.id).send_mail(record.id)
+            x=self.env['mail.template'].browse(template.id).send_mail(record.id)
+            mail=self.env['mail.mail'].search([('id','=',x)])
+            if mail:
+                mail.write({'failure_reason':''})
+                mail.send()
 
     def iniciar(self):
         for record in self:
@@ -113,7 +125,11 @@ class usovehiculo(models.Model):
         for record in self:
             record.state='Cancelado'
         template = self.env.ref('fiaes.SolicitudVehiculo_cancelado', False)
-        self.env['mail.template'].browse(template.id).send_mail(record.id)
+        x=self.env['mail.template'].browse(template.id).send_mail(record.id)
+        mail=self.env['mail.mail'].search([('id','=',x)])
+        if mail:
+            mail.write({'failure_reason':''})
+            mail.send()
 
     @api.one
     @api.depends('vehicle_id')
