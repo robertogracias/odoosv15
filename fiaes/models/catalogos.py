@@ -67,10 +67,10 @@ class empleado(models.Model):
     fecha_retiro=fields.Date("Fecha de Retiro")
     causas_despido=fields.Text("Causas de retiro")
     cuenta_bancaria=fields.Char("Cuenta Bancaria")
-    marital=fields.Selection(selection=[('Soltero', 'Soltero')
+    marital=fields.Selection(selection=[('single', 'Soltero')
                                         ,('Casado', 'Casado')
                                         ,('Companero', 'Compañero de vida')]
-                                        , string='Estado',default='No Acreditado')
+                                        , string='Estado',default='single')
     cuenta_tipo=fields.Selection(selection=[('Ahorro', 'Ahorro')
                                         ,('Corriente', 'Corriente')]
                                         , string='Tipo de cuenta')
