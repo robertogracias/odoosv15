@@ -28,8 +28,16 @@ class integrador_user(models.Model):
 
 class integrador_partner(models.Model):
     _inherit='res.partner'
-    nrc=fields.Char("NRC")
-    nit=fields.Char("NIT",select=True)
+    _sql_constraints = [
+        ('NIT_Unico', 'unique (company_id,nit)', 'NIT debe ser unico por Compania'),
+        ('NRC_Unico', 'unique (company_id,nrc)', 'NRC debe ser unico por Compania'),
+        ('DUI_Unico', 'unique (company_id,dui)', 'DUI/CEDULA debe ser unico por Compania')
+    ]
+    nrc=fields.Char("NRC",copy=False)
+    nit=fields.Char("NIT",select=True,required=True,copy=False)
     giro=fields.Char("Giro")
+    dui=fields.Char("DUI/Cedula",copy=False)
+    nombres=fields.Char("Nombres")
+    apellidos=fields.Char("Apellidos")
     razon_social=fields.Char("Razón social")
 
