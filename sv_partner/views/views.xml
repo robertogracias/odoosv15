@@ -16,6 +16,19 @@
                     <field name="nrc"/>
                     <field name="giro"/>
                 </xpath>
+                
+                <xpath expr="//page[@name='contact_addresses']" position="after">
+                    <page string="Referencias">
+                        <field name="referencia_ids">
+                            <tree editable="buttom">
+                                <field name="name"/>
+                                <field name="telefono"/>
+                                <field name="email"/>
+                                <field name="comentario"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
             </field>
         </record>
 
@@ -29,6 +42,18 @@
                     <field name="nit"/>
                     <field name="nrc"/>
                     <field name="dui"/>
+                </xpath>
+                
+            </field>
+        </record>
+
+        <record id="accountmovesv_search" model="ir.ui.view">
+            <field name="name">accountmovesv_search</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="nit"/>
                 </xpath>
                 
             </field>
