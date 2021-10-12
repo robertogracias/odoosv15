@@ -44,7 +44,7 @@ class odoosv_partner(models.Model):
 
 class odoosv_move(models.Model):
     _inherit='account.move'
-    nit=fields.Char("NIT",related='partner_id.nit')
+    nit=fields.Char("NIT",related='partner_id.nit',store=True)
 
 class odoosv_referencia(models.Model):
     _name='odoosv.partner.referencia'

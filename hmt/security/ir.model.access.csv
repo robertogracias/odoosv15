@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+hmt_restriccion,hmt_restriccion,model_hmt_product_restriccion,base.group_user,1,0,0,0
+hmt_restriccion1,hmt_restriccion1,model_hmt_product_restriccion,sales_team.group_sale_manager,1,1,1,1
