@@ -46,26 +46,29 @@ class hmt_saleorder(models.Model):
                         if c.ruta_id:
                             if c.canal_id:
                                 if r.partner_id.id==c.partner_id.id and r.ruta_id.id==c.ruta_id.id and r.canal_id.id==c.canal_id.id:
-                                    raise ValidationError('El producto '+l.product_id.product_temp_id.name+ ' ruta:'+c.ruta_id.name+ ' canal:'+c.canal_id.name)
+                                    raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+ ' ruta:'+c.ruta_id.name+ ' canal:'+c.canal_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
                             else:
                                 if r.partner_id.id==c.partner_id.id and r.ruta_id.id==c.ruta_id.id:
-                                    raise ValidationError('El producto '+l.product_id.product_temp_id.name+ ' ruta:'+c.ruta_id.name)
+                                    raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+ ' ruta:'+c.ruta_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
                         else:
                             if c.canal_id:
                                 if r.partner_id.id==c.partner_id.id  and r.canal_id.id==c.canal_id.id:
-                                    raise ValidationError('El producto '+l.product_id.product_temp_id.name+' canal:'+c.canal_id.name)
+                                    raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+' canal:'+c.canal_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
+                            else:
+                                if r.partner_id.id==c.partner_id.id:
+                                    raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
                     else:
                         if c.ruta_id:
                             if c.canal_id:
                                 if r.ruta_id.id==c.ruta_id.id and r.canal_id.id==c.canal_id.id:
-                                    raise ValidationError('El producto '+l.product_id.product_temp_id.name+ ' ruta:'+c.ruta_id.name+ ' canal:'+c.canal_id.name)
+                                    raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+ ' ruta:'+c.ruta_id.name+ ' canal:'+c.canal_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
                             else:
                                 if r.ruta_id.id==c.ruta_id.id :
-                                    raise ValidationError('El producto '+l.product_id.product_temp_id.name+ ' ruta:'+c.ruta_id.name)
+                                    raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+ ' ruta:'+c.ruta_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
                         else:
                             if c.canal_id:
                                 if r.canal_id.id==c.canal_id.id:
-                                    raise ValidationError(' canal:'+c.canal_id.name)
+                                    raise ValidationError(' canal:'+c.canal_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
 
 
 
@@ -81,24 +84,27 @@ class hmt_saleorder_line(models.Model):
                     if c.ruta_id:
                         if c.canal_id:
                             if r.partner_id.id==c.partner_id.id and r.ruta_id.id==c.ruta_id.id and r.canal_id.id==c.canal_id.id:
-                                    raise ValidationError('El producto '+l.product_id.product_temp_id.name+ ' ruta:'+c.ruta_id.name+ ' canal:'+c.canal_id.name)
+                                    raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+ ' ruta:'+c.ruta_id.name+ ' canal:'+c.canal_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
                         else:
                             if r.partner_id.id==c.partner_id.id and r.ruta_id.id==c.ruta_id.id:
-                                    raise ValidationError('El producto '+l.product_id.product_temp_id.name+ ' ruta:'+c.ruta_id.name)
+                                    raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+ ' ruta:'+c.ruta_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
                     else:
                         if c.canal_id:
                             if r.partner_id.id==c.partner_id.id  and r.canal_id.id==c.canal_id.id:
-                                raise ValidationError('El producto '+l.product_id.product_temp_id.name+' canal:'+c.canal_id.name)
+                                raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+' canal:'+c.canal_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
+                        else:
+                            if r.partner_id.id==c.partner_id.id:
+                                raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
                 else:
                     if c.ruta_id:
                         if c.canal_id:
                             if r.ruta_id.id==c.ruta_id.id and r.canal_id.id==c.canal_id.id:
-                                raise ValidationError('El producto '+l.product_id.product_temp_id.name+ ' ruta:'+c.ruta_id.name+ ' canal:'+c.canal_id.name)
+                                raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+ ' ruta:'+c.ruta_id.name+ ' canal:'+c.canal_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
                         else:
                             if r.ruta_id.id==c.ruta_id.id :
-                                raise ValidationError('El producto '+l.product_id.product_temp_id.name+ ' ruta:'+c.ruta_id.name)
+                                raise ValidationError('El producto '+l.product_id.product_tmpl_id.name+ ' ruta:'+c.ruta_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
                     else:
                         if c.canal_id:
                             if r.canal_id.id==c.canal_id.id:
-                                raise ValidationError(' canal:'+c.canal_id.name)
+                                raise ValidationError(' canal:'+c.canal_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
 
