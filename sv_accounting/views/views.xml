@@ -9,7 +9,13 @@
                  <xpath expr="//page[@name='general_info']" position="after">
                     <page string="Configuracion El Salvador">
                         <group>
-                            <button name="configurar" type="object" string="Configurar"/> 
+                            <group>
+                                <button name="configurar" type="object" string="Configurar"/> 
+                                <button name="configurar_productos" type="object" string="Configurar Productos"/> 
+                            </group>
+                            <group>
+                                <button name="configurar_partners" type="object" string="Configurar Asociados"/> 
+                            </group>
                         </group>
                         <group string="Cuentas">
                             <field name="account_iva_consumidor_id"/>
@@ -102,6 +108,7 @@
             <field name="arch" type="xml">
                  <xpath expr="//field[@name='invoice_vendor_bill_id']" position="after">
                         <field name="tipo_documento_id"/>
+                        <field name="nofiscal"/>
                 </xpath>
             </field>
         </record>

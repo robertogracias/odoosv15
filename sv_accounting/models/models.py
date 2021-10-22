@@ -553,7 +553,7 @@ if not partner.nrc:
                 self.env['odoosv.fiscal.document'].create(dic)
             dic={}
             exportacion=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Exportacion')],limit=1)
-            if not factura:
+            if not exportacion:
                 dic['name']='Exportacion'
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='out_invoice'
@@ -565,7 +565,7 @@ if not partner.tipo_localidad=='NoDomiciliado':
                 self.env['odoosv.fiscal.document'].create(dic)
             dic={}
             notacredito=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Nota de Credito')],limit=1)
-            if not factura:
+            if not notacredito:
                 dic['name']='Nota de Credito'
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='out_refund'
@@ -577,12 +577,13 @@ if not partner.nrc:
                 self.env['odoosv.fiscal.document'].create(dic)
             dic={}
             devolucion=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Devolucion')],limit=1)
-            if not factura:
+            if not devolucion:
                 dic['name']='Devolucion'
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='out_refund'
                 dic['formato']='Devolucion'
                 self.env['odoosv.fiscal.document'].create(dic)
+
     #Aplicar todas las configuraciones
     def configurar(self):
         for r in self:
@@ -591,6 +592,50 @@ if not partner.nrc:
             r.create_fiscal_position()
             r.configure_settings()
             r.create_docs()
+
+    def configurar_productos(self):
+        for r in self:
+            products=self.env['product.template'].search([('company_id','=',r.id)])
+            for p in products:
+                if p.fiscal_type=='Servicio':
+                    ids=[]
+                    ids.append(r.tax_base_servicio_venta.id)
+                    p.write({'taxes_id':[(6,0,ids)]})
+                    ids=[]
+                    ids.append(r.tax_base_servicio_compra.id)
+                    p.write({'supplier_taxes_id':[(6,0,ids)]})
+                if p.fiscal_type=='Tangible':
+                    ids=[]
+                    ids.append(r.tax_base_tangible_venta.id)
+                    p.write({'taxes_id':[(6,0,ids)]})
+                    ids=[]
+                    ids.append(r.tax_base_tangible_compra.id)
+                    p.write({'supplier_taxes_id':[(6,0,ids)]})
+
+    def configurar_partners(self):
+        for r in self:
+            partners=self.env['res.partner'].search([('company_id','=',r.id)])
+            for p in partners:
+                if p.tipo_localidad=='NoDomiciliado':
+                    p.write({'property_account_position_id':r.fiscal_position_extrangero_id.id})
+                else:
+                    if p.contribuyente:
+                        if p.tipo_fiscal=='Gravado':
+                            if p.tipo_persona=='Juridico':
+                                if p.tamanio_empresa=='Grande':
+                                    p.write({'property_account_position_id':r.fiscal_position_grande_juridico_id.id})
+                                else:
+                                    p.write({'property_account_position_id':r.fiscal_position_pyme_juridico_id.id})
+                            else:
+                                if p.tamanio_empresa=='Grande':
+                                    p.write({'property_account_position_id':r.fiscal_position_grande_natural_id.id})
+                                else:
+                                    p.write({'property_account_position_id':r.fiscal_position_pyme_natural_id.id})
+                        else:
+                            p.write({'property_account_position_id':r.fiscal_position_exento_id.id})
+                    else:
+                        p.write({'property_account_position_id':r.fiscal_position_no_contribuyente_id.id})
+
 
 
 class odoosv_partner(models.Model):
@@ -604,6 +649,8 @@ class odoosv_partner(models.Model):
 class odoosv_move(models.Model):
     _inherit='account.move'
     tipo_documento_id=fields.Many2one('odoosv.fiscal.document',string="Tipo de Documento")
+    nofiscal=fields.Boolean("Fuera del ambito fiscal")
+    #caja_id=fields.Many2one('odoosv.caja',string="Caja",default=lambda self: self.env.user.caja_id.id)
 
     @api.constrains('tipo_documento_id','partner_id','amount_total')
     def _check_restriciones(self):
@@ -624,11 +671,9 @@ class odoosv_documento(models.Model):
     _description='Tipos de documentos de la localizacion'
     name=fields.Char('Nombre del documento')
     formato=fields.Char('Formato del documento')
-    tipo_movimiento=fields.Selection(selection=[('in_invoice','Factura Proveedor'),('out_invoice','Factura Cliente'),('in_fefund','Nota Credito Proveedor'),('out_fefund','Nota Credito Cliente'),('entry','Entry')],string="Tipo Documento")
+    tipo_movimiento=fields.Selection(selection=[('in_invoice','Factura Proveedor'),('out_invoice','Factura Cliente'),('in_refund','Nota Credito Proveedor'),('out_refund','Nota Credito Cliente'),('entry','Entry')],string="Tipo Documento")
     validacion=fields.Text("Codigo de Validacion")
     company_id=fields.Many2one('res.company',string="Company")
 
     
-            
-
 
