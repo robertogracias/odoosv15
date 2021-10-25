@@ -88,6 +88,19 @@
         </record>
 
 
+        <record id="svaccount_form" model="ir.ui.view">
+            <field name="name">svaccount_form</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_form"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='group_id']" position="after">
+                    <field name="partner_requerido"/>
+                    <field name="analytic_requerido"/>
+                </xpath>
+            </field>
+        </record>
+
+
         <record id="productofiscal_form" model="ir.ui.view">
             <field name="name">productofiscal_form</field>
             <field name="model">product.template</field>

@@ -29,6 +29,8 @@ class odoofiscalsv_taxgroup(models.Model):
 
 class odoosv_user(models.Model):
     _inherit='res.company'
+
+    sv=fields.Boolean("Localizacion de El Salvador")
     
     #Cuentas
     account_iva_consumidor_id=fields.Many2one('account.account',string="Cuenta de IVA consumidor (Venta)")
@@ -116,10 +118,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_iva_consumidor_id':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_consumidor_id.id,'invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_consumidor_id.id,'refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_consumidor_id.id,'invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_consumidor_id.id,'refund_tax_id':tax.id})
 
             #Iva contribuyente            
             dic={}
@@ -136,10 +136,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_iva_contribuyente_id':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_contribuyente_id.id,'invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_contribuyente_id.id,'refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_contribuyente_id.id,'invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_contribuyente_id.id,'refund_tax_id':tax.id})
 
 
             #Iva Compras            
@@ -157,10 +155,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_iva_compras_id':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_compras_id.id,'invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_compras_id.id,'refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_compras_id.id,'invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_iva_compras_id.id,'refund_tax_id':tax.id})
 
 
             #Iva retencion            
@@ -178,10 +174,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_retencion_id':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_retencion_id.id,'invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_retencion_id.id,'refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_retencion_id.id,'invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_retencion_id.id,'refund_tax_id':tax.id})
 
             #IVA percepcion            
             dic={}
@@ -198,10 +192,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_perceccion_id':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_perceccion_id.id,'invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_perceccion_id.id,'refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_perceccion_id.id,'invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_perceccion_id.id,'refund_tax_id':tax.id})
 
             #ISR            
             dic={}
@@ -218,10 +210,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_isr_id':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_isr_id.id,'invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_isr_id.id,'refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_isr_id.id,'invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'tax','account_id':r.account_isr_id.id,'refund_tax_id':tax.id})
 
             #exento compra           
             dic={}
@@ -238,10 +228,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_exento_compra_id':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
 
             #exento venta           
             dic={}
@@ -258,10 +246,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_exento_venta_id':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
 
 
             #no sujeto compra           
@@ -279,10 +265,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_nosujeto_compra_id':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
 
             #no sujeto venta           
             dic={}
@@ -299,10 +283,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_nosujeto_venta_id':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
 
             #base tangible compra           
             dic={}
@@ -319,10 +301,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_base_tangible_compra':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
 
             #base Tangible venta           
             dic={}
@@ -339,10 +319,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_base_tangible_venta':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
 
 
             #base servicio compra           
@@ -360,10 +338,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_base_servicio_compra':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
 
             #base Servicio venta           
             dic={}
@@ -380,10 +356,8 @@ class odoosv_user(models.Model):
             else:
                 tax=self.env['account.tax'].create(dic)
                 r.write({'tax_base_servicio_venta':tax.id})
-            tax.invoice_repartition_line_ids.unlink()
-            tax.refund_repartition_line_ids.unlink()
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
-            self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','invoice_tax_id':tax.id})
+                self.env['account.tax.repartition.line'].create({'factor_percent':100,'repartition_type':'base','refund_tax_id':tax.id})
 
 
     def create_fiscal_position(self):
@@ -529,9 +503,11 @@ class odoosv_user(models.Model):
 
     def create_docs(self):
         for r in self:
+
+            #DOCUMENTOS DE VENTA
             #factura
             dic={}
-            factura=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Factura')],limit=1)
+            factura=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Factura'),('tipo_movimiento','=','out_invoice')],limit=1)
             if not factura:
                 dic['name']='Factura'
                 dic['company_id']=r.id
@@ -540,8 +516,8 @@ class odoosv_user(models.Model):
                 self.env['odoosv.fiscal.document'].create(dic)
             #ccf
             dic={}
-            ccf=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','CCF')],limit=1)
-            if not factura:
+            ccf=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','CCF'),('tipo_movimiento','=','out_invoice')],limit=1)
+            if not ccf:
                 dic['name']='CCF'
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='out_invoice'
@@ -552,7 +528,7 @@ if not partner.nrc:
                 """
                 self.env['odoosv.fiscal.document'].create(dic)
             dic={}
-            exportacion=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Exportacion')],limit=1)
+            exportacion=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Exportacion'),('tipo_movimiento','=','out_invoice')],limit=1)
             if not exportacion:
                 dic['name']='Exportacion'
                 dic['company_id']=r.id
@@ -563,8 +539,9 @@ if not partner.tipo_localidad=='NoDomiciliado':
     raise ValidationError('El cliente no debe ser local')
                 """
                 self.env['odoosv.fiscal.document'].create(dic)
+            #Nota de Credito    
             dic={}
-            notacredito=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Nota de Credito')],limit=1)
+            notacredito=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Nota de Credito'),('tipo_movimiento','=','out_refund')],limit=1)
             if not notacredito:
                 dic['name']='Nota de Credito'
                 dic['company_id']=r.id
@@ -575,8 +552,21 @@ if not partner.nrc:
     raise ValidationError('El cliente debe tener NRC')
                 """
                 self.env['odoosv.fiscal.document'].create(dic)
+            #Nota de Credito    
             dic={}
-            devolucion=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Devolucion')],limit=1)
+            notacredito=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Nota de Debito'),('tipo_movimiento','=','out_invoice')],limit=1)
+            if not notacredito:
+                dic['name']='Nota de Debito'
+                dic['company_id']=r.id
+                dic['tipo_movimiento']='out_invoice'
+                dic['formato']='NotaDebito'
+                dic['validacion']="""
+if not partner.nrc:
+    raise ValidationError('El cliente debe tener NRC')
+                """
+                self.env['odoosv.fiscal.document'].create(dic)    
+            dic={}
+            devolucion=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Devolucion'),('tipo_movimiento','=','out_refund')],limit=1)
             if not devolucion:
                 dic['name']='Devolucion'
                 dic['company_id']=r.id
@@ -584,9 +574,78 @@ if not partner.nrc:
                 dic['formato']='Devolucion'
                 self.env['odoosv.fiscal.document'].create(dic)
 
+            #DOCUMENTOS DE COMPRA
+            #Recibo
+            dic={}
+            recibo=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Recibo'),('tipo_movimiento','=','in_invoice')],limit=1)
+            if not recibo:
+                dic['name']='Recibo'
+                dic['company_id']=r.id
+                dic['tipo_movimiento']='in_invoice'
+                dic['formato']='Recibo'
+                self.env['odoosv.fiscal.document'].create(dic)
+                dic['validacion']="""
+if partner.contribuyente:
+    raise ValidationError('El proveedor no debe ser contribuyente')
+                """
+            #ccf
+            dic={}
+            ccf=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','CCF'),('tipo_movimiento','=','in_invoice')],limit=1)
+            if not ccf:
+                dic['name']='CCF'
+                dic['company_id']=r.id
+                dic['tipo_movimiento']='in_invoice'
+                dic['formato']='CCF'
+                dic['validacion']="""
+if not partner.nrc:
+    raise ValidationError('El proveedor debe tener NRC')
+                """
+                self.env['odoosv.fiscal.document'].create(dic)
+
+            dic={}
+            importacion=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Importacion'),('tipo_movimiento','=','in_invoice')],limit=1)
+            if not importacion:
+                dic['name']='Importacion'
+                dic['company_id']=r.id
+                dic['tipo_movimiento']='in_invoice'
+                dic['formato']='Importacion'
+                dic['validacion']="""
+if not partner.tipo_localidad=='NoDomiciliado':
+    raise ValidationError('El Proveedor no debe ser local')
+                """
+                self.env['odoosv.fiscal.document'].create(dic)
+            #Nota de Credito    
+            dic={}
+            notacredito=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Nota de Credito'),('tipo_movimiento','=','in_refund')],limit=1)
+            if not notacredito:
+                dic['name']='Nota de Credito'
+                dic['company_id']=r.id
+                dic['tipo_movimiento']='in_refund'
+                dic['formato']='NotaCredito'
+                dic['validacion']="""
+if not partner.nrc:
+    raise ValidationError('El Proveedor debe tener NRC')
+                """
+                self.env['odoosv.fiscal.document'].create(dic)
+            #Nota de Debito    
+            dic={}
+            notacredito=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Nota de Debito'),('tipo_movimiento','=','in_invoice')],limit=1)
+            if not notacredito:
+                dic['name']='Nota de Debito'
+                dic['company_id']=r.id
+                dic['tipo_movimiento']='in_invoice'
+                dic['formato']='NotaDebito'
+                dic['validacion']="""
+if not partner.nrc:
+    raise ValidationError('El proveedor debe tener NRC')
+                """
+                self.env['odoosv.fiscal.document'].create(dic)    
+            
+
     #Aplicar todas las configuraciones
     def configurar(self):
         for r in self:
+            r.write({'sv':True})
             r.create_tax_groups()
             r.create_tax()
             r.create_fiscal_position()
@@ -646,9 +705,37 @@ class odoosv_partner(models.Model):
     tipo_fiscal=fields.Selection(selection=[('Gravado','Gravado'),('Exento','Exento')],string="Tipo fiscal")
     tipo_localidad=fields.Selection(selection=[('Local','Local'),('NoDomiciliado','NoDomiciliado')],string="Localidad")
 
+    @api.onchange('contribuyente','tipo_persona','tamanio_empresa','tipo_fiscal','tipo_localidad')
+    def onchange_fiscal(self):
+        for p in self:
+            if p.company_id:
+                if p.company_id.sv:
+                    if p.tipo_localidad=='NoDomiciliado':
+                        p.write({'property_account_position_id':p.company_id.fiscal_position_extrangero_id.id})
+                    else:
+                        if p.contribuyente:
+                            if p.tipo_fiscal=='Gravado':
+                                if p.tipo_persona=='Juridico':
+                                    if p.tamanio_empresa=='Grande':
+                                        p.write({'property_account_position_id':p.company_id.fiscal_position_grande_juridico_id.id})
+                                    else:
+                                        p.write({'property_account_position_id':p.company_id.fiscal_position_pyme_juridico_id.id})
+                                else:
+                                    if p.tamanio_empresa=='Grande':
+                                        p.write({'property_account_position_id':p.company_id.fiscal_position_grande_natural_id.id})
+                                    else:
+                                        p.write({'property_account_position_id':p.company_id.fiscal_position_pyme_natural_id.id})
+                            else:
+                                p.write({'property_account_position_id':p.company_id.fiscal_position_exento_id.id})
+                        else:
+                            p.write({'property_account_position_id':p.company_id.fiscal_position_no_contribuyente_id.id})
+
+
+    
+
 class odoosv_move(models.Model):
     _inherit='account.move'
-    tipo_documento_id=fields.Many2one('odoosv.fiscal.document',string="Tipo de Documento")
+    tipo_documento_id=fields.Many2one('odoosv.fiscal.document',string="Tipo de Documento",ondelete="restrict")
     nofiscal=fields.Boolean("Fuera del ambito fiscal")
     #caja_id=fields.Many2one('odoosv.caja',string="Caja",default=lambda self: self.env.user.caja_id.id)
 
@@ -665,7 +752,28 @@ class odoosv_move(models.Model):
                     dic['ValidationError']=ValidationError
                     if r.tipo_documento_id.validacion:
                         safe_eval(r.tipo_documento_id.validacion,dic, mode='exec')
-    
+            if r.move_type in ('in_invoice','in_refund'):
+                if not r.nofiscal:
+                    dias=(datetime.today().date()-r.invoice_date).days
+                    if dias>90:
+                        raise ValidationError('El Documento debe tener menos de 90 dias si se aplicara fiscalmente')
+
+class odoosv_moveline(models.Model):
+    _inherit='account.move.line'
+
+    @api.constrains('account_id','partner_id','account_analytic_id')
+    def _check_restriciones(self):
+        for r in self:
+            if r.account_id.partner_requerido:
+                if not r.partner_id:
+                    raise ValidationError('Debe especificar un asociado')
+            if r.account_id.analytic_requerido:
+                if not r.analytic_account_id:
+                    raise ValidationError('Debe especificar una cuenta analitica')
+
+
+
+
 class odoosv_documento(models.Model):
     _name='odoosv.fiscal.document'
     _description='Tipos de documentos de la localizacion'
@@ -675,5 +783,8 @@ class odoosv_documento(models.Model):
     validacion=fields.Text("Codigo de Validacion")
     company_id=fields.Many2one('res.company',string="Company")
 
-    
 
+class odoosv_account_account(models.Model):
+    _inherit='account.account'
+    partner_requerido=fields.Boolean('Tercero requerido')
+    analytic_requerido=fields.Boolean('Cuenta analitica requerida')
