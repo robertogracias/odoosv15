@@ -739,24 +739,26 @@ class odoosv_move(models.Model):
     nofiscal=fields.Boolean("Fuera del ambito fiscal")
     #caja_id=fields.Many2one('odoosv.caja',string="Caja",default=lambda self: self.env.user.caja_id.id)
 
-    @api.constrains('tipo_documento_id','partner_id','amount_total')
+    @api.constrains('tipo_documento_id','partner_id','amount_total','state')
     def _check_restriciones(self):
         for r in self:
             if r.move_type in ('in_invoice','in_refund','out_invoice','out_refund'):
-                if not r.tipo_documento_id:
-                    raise ValidationError('Debe especificare un tipo de documento')
-                else:
-                    dic={}
-                    dic['move']=r
-                    dic['partner']=r.partner_id
-                    dic['ValidationError']=ValidationError
-                    if r.tipo_documento_id.validacion:
-                        safe_eval(r.tipo_documento_id.validacion,dic, mode='exec')
+                if r.state!='draft':
+                    if not r.tipo_documento_id:
+                        raise ValidationError('Debe especificare un tipo de documento')
+                    else:
+                        dic={}
+                        dic['move']=r
+                        dic['partner']=r.partner_id
+                        dic['ValidationError']=ValidationError
+                        if r.tipo_documento_id.validacion:
+                            safe_eval(r.tipo_documento_id.validacion,dic, mode='exec')
             if r.move_type in ('in_invoice','in_refund'):
                 if not r.nofiscal:
-                    dias=(datetime.today().date()-r.invoice_date).days
-                    if dias>90:
-                        raise ValidationError('El Documento debe tener menos de 90 dias si se aplicara fiscalmente')
+                    if r.invoice_date:
+                        dias=(datetime.today().date()-r.invoice_date).days
+                        if dias>90:
+                            raise ValidationError('El Documento debe tener menos de 90 dias si se aplicara fiscalmente')
 
 class odoosv_moveline(models.Model):
     _inherit='account.move.line'

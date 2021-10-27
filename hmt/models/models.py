@@ -17,6 +17,9 @@ from odoo.tools.safe_eval import safe_eval
 _logger = logging.getLogger(__name__)
 
 
+class hmt_approval_request(models.Model):
+    _inherit='approval.request'
+    account_move_id=fields.Many2one(comodel_name='account.move',string='Factura')
 
 
 class hmt_restriccion(models.Model):
@@ -107,4 +110,58 @@ class hmt_saleorder_line(models.Model):
                         if c.canal_id:
                             if r.canal_id.id==c.canal_id.id:
                                 raise ValidationError(' canal:'+c.canal_id.name+' No puede ser vendido por restricciones de cliente, ruta  y canal')
+
+
+class hm_account_move(models.Model):
+    _inherit='account.move'
+    po_aprobacion=fields.Many2one(comodel_name='approval.request',string='Request')
+    po_aprobacion_requierida=fields.Boolean(string="Requiere Aprobacion",compute="_requerir_aprobacion",store=False)
+    po_aprobacion_state=fields.Selection(selection=[('new','Nuevo'),('pending','Enviado'),('approved','Aprobado'),('refused','Rechazado'),('cancel','Cancelado')],related='po_aprobacion.request_status',store=False)
+
+    @api.depends('state', 'invoice_line_ids')
+    def _requerir_aprobacion(self):
+        for r in self:
+            validar=False
+            if r.move_type=='in_invoice':
+                for l in r.invoice_line_ids:
+                    if l.purchase_line_id:
+                        if l.price_unit!=l.purchase_line_id.price_unit:
+                            validar=True
+            r.po_aprobacion_requierida=validar
+
+    def solicitar_aprobacion_po(self):
+        for r in self:
+            if r.move_type=='in_invoice':
+                validar=False
+                for l in r.invoice_line_ids:
+                    if l.purchase_line_id:
+                        if l.price_unit!=l.purchase_line_id.price_unit:
+                            validar=True
+                    if validar:
+                        if not r.po_aprobacion:
+                            dic={}
+                            dic['account_move_id']=r.id
+                            dic['reason']='Los precios varian entre la orden de compra y la factrura'
+                            modeldata = self.env['ir.model.data'].search([('module','=','hmt'),('name','=','sv_pofactura_approval')],limit=1)
+                            categoria=self.env['approval.category'].browse(modeldata.res_id)
+                            dic['category_id']=categoria.id
+                            dic['name']='Aprobacion Factura '+r.name
+                            request=self.env['approval.request'].create(dic)
+                            r.po_aprobacion=request.id
+
+    @api.constrains('state')
+    def check_po_prices(self):
+        for r in self:
+            if r.state=='posted' and r.move_type=='in_invoice':
+                validar=False
+                for l in r.invoice_line_ids:
+                    if l.purchase_line_id:
+                        if l.price_unit!=l.purchase_line_id.price_unit:
+                            validar=True
+                if validar:
+                    if r.po_aprobacion:
+                        if r.po_aprobacion.request_status!='approved':
+                            raise ValidationError('La factura requiere aprobacion por diferencia de precios')
+                    else:
+                        raise ValidationError('La factura requiere aprobacion por diferencia de precios')
 

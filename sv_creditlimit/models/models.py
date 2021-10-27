@@ -67,6 +67,6 @@ class odoosv_aproval(models.Model):
                     raise ValidationError('La solicitud no puede ser probada por el usuario que la presento')
                 if r.partner_id:
                     r.partner_id.write({'credit_limit':r.amount})
-        return res;
+        return res
 
 

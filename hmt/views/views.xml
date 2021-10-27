@@ -23,7 +23,33 @@
             </field>
         </record>
 
-        
+        <record id="requestmove_form" model="ir.ui.view">
+            <field name="name">requestmove_form</field>
+            <field name="model">approval.request</field>
+            <field name="inherit_id" ref="approvals.approval_request_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="account_move_id" attrs="{'invisible':[('account_move_id','==',False)]}" readonly="1"/>         
+                </xpath>
+            </field>
+        </record>
+
+        <record id="move_po_approval_form" model="ir.ui.view">
+            <field name="name">move_po_approval_form</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='other_info']" position="inside">
+                    <group string="Requiere aprobacion por orden de compra" attrs="{'invisible':[('po_aprobacion_requierida','==',False)]}" >
+                        <field name="po_aprobacion"  readonly="1"/>
+                        <field name="po_aprobacion_state"  readonly="1"/>
+                        <button name="solicitar_aprobacion_po" type="object" string="Solicitar Aprobacion"></button>
+                        <field name="po_aprobacion_requierida"  invisible="1"/>
+                    </group>
+                            
+                </xpath>
+            </field>
+        </record>
         
     </data>
 </odoo>
