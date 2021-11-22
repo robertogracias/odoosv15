@@ -21,6 +21,9 @@ class hmt_approval_request(models.Model):
     _inherit='approval.request'
     account_move_id=fields.Many2one(comodel_name='account.move',string='Factura')
 
+class htm_company(models.Model):
+    _inherit='res.company'
+    terminos_generales_venta=fields.Text("Terminos generales en las ordenes de venta")
 
 class hmt_restriccion(models.Model):
     _name='hmt.product.restriccion'
@@ -39,7 +42,8 @@ class hmt_producto(models.Model):
 
 class hmt_saleorder(models.Model):
     _inherit='sale.order'
-    
+    terminos_generales_venta=fields.Text("Terminos generales en las ordenes de venta",default=lambda self: self.env.user.company_id.terminos_generales_venta)
+
     @api.constrains('partner_id','ruta_id','canal_id')
     def _check_restriciones(self):
         for r in self:

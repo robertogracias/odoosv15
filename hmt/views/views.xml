@@ -23,6 +23,9 @@
             </field>
         </record>
 
+
+
+
         <record id="requestmove_form" model="ir.ui.view">
             <field name="name">requestmove_form</field>
             <field name="model">approval.request</field>
@@ -51,5 +54,33 @@
             </field>
         </record>
         
+
+        <record id="hmt_company_form" model="ir.ui.view">
+            <field name="name">hmt_company_form</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='general_info']" position="after">
+                    <page string="Terminos de Venta">
+                        <field name="terminos_generales_venta" widget="html"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="hmt_saleorder_form" model="ir.ui.view">
+            <field name="name">hmt_saleorder_form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='customer_signature']" position="after">
+                    <page string="Terminos de Venta">
+                        <field name="terminos_generales_venta" widget="html"/>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>

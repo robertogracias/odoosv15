@@ -21,6 +21,7 @@ _logger = logging.getLogger(__name__)
 class odoofiscalsv_prodcut(models.Model):
     _inherit='product.template'
     fiscal_type=fields.Selection(selection=[('Servicio','Servicio'),('Tangible','Tangible')],string="Tipo Fiscal del producto")
+    bloquear_costo=fields.Boolean("Bloquear venta por debajo del costo")
 
 class odoofiscalsv_taxgroup(models.Model):
     _inherit='account.tax.group'
@@ -731,12 +732,20 @@ class odoosv_partner(models.Model):
                             p.write({'property_account_position_id':p.company_id.fiscal_position_no_contribuyente_id.id})
 
 
-    
+
+class odoosv_journal(models.Model):
+    _inherit='account.journal'
+    sv_sequence_id=fields.Many2one('ir.sequence',string="Numeracion",ondelete="restrict")
 
 class odoosv_move(models.Model):
     _inherit='account.move'
     tipo_documento_id=fields.Many2one('odoosv.fiscal.document',string="Tipo de Documento",ondelete="restrict")
+    numeracion_automatica=fields.Boolean("Numeracion automatica",related='tipo_documento_id.numeracion_automatica',store=False)
+    razon_notacredito_id=fields.Many2one('odoosv.razon_notacredito',string="Razon de la nota de credito",ondelete="restrict")
     nofiscal=fields.Boolean("Fuera del ambito fiscal")
+    sv_numerado=fields.Boolean("Numerado",copy=False)
+    sv_numerado_doc=fields.Boolean("Numerado en documento",copy=False)
+    doc_numero=fields.Char("Numero de documento")
     #caja_id=fields.Many2one('odoosv.caja',string="Caja",default=lambda self: self.env.user.caja_id.id)
 
     @api.constrains('tipo_documento_id','partner_id','amount_total','state')
@@ -759,6 +768,24 @@ class odoosv_move(models.Model):
                         dias=(datetime.today().date()-r.invoice_date).days
                         if dias>90:
                             raise ValidationError('El Documento debe tener menos de 90 dias si se aplicara fiscalmente')
+    
+    @api.depends('posted_before', 'state', 'journal_id', 'date')
+    def _compute_name(self):
+        for r in self:
+            if r.state=='posted':
+                if r.sv_numerado==False:
+                    seq=r.journal_id.sv_sequence_id
+                    r.name=seq.next_by_id(r.date)
+                    r.sv_numerado=True
+                if r.numeracion_automatica==True:
+                    if r.sv_numerado_doc==False:
+                        seq=r.tipo_documento_id.sv_sequence_id
+                        r.doc_numero=seq.next_by_id()
+                        r.sv_numerado_doc=True
+
+            else:
+                if not r.name:
+                    r.name='/'
 
 class odoosv_moveline(models.Model):
     _inherit='account.move.line'
@@ -772,6 +799,12 @@ class odoosv_moveline(models.Model):
             if r.account_id.analytic_requerido:
                 if not r.analytic_account_id:
                     raise ValidationError('Debe especificar una cuenta analitica')
+            if r.product_id:
+                if r.move_id.move_type=='out_invoice':
+                    if r.exclude_from_invoice_tab==False:
+                        if r.product_id.bloquear_costo:
+                            if r.price_unit<r.product_id.standard_price:
+                                raise ValidationError('El precio esta por debajo del costo:'+r.product_id.name)
 
 
 
@@ -784,9 +817,27 @@ class odoosv_documento(models.Model):
     tipo_movimiento=fields.Selection(selection=[('in_invoice','Factura Proveedor'),('out_invoice','Factura Cliente'),('in_refund','Nota Credito Proveedor'),('out_refund','Nota Credito Cliente'),('entry','Entry')],string="Tipo Documento")
     validacion=fields.Text("Codigo de Validacion")
     company_id=fields.Many2one('res.company',string="Company")
+    numeracion_automatica=fields.Boolean("Numeracion automatica")
+    sv_sequence_id=fields.Many2one('ir.sequence',string="Numeracion",ondelete="restrict")
 
 
 class odoosv_account_account(models.Model):
     _inherit='account.account'
     partner_requerido=fields.Boolean('Tercero requerido')
     analytic_requerido=fields.Boolean('Cuenta analitica requerida')
+
+
+class odoosv_notacredito_razon(models.Model):
+    _name='odoosv.razon_notacredito'
+    _description='Razon de notas de credito'
+    name=fields.Char('Razon de la nota de credito')
+
+
+class odoosv_ajuste_razon(models.Model):
+    _name='odoosv.razon_inventario'
+    _description='Razon de ajuste de inventario'
+    name=fields.Char('Razon de ajuste de inventario')
+
+class odoosv_ajuste_inventario_line(models.Model):
+    _inherit='stock.inventory.line'
+    razon_id=fields.Many2one('odoosv.razon_inventario',string="Razon")

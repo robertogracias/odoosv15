@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+sv_jasper,sv_jasper,model_odoosv_jasper,base.group_system,1,1,1,1
+sv_reporte,sv_reporte,model_odoosv_reporte,base.group_system,1,1,1,1
+sv_reporte1,sv_reporte1,model_odoosv_reporte,base.group_user,1,0,0,0

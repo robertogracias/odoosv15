@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       
+        <record id="jasper_move_form" model="ir.ui.view">
+            <field name="name">jasper_move_form</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_vendor_bill_id']" position="after">
+                    <div style="display:none" id="formatofiscal">
+                        <field name="formato_fiscal" invisible="0" />
+                    </div>
+                </xpath>
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="imprimir" class="oe_stat_button" icon="fa-bars" type="object" 
+                    onclick="var url=document.getElementById('formatofiscal').children[0].innerHTML;
+                             url=url.split('amp;').join('');
+                             var windows=window.open(url);"                                      
+                    attrs="{'invisible': ['|',('state', 'in', ('draft','cancel')),('move_type', 'in', ('in_invoice','in_refund','entry'))]}" string="Imprimir">
+                    </button>
+                </xpath>
+            </field>
+        </record>
+        
+
+
+       
+        
+    </data>
+</odoo>

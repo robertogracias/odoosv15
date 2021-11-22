@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record model="ir.ui.view" id="odoosv_jasper_form">
+            <field name="name">odoosv_jasper_form</field>
+            <field name="model">odoosv.jasper</field>
+            <field name="arch" type="xml">
+                <form string="Jasper">
+                    <sheet>
+                        <group>
+                            <field name="name" placeholder="Servidor"/>
+                            <field name="url" />
+                            <field name="usuario" />
+                            <field name="password" />
+                            <field name="locate" />
+                            <field name="timezone" />
+                        </group>
+                    </sheet>
+                    <!--div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div-->
+                </form>
+            </field>
+        </record>
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="odoosv_jasper_tree">
+            <field name="name">odoosv_jasper_tree</field>
+            <field name="model">odoosv.jasper</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="url" />
+                    <field name="locate" />
+                    <field name="timezone" />
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="odoosv_jasper_action">
+            <field name="name">Servidores Jasper</field>
+            <field name="res_model">odoosv.jasper</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Servidores de Reportes</p>
+            </field>
+        </record>
+
+        <!--menu del objetivo-->
+        <menuitem id="odoosv_jasper_menu" parent="base.menu_custom" name="Servidores de Reportes" action="odoosv_jasper_action" sequence="9"/>
+
+
+    </data>
+</odoo>

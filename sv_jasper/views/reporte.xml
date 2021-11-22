@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record model="ir.ui.view" id="odoosv_reporte_form">
+            <field name="name">odoosv_reporte_form</field>
+            <field name="model">odoosv.reporte</field>
+            <field name="arch" type="xml">
+                <form string="Reporte">
+                    <sheet>
+                        <group>
+                            <field name="name" placeholder="Reporte"/>
+                            <field name="url" />
+                            <field name="jasper" />
+                            <field name="ruta" />
+                            <field name="reporte" />
+                        </group>
+                    </sheet>
+                    <!--div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div-->
+                </form>
+            </field>
+        </record>
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="odoosv_reporte_tree">
+            <field name="name">odoosv_reporte_tree</field>
+            <field name="model">odoosv.reporte</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" placeholder="Reporte"/>
+                            <field name="url" />
+                            <field name="ruta" />
+                            <field name="reporte" />
+                </tree>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="odoosv_reporte_kanban">
+            <field name="name">odoosv_reporte_kanban</field>
+            <field name="model">odoosv.reporte</field>
+            <field name="arch" type="xml">
+                
+                <kanban>
+                    <field name="name"/>
+                    <field name="url"/>
+                    <templates>
+                 
+                        <t t-name="kanban-box">
+                            <div >
+                              <div class="o_dropdown_kanban dropdown">
+    
+                                    <a role="button" class="dropdown-toggle o-no-caret btn" data-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                        <span class="fa fa-ellipsis-v"/>
+                                    </a>
+                                    <div class="dropdown-menu" role="menu">
+                                        <t t-if="widget.editable"><a role="menuitem" type="edit" class="dropdown-item">Edit...</a></t>
+                                        <t t-if="widget.deletable"><a role="menuitem" type="delete" class="dropdown-item">Delete</a></t>
+                                      
+                                    </div>
+                                </div>
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <b class="o_kanban_record_title"><field name="name"/></b>
+                                    </div>
+                                    <div class="o_kanban_record_body">
+                                          <a t-att-href="record.url.raw_value" target="_blank" >ver</a>
+                                    </div>
+                                </div>
+                                <div class="oe_clear"/>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+
+            </field>
+        </record>
+
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="odoosv_reporte_action">
+            <field name="name">Reportes</field>
+            <field name="res_model">odoosv.reporte</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Reportes</p>
+            </field>
+        </record>
+
+        <!--menu del objetivo-->
+        <menuitem id="odoosv_reporte_menu" parent="account.menu_finance_reports" name="Reportes externos" action="odoosv_reporte_action" sequence="90"/>
+
+
+    </data>
+</odoo>

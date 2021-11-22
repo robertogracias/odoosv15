@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "sv_accounting",
+    'name': "sv_jasper",
 
     'summary': """
-       Agrega las posiciones fiscales e impuestos para compania salvadore;as""",
+       controlador para redirigir los reportes de jasper""",
 
     'description': """
-        Agrega una pantalla para realizar las configuraciones de impuestos
+         controlador para redirigir los reportes de jasper
     """,
 
     'author': "Exelity",
@@ -19,17 +19,13 @@
     'version': '14.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','account'],
+    'depends': ['base'],
 
     # always loaded
     'data': [
-        'views/views.xml',
-        'views/documento.xml',
-        'views/razon.xml',
-        'views/razon_ajuste.xml',
+        'views/jasper.xml',
+        'views/reporte.xml',
         'security/ir.model.access.csv',
-        'data/data.xml',
-        'views/templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

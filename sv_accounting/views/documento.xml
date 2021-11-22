@@ -14,6 +14,8 @@
                             <field name="formato"/>
                             <field name="tipo_movimiento"/>
                             <field name="validacion"/>
+                            <field name="numeracion_automatica"/>
+                            <field name="sv_sequence_id" attrs="{'required':[('numeracion_automatica','=',True)]}"/>
                         </group>
                     </sheet>
                     <!--div class="oe_chatter">
