@@ -15,6 +15,7 @@
                             </group>
                             <group>
                                 <button name="configurar_partners" type="object" string="Configurar Asociados"/> 
+                                <button name="configure_db" type="object" string="Configurar DB"/> 
                             </group>
                         </group>
                         <group string="Cuentas">
@@ -58,11 +59,10 @@
                             <field name="fiscal_position_exento_id"/>
                             <field name="fiscal_position_extrangero_id"/>
                         </group>
-                        <group string="Formatos de Documentos">
-                            <field name="formato_ccf"/>
-                            <field name="formato_factura"/>
-                            <field name="formato_exportacion"/>
-                            <field name="formato_notacredito"/>
+                        <group string="Otros">
+                            <field name="contador"/>
+                            <field name="dividir_facturas"/>
+                            <field name="lineas_factura" attrs="{'invisible':[('dividir_facturas','=',False)],'required':[('dividir_facturas','=',True)]}"/>
                         </group>
                     </page>
                 </xpath>
@@ -122,10 +122,12 @@
             <field name="arch" type="xml">
                  <xpath expr="//field[@name='invoice_vendor_bill_id']" position="after">
                         <field name="numeracion_automatica" invisible="1"/>
+                        <field name="requiere_poliza" invisible="1"/>
                         <field name="doc_numero" attrs="{'readonly':[('numeracion_automatica','=',True)]}"/>
                         <field name="tipo_documento_id"/>
                         <field name="nofiscal"/>
                         <field name="razon_notacredito_id" attrs="{'invisible':[('move_type','in',('in_invoice','out_invoice','entry'))]}"/>
+                        <field name="poliza" attrs="{'invisible':[('requiere_poliza','=',False)]}"/>
                 </xpath>
             </field>
         </record>

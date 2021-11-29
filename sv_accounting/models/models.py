@@ -9,7 +9,9 @@ import json
 import requests
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
+from functools import partial
+from itertools import groupby
 from collections import OrderedDict
 from odoo import api, fields, models,_
 from odoo.exceptions import ValidationError
@@ -32,6 +34,10 @@ class odoosv_user(models.Model):
     _inherit='res.company'
 
     sv=fields.Boolean("Localizacion de El Salvador")
+
+    contador=fields.Char("Contador")
+    dividir_facturas=fields.Boolean("Dividir facturas")
+    lineas_factura=fields.Integer("Lineas por factura")
     
     #Cuentas
     account_iva_consumidor_id=fields.Many2one('account.account',string="Cuenta de IVA consumidor (Venta)")
@@ -514,6 +520,7 @@ class odoosv_user(models.Model):
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='out_invoice'
                 dic['formato']='Factura'
+                dic['contribuyente']=False
                 self.env['odoosv.fiscal.document'].create(dic)
             #ccf
             dic={}
@@ -523,6 +530,7 @@ class odoosv_user(models.Model):
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='out_invoice'
                 dic['formato']='CCF'
+                dic['contribuyente']=True
                 dic['validacion']="""
 if not partner.nrc:
     raise ValidationError('El cliente debe tener NRC')
@@ -535,6 +543,7 @@ if not partner.nrc:
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='out_invoice'
                 dic['formato']='Exportacion'
+                dic['contribuyente']=False
                 dic['validacion']="""
 if not partner.tipo_localidad=='NoDomiciliado':
     raise ValidationError('El cliente no debe ser local')
@@ -548,6 +557,7 @@ if not partner.tipo_localidad=='NoDomiciliado':
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='out_refund'
                 dic['formato']='NotaCredito'
+                dic['contribuyente']=True
                 dic['validacion']="""
 if not partner.nrc:
     raise ValidationError('El cliente debe tener NRC')
@@ -560,6 +570,7 @@ if not partner.nrc:
                 dic['name']='Nota de Debito'
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='out_invoice'
+                dic['contribuyente']=True
                 dic['formato']='NotaDebito'
                 dic['validacion']="""
 if not partner.nrc:
@@ -572,6 +583,7 @@ if not partner.nrc:
                 dic['name']='Devolucion'
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='out_refund'
+                dic['contribuyente']=False
                 dic['formato']='Devolucion'
                 self.env['odoosv.fiscal.document'].create(dic)
 
@@ -583,6 +595,7 @@ if not partner.nrc:
                 dic['name']='Recibo'
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='in_invoice'
+                dic['contribuyente']=False
                 dic['formato']='Recibo'
                 self.env['odoosv.fiscal.document'].create(dic)
                 dic['validacion']="""
@@ -596,6 +609,7 @@ if partner.contribuyente:
                 dic['name']='CCF'
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='in_invoice'
+                dic['contribuyente']=True
                 dic['formato']='CCF'
                 dic['validacion']="""
 if not partner.nrc:
@@ -609,6 +623,7 @@ if not partner.nrc:
                 dic['name']='Importacion'
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='in_invoice'
+                dic['contribuyente']=True
                 dic['formato']='Importacion'
                 dic['validacion']="""
 if not partner.tipo_localidad=='NoDomiciliado':
@@ -620,6 +635,7 @@ if not partner.tipo_localidad=='NoDomiciliado':
             notacredito=self.env['odoosv.fiscal.document'].search([('company_id','=',r.id),('name','=','Nota de Credito'),('tipo_movimiento','=','in_refund')],limit=1)
             if not notacredito:
                 dic['name']='Nota de Credito'
+                dic['contribuyente']=True
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='in_refund'
                 dic['formato']='NotaCredito'
@@ -635,6 +651,7 @@ if not partner.nrc:
                 dic['name']='Nota de Debito'
                 dic['company_id']=r.id
                 dic['tipo_movimiento']='in_invoice'
+                dic['contribuyente']=True
                 dic['formato']='NotaDebito'
                 dic['validacion']="""
 if not partner.nrc:
@@ -746,6 +763,8 @@ class odoosv_move(models.Model):
     sv_numerado=fields.Boolean("Numerado",copy=False)
     sv_numerado_doc=fields.Boolean("Numerado en documento",copy=False)
     doc_numero=fields.Char("Numero de documento")
+    requiere_poliza=fields.Boolean("Requiere Poliza",related='tipo_documento_id.requiere_poliza')
+    poliza=fields.Char("Poliza")
     #caja_id=fields.Many2one('odoosv.caja',string="Caja",default=lambda self: self.env.user.caja_id.id)
 
     @api.constrains('tipo_documento_id','partner_id','amount_total','state')
@@ -819,6 +838,9 @@ class odoosv_documento(models.Model):
     company_id=fields.Many2one('res.company',string="Company")
     numeracion_automatica=fields.Boolean("Numeracion automatica")
     sv_sequence_id=fields.Many2one('ir.sequence',string="Numeracion",ondelete="restrict")
+    contribuyente=fields.Boolean("Documento de contribuyente")
+    requiere_poliza=fields.Boolean("Requiere Poliza")
+    codigo=fields.Char('Codigo')
 
 
 class odoosv_account_account(models.Model):
@@ -841,3 +863,146 @@ class odoosv_ajuste_razon(models.Model):
 class odoosv_ajuste_inventario_line(models.Model):
     _inherit='stock.inventory.line'
     razon_id=fields.Many2one('odoosv.razon_inventario',string="Razon")
+
+
+class odoosv_sale_order(models.Model):
+    _inherit='sale.order'
+
+    def _create_invoices(self, grouped=False, final=False, date=None):
+        """
+        Create the invoice associated to the SO.
+        :param grouped: if True, invoices are grouped by SO id. If False, invoices are grouped by
+                        (partner_invoice_id, currency)
+        :param final: if True, refunds will be generated if necessary
+        :returns: list of created invoices
+        """
+        dividir_facturas=False
+        lineas_factura=100000
+        if not self.env['account.move'].check_access_rights('create', False):
+            try:
+                self.check_access_rights('write')
+                self.check_access_rule('write')
+            except AccessError:
+                return self.env['account.move']
+
+        # 1) Create invoices.
+        invoice_vals_list = []
+        invoice_item_sequence = 0 # Incremental sequencing to keep the lines order on the invoice.
+        for order in self:
+            dividir_facturas=order.company_id.dividir_facturas
+            if (dividir_facturas):
+                lineas_factura=order.company_id.lineas_factura
+            order = order.with_company(order.company_id)
+            current_section_vals = None
+            down_payments = order.env['sale.order.line']
+
+            invoice_vals = order._prepare_invoice()
+            invoiceable_lines = order._get_invoiceable_lines(final)
+
+            if not any(not line.display_type for line in invoiceable_lines):
+                raise self._nothing_to_invoice_error()
+
+            invoice_line_vals = []
+            down_payment_section_added = False
+            for line in invoiceable_lines:
+                if not down_payment_section_added and line.is_downpayment:
+                    # Create a dedicated section for the down payments
+                    # (put at the end of the invoiceable_lines)
+                    invoice_line_vals.append(
+                        (0, 0, order._prepare_down_payment_section_line(
+                            sequence=invoice_item_sequence,
+                        )),
+                    )
+                    dp_section = True
+                    invoice_item_sequence += 1
+                invoice_line_vals.append(
+                    (0, 0, line._prepare_invoice_line(
+                        sequence=invoice_item_sequence,
+                    )),
+                )
+                invoice_item_sequence += 1
+
+            invoice_vals['invoice_line_ids'] += invoice_line_vals
+            invoice_vals_list.append(invoice_vals)
+
+        if not invoice_vals_list:
+            raise self._nothing_to_invoice_error()
+
+        # 2) Manage 'grouped' parameter: group by (partner_id, currency_id).
+        if not grouped:
+            new_invoice_vals_list = []
+            invoice_grouping_keys = self._get_invoice_grouping_keys()
+            for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: [x.get(grouping_key) for grouping_key in invoice_grouping_keys]):
+                
+                origins = set()
+                payment_refs = set()
+                refs = set()
+                for invoice_vals in invoices:
+                    items=[]
+                    contador=1
+                    lineasfactura=[]
+                    for l in invoice_vals['invoice_line_ids']:
+                        lineasfactura.append(l)
+                        contador=contador+1
+                        if contador>lineas_factura:
+                            contador=1
+                            items.append(lineasfactura)
+                            lineasfactura=[]                        
+                    if contador>1:
+                        items.append(lineasfactura)
+                    origins.add(invoice_vals['invoice_origin'])
+                    payment_refs.add(invoice_vals['payment_reference'])
+                    refs.add(invoice_vals['ref'])
+                    for lineas in items:
+                        ref_invoice_vals = invoice_vals.copy()
+                        ref_invoice_vals.update({
+                        'ref': ', '.join(refs)[:2000],
+                        'invoice_origin': ', '.join(origins),
+                        'invoice_line_ids':lineas,
+                        'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
+                        })
+                        new_invoice_vals_list.append(ref_invoice_vals)
+            invoice_vals_list = new_invoice_vals_list
+        # 3) Create invoices.
+
+        # As part of the invoice creation, we make sure the sequence of multiple SO do not interfere
+        # in a single invoice. Example:
+        # SO 1:
+        # - Section A (sequence: 10)
+        # - Product A (sequence: 11)
+        # SO 2:
+        # - Section B (sequence: 10)
+        # - Product B (sequence: 11)
+        #
+        # If SO 1 & 2 are grouped in the same invoice, the result will be:
+        # - Section A (sequence: 10)
+        # - Section B (sequence: 10)
+        # - Product A (sequence: 11)
+        # - Product B (sequence: 11)
+        #
+        # Resequencing should be safe, however we resequence only if there are less invoices than
+        # orders, meaning a grouping might have been done. This could also mean that only a part
+        # of the selected SO are invoiceable, but resequencing in this case shouldn't be an issue.
+        if len(invoice_vals_list) < len(self):
+            SaleOrderLine = self.env['sale.order.line']
+            for invoice in invoice_vals_list:
+                sequence = 1
+                for line in invoice['invoice_line_ids']:
+                    line[2]['sequence'] = SaleOrderLine._get_invoice_line_sequence(new=sequence, old=line[2]['sequence'])
+                    sequence += 1
+
+        # Manage the creation of invoices in sudo because a salesperson must be able to generate an invoice from a
+        # sale order without "billing" access rights. However, he should not be able to create an invoice from scratch.
+        moves = self.env['account.move'].sudo().with_context(default_move_type='out_invoice').create(invoice_vals_list)
+
+        # 4) Some moves might actually be refunds: convert them if the total amount is negative
+        # We do this after the moves have been created since we need taxes, etc. to know if the total
+        # is actually negative or not
+        if final:
+            moves.sudo().filtered(lambda m: m.amount_total < 0).action_switch_invoice_into_refund_credit_note()
+        for move in moves:
+            move.message_post_with_view('mail.message_origin_link',
+                values={'self': move, 'origin': move.line_ids.mapped('sale_line_ids.order_id')},
+                subtype_id=self.env.ref('mail.mt_note').id
+            )
+        return moves

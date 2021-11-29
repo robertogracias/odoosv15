@@ -29,9 +29,11 @@ class jasper_account_move(models.Model):
     
     def compute_fiscalreport(self):
         for r in self:
+            texto=''
             jasper=r.company_id.jasper
             if not jasper:
                 jasper=self.env['odoosv.jasper'].search([('name','=','odoo')],limit=1)
             if jasper:
                 if r.tipo_documento_id:
-                    r.formato_fiscal=jasper.create_link_report('/sv/reportes/transacciones',r.tipo_documento_id.formato,r.id,'pdf')
+                    texto=jasper.create_link_report('/sv/reportes/transacciones',r.tipo_documento_id.formato,r.id,'pdf')
+            r.formato_fiscal=texto

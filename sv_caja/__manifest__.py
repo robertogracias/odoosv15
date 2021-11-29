@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "sv_accounting",
+    'name': "sv_caja",
 
     'summary': """
-       Agrega las posiciones fiscales e impuestos para compania salvadore;as""",
+       Contiene adiciones a los cajas para El Salvador""",
 
     'description': """
-        Agrega una pantalla para realizar las configuraciones de impuestos
+        Contiene adiciones a las cajas para El Salvador
     """,
 
     'author': "Exelity",
@@ -19,14 +19,11 @@
     'version': '14.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','account','sale'],
+    'depends': ['base','sv_accounting'],
 
     # always loaded
     'data': [
         'views/views.xml',
-        'views/documento.xml',
-        'views/razon.xml',
-        'views/razon_ajuste.xml',
         'security/ir.model.access.csv',
         'data/data.xml',
         'views/templates.xml',

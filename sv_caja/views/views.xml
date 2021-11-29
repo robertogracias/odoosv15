@@ -1,0 +1,387 @@
+<odoo>
+    <data>
+      
+      <record model="ir.ui.view" id="odoosv_caja_form">
+        <field name="name">odoosv_caja_form</field>
+        <field name="model">odoosv.caja</field>
+        <field name="arch" type="xml">
+            <form string="caja">
+                <sheet>
+                    <div class="oe_title oe_inline">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" required="1"/>
+                        </h1>
+                    </div> 
+                    <group>
+                        <field name="warehouse_id" />
+                        <field name="location_id" />
+                        <field name="picking_type_id" />
+                        <field name="analytic_account_id" />
+                    </group>
+                    <field name="serie_ids">
+                      <tree editable="top">
+                        <field name="name" />
+                        <field name="serie" />
+                        <field name="tipo_documento_id" />
+                        <field name="sv_sequence_id" />
+                      </tree>
+  
+                    </field>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+     </record>
+    
+    
+    <!--tree del pei-->
+     <record model="ir.ui.view" id="odoosv_caja_tree">
+        <field name="name">odoosv_caja_tree</field>
+        <field name="model">odoosv.caja</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" placeholder="Documento"/>
+                <field name="warehouse_id" />
+                <field name="location_id" />
+                <field name="picking_type_id" />
+                <field name="analytic_account_id" />
+            </tree>
+        </field>
+     </record>
+    
+    
+    <!--action del pei-->
+        <record model="ir.actions.act_window" id="caja_action">
+                <field name="name">caja</field>
+                <field name="res_model">odoosv.caja</field>
+                <field name="view_mode">tree,form</field>
+                <field name="help" type="html">
+                    <p class="oe_view_nocontent_create">caja
+                    </p>
+                </field>
+            </record>
+    
+    <!--menu del pei-->
+       <menuitem 
+       id="odoosv_caja" 
+       parent="base.menu_users"
+       name="caja"
+       action="caja_action"
+       sequence="1"
+       /> 
+    
+  
+  
+  
+  
+  
+       <!-- Cirree  -->
+  
+       <!--tree del pei-->
+     <record model="ir.ui.view" id="cierre_tree">
+      <field name="name">cierre_tree</field>
+      <field name="model">odoosv.cierre</field>
+      <field name="arch" type="xml">
+          <tree>
+              <field name="name" />
+              <field name="fecha" />
+              <field name="caja_id" />
+          </tree>
+      </field>
+   </record>
+  
+  
+  
+      <record model="ir.ui.view" id="cierre_form">
+      <field name="name">cierre_form</field>
+      <field name="model">odoosv.cierre</field>
+      <field name="arch" type="xml">
+          
+          <form>
+              <header>
+                        <button name="calcular" string="Calcular" type="object" class="oe_highlight" attrs="{'invisible':[('estado', '=', 'Cerrado')]}"/>
+                        <button name="liberar" string="Liberar" type="object" class="oe_highlight" attrs="{'invisible':[('estado', '=', 'Cerrado')]}"/>
+                        <button name="cerrar" string="Cerrar" type="object" class="oe_highlight" attrs="{'invisible':[('estado', '=', 'Cerrado')]}"/>
+                        <field name="estado" widget="statusbar"/>
+                      </header>
+                       <sheet>
+                           <div class="oe_title oe_inline">
+                               <label for="name" class="oe_edit_only"/>
+                               <h1><field name="name"/></h1>
+                           </div>
+                           <group>
+                                   <field name="fecha" />
+                                   <field name="caja_id" string="Caja"/>
+                                   <field name="factura_ids"  readonly="1">
+                                     <tree>
+                                       <field name="name"/>
+                                  <field name="partner_id" string="Cliente"/>
+                                  <field name="invoice_source_email" invisible="1"/>
+                                  <field name="invoice_origin" optional="show" string="Source Document"/>
+                                  <field name="ref" />
+                                  <field name="invoice_user_id" optional="show" invisible="context.get('default_type') not in ('out_invoice', 'out_refund','out_receipt')" string="Sales Person"/>
+                                  <field name="invoice_date" optional="show"/>
+                                  <field name="amount_untaxed_signed" string="Tax Excluded" sum="Total" optional="show"/>
+                                  <field name="amount_tax_signed" string="Tax" sum="Total" optional="hide"/>
+                                  <field name="amount_total_signed" string="Total" sum="Total" optional="show"/>
+                                  <field name="amount_residual_signed" string="Amount Due" sum="Amount Due" optional="show"/>
+                                  <field name="currency_id" invisible="1"/>
+                                  <field name="company_currency_id" invisible="1"/>
+                                  <field name="state" optional="show"/>
+                                  <field name="payment_state" optional="hide"/>
+                                  <field name="move_type" invisible="context.get('default_type', True)"/>
+                                     </tree>
+                                  </field>
+                                   <field name="pago_ids"  readonly="1"/>
+                                   <field name="cierrepago_ids" readonly="1">
+                                     <tree string="Metodos de pago">
+                                       <field name="name" />
+                                       <field name="monto" />
+                                    </tree>
+                                   </field>
+                                   <field name="remesa_ids" readonly="1">
+                                     <tree string="Remesas">
+                                       <field name="origen_id" />
+                                       <field name="destino_id" />
+                                       <field name="monto" />
+                                    </tree>
+                                   </field>
+                           </group>
+              
+                       </sheet>
+                       </form>
+  
+  
+  
+  
+  
+      </field>
+   </record>
+  
+  
+  
+  
+    <record id="odoosv_user_form" model="ir.ui.view">
+      <field name="name">odoosv_user_form</field>
+      <field name="model">res.users</field>
+      <field name="inherit_id" ref="base.view_users_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='partner_id']" position="after">
+          <field name="caja_id" string='Caja'/>
+        </xpath>
+      </field>
+    </record>
+  
+  
+    <record id="odoosv_sale_form" model="ir.ui.view">
+      <field name="name">odoosv_sale_form</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='payment_term_id']" position="after">
+          <field name="caja_id" string='Caja'/>
+        </xpath>
+      </field>
+    </record>
+  
+  
+    <record id="odoosv_move_form" model="ir.ui.view">
+      <field name="name">odoosv_move_form</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="account.view_move_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='invoice_date']" position="after">
+          <field name="caja_id" string='Caja'/>
+        </xpath>
+      </field>
+    </record>
+  
+  
+  
+  
+    <report
+    id="evaluacion_report"
+    string="Reporte de Cierre"
+    model="odoosv.cierre"
+    report_type="qweb-pdf"
+    file="sv_sucursal.template_cierre_report"
+    name="sv_sucursal.template_cierre_report"
+    menu="True"/>
+    
+  
+  
+    <template id="template_cierre_report">
+      <t t-call="web.html_container">
+          <t t-foreach="docs" t-as="doc">
+  
+      <t t-call="web.external_layout">
+          <div class="page">
+              <!--<div class="oe_structure"/>-->
+              <div class="row" style="border-bottom:thin solid #ffffff;margin-bottom:5px;">
+                <div class="col-6" style="border-right:thin solid #ffffff;margin-bottom:5px;">
+                  <h2>Reporte de Cierre</h2>
+                </div>
+                <div class="col-6">
+                  <table style="text-align:right;width:100%">
+                    <tr>
+                      <td>
+                        <span>Fecha :</span>
+                        <strong><p class="m-0" t-field="doc.fecha" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></strong><p/>
+                      </td>
+                      <td>
+                        <span>caja :</span>
+                        <strong><p class="m-0" t-field="doc.caja_id" /></strong><p/>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+               
+            
+            
+            <div style="width:100%;border-bottom:thin solid black">
+                                      <h3>Facturas</h3>
+                                  </div>
+                                  
+                                  <table class="table table-sm o_main_table" name="isnumos">
+                                      <thead>
+                                          <tr style="background:gray">
+                                          <td>Cliente</td>
+                                          <td>Fecha</td>
+                                          <td># Fact.</td>
+                                          <td>Doc. Origen</td>
+                                          <td>Vendedor</td>
+                                          <td>Total sin Imp.</td>
+                                          <!--td>Impuestos</td-->
+                                          <td>Total</td>
+                                          </tr>
+                                      </thead>
+                                      <tbody class="invoice_tbody">
+                                          <t t-set="sin_impuestos" t-value="0"/>
+                                          <t t-set="impuestos" t-value="0"/>
+                                          <t t-set="total" t-value="0"/>
+                                          <t t-foreach="doc.factura_ids" t-as="i">
+                                              <t t-set="sin_impuestos" t-value="sin_impuestos + i.amount_untaxed"/>
+                                              <!--t t-set="impuestos" t-value="impuestos + (i.amount_total-i.amount_untaxed)"/-->
+                                              <t t-set="total" t-value="total + i.amount_total"/>
+                                              <tr>
+                                                  <td><span t-field="i.partner_id"/></td>
+                                                  <td><span t-field="i.invoice_date"/></td>
+                                                  <td><span t-field="i.ref"/></td>
+                                                  <td><span t-field="i.invoice_origin"/></td>
+                                                  <td><span t-field="i.user_id"/></td>
+                                                  <td class=" text-right"><span t-field="i.amount_untaxed" t-field-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: &quot;currency&quot;}"/></td>
+                                                  <!--td class=" text-right"><span t-field="(i.amount_total-i.amount_untaxed)" t-field-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: &quot;currency&quot;}"/></td-->
+                                                  <td class=" text-right"><span t-field="i.amount_total" t-field-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: &quot;currency&quot;}"/></td>
+                                              </tr>
+                                          </t>
+                                          <tr class="is-subtotal text-right" style="background:gray">
+                                                  <td colspan="5"><span>Total</span></td>
+                                                  <td><span t-esc="'%.2f'% sin_impuestos"/></td>
+                                                  <!--td><span t-esc="'%.2f'% impuestos"/></td-->
+                                                  <td><span t-esc="'%.2f'% total"/></td>
+                                              </tr>
+                                      </tbody>
+                                  </table>
+                                  
+  
+              
+  
+              <div class="row" id="informations">
+                  <h3>Pagos</h3>
+              </div>
+  
+              <!-- Is there a discount on at least one line? -->
+  
+              <table class="table table-sm o_main_table">
+                  <thead>
+                      <tr>
+                          <th name="th_fechahora" class="text-left">Fecha</th>
+                          <th name="th_fechahora" class="text-left">Factura</th>
+                          <th name="th_cliente" class="text-left">Cliente</th>
+                          <th name="th_metodo" class="text-left">Forma</th>
+                          <th name="th_monto" class="text-left">Monto</th>
+                          
+                          
+                      </tr>
+                  </thead>
+                  <tbody class="sale_tbody">
+                      <t t-foreach="doc.pago_ids" t-as="line">
+                          <tr class="o_line_section" style="font-size:12px;color:#000000;">
+                              <td class="text-left"><span t-field="line.create_date"/></td>
+                              <td class="text-left"><span t-field="line.x_doc"/></td>
+                              <td class="text-left"><span t-field="line.partner_id.name"/></td>
+                              <td class="text-left"><span t-field="line.journal_id.name"/></td>
+                              <td class="text-right"><span t-field="line.amount"/></td>
+                              
+                          </tr>
+                      </t>
+                  </tbody>
+              </table>
+              
+              
+               <div class="row" >
+                  <h3>Formas de Pago</h3>
+              </div>
+  
+              <!-- Is there a discount on at least one line? -->
+  
+              <table class="table table-sm o_main_table">
+                  <thead>
+                      <tr>
+                          <th name="th_forma" class="text-left">Forma de Pago</th>
+                          <th name="th_monto" class="text-right">Monto</th>
+                      </tr>
+                  </thead>
+                  <tbody class="sale_tbody">
+                      <t t-foreach="doc.cierrepago_ids" t-as="line">
+                          <tr class="o_line_section" style="font-size:12px;color:#000000;">
+                              <td class="text-left"><span t-field="line.name"/></td>
+                              <td class="text-right"><span t-field="line.monto"/></td>
+                          </tr>
+                      </t>
+                  </tbody>
+              </table>
+              
+              
+              
+                  <div class="row" >
+                  <h3>Remesas</h3>
+              </div>
+  
+              <!-- Is there a discount on at least one line? -->
+  
+              <table class="table table-sm o_main_table">
+                  <thead>
+                      <tr>
+                          <th name="th_origen" class="text-left">Origen</th>
+                          <th name="th_origen" class="text-left">Destino</th>
+                          <th name="th_monto" class="text-left">Monto</th>
+                      </tr>
+                  </thead>
+                  <tbody class="sale_tbody">
+                      <t t-foreach="doc.remesa_ids" t-as="line">
+                          <tr class="o_line_section" style="font-size:12px;color:#000000;">
+                              <td class="text-left"><span t-field="line.orgien_id.name"/></td>
+                              <td class="text-left"><span t-field="line.destino_id.name"/></td>
+                              <td class="text-right"><span t-field="line.monto"/></td>
+                          </tr>
+                      </t>
+                  </tbody>
+              </table>
+          </div>
+      </t>
+       </t>
+       </t>
+     </template>
+  
+  
+  
+  
+  
+    </data>
+  </odoo>
