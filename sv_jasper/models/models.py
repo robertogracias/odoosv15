@@ -47,6 +47,7 @@ class odoosv_jasper(models.Model):
             link=link+"&reportUnit="+ruta+"/"+reporte
             link=link+"&decorate=no"
             link=link+"&userTimezone="+jasper.timezone
+            link=link+"&companyId="+str(self.env.user.company_id.id)
             if id:
                 link=link+"&id="+str(id)
         return link
@@ -65,6 +66,7 @@ class odoosv_jasper(models.Model):
                 link=link+"&reportUnit="+ruta+"/"+reporte
                 link=link+"&decorate=no"
                 link=link+"&userTimezone="+jasper.timezone
+                link=link+"&companyId="+str(self.env.user.company_id.id)
                 if id:
                     link=link+"&id="+str(id)
             return link
