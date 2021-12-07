@@ -17,10 +17,6 @@ from odoo.tools.safe_eval import safe_eval
 _logger = logging.getLogger(__name__)
 
 
-class jpc_approval_request(models.Model):
-    _inherit='approval.request'
-    account_move_id=fields.Many2one(comodel_name='account.move',string='Factura')
-
 
 class jpc_cuenta_analiticas(models.Model):
     _inherit='account.analytic.account'
