@@ -25,6 +25,7 @@ class odoofiscalsv_prodcut(models.Model):
     fiscal_type=fields.Selection(selection=[('Servicio','Servicio'),('Tangible','Tangible')],string="Tipo Fiscal del producto")
     bloquear_costo=fields.Boolean("Bloquear venta por debajo del costo")
 
+
 class odoofiscalsv_taxgroup(models.Model):
     _inherit='account.tax.group'
     code=fields.Char("Codigo")
@@ -805,6 +806,37 @@ class odoosv_move(models.Model):
             else:
                 if not r.name:
                     r.name='/'
+    
+    def button_create_landed_costs(self):
+        """Create a `stock.landed.cost` record associated to the account move of `self`, each
+        `stock.landed.costs` lines mirroring the current `account.move.line` of self.
+        """
+        self.ensure_one()
+        landed_costs_lines = self.line_ids.filtered(lambda line: line.is_landed_costs_line)
+        transferencias=[]
+        picks=self.env['stock.picking'].search([('origin','=',self.invoice_origin)])
+        for p in picks:
+            if p.state!='done':
+                if p.state!='cancel':
+                    raise ValidationError(_('Hay transferencias no compleatas'))
+            if p.state=='done':
+                t=(4,p.id)
+                transferencias.append(t)
+        landed_costs = self.env['stock.landed.cost'].create({
+            'vendor_bill_id': self.id,
+            'picking_ids':transferencias,
+            'cost_lines': [(0, 0, {
+                'product_id': l.product_id.id,
+                'name': l.product_id.name,                
+                'account_id': l.product_id.product_tmpl_id.get_product_accounts()['stock_input'].id,
+                'price_unit': l.currency_id._convert((l.price_subtotal if self.move_type=='in_invoice' else (l.price_subtotal*-1) ), l.company_currency_id, l.company_id, l.move_id.date),
+                'split_method': l.product_id.split_method_landed_cost or 'equal',
+            }) for l in landed_costs_lines],
+        })
+        action = self.env["ir.actions.actions"]._for_xml_id("stock_landed_costs.action_stock_landed_cost")
+        return dict(action, view_mode='form', res_id=landed_costs.id, views=[(False, 'form')])
+        
+
 
 class odoosv_moveline(models.Model):
     _inherit='account.move.line'

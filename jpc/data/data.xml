@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Aprobacion de Orden de compra con variacion en los precios -->
+    <record id="sv_pofactura_approval" model="approval.category">
+        <field name="name">Aprobacion de Factura De Compra</field>
+        <field name="description">Solicitud de aprobacion de factura con diferencias a los precios </field>
+        <field name="automated_sequence">True</field>
+        <field name="sequence_code">FACC</field>
+        <field name="code">factura_approval</field>
+    </record>
+
+   
+</odoo>

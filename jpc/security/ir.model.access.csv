@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+jpc_jornada,jpc_jornada,model_jpc_reporte_jornal,base.group_user,1,1,1,1
+jpc_jornada_item,jpc_jornada_item,model_jpc_reporte_jornal_item,base.group_user,1,1,1,1

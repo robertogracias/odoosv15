@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "sv_accounting",
+    'name': "jpc",
 
     'summary': """
-       Agrega las posiciones fiscales e impuestos para compania salvadore;as""",
+       Contiene funcionalidades especificas para JUAN PABLO CHICAS""",
 
     'description': """
-        Agrega una pantalla para realizar las configuraciones de impuestos
+       Contiene funcionalidades especificas para JUAN PABLO CHICAS
     """,
 
     'author': "Exelity",
@@ -19,14 +19,12 @@
     'version': '14.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','account','sale','stock_landed_costs'],
+    'depends': ['base','account','sv_canal','sv_ruta'],
 
     # always loaded
     'data': [
         'views/views.xml',
-        'views/documento.xml',
-        'views/razon.xml',
-        'views/razon_ajuste.xml',
+        'views/jornadaslaborales.xml',
         'security/ir.model.access.csv',
         'data/data.xml',
         'views/templates.xml',

@@ -129,6 +129,7 @@
                         <field name="razon_notacredito_id" attrs="{'invisible':[('move_type','in',('in_invoice','out_invoice','entry'))]}"/>
                         <field name="poliza" attrs="{'invisible':[('requiere_poliza','=',False)]}"/>
                 </xpath>
+                
             </field>
         </record>
 
