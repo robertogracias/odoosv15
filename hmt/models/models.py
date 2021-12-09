@@ -24,6 +24,11 @@ class hmt_approval_request(models.Model):
 class htm_company(models.Model):
     _inherit='res.company'
     terminos_generales_venta=fields.Text("Terminos generales en las ordenes de venta")
+    formas_pago=fields.Text("Formas de pago")
+    garantia=fields.Text("Garantia")
+    notas=fields.Text("Notas")
+    otros=fields.Text("Otros parametros")
+    entrega=fields.Text("Tiempos de entrega")
 
 class hmt_restriccion(models.Model):
     _name='hmt.product.restriccion'
@@ -38,11 +43,17 @@ class hmt_restriccion(models.Model):
 class hmt_producto(models.Model):
     _inherit='product.template'
     restriccion_ids=fields.One2many(comodel_name='hmt.product.restriccion',inverse_name='product_id',string='Restricciones')
-
+    especificacion=fields.Text("Especificacion Tecnica")
 
 class hmt_saleorder(models.Model):
     _inherit='sale.order'
     terminos_generales_venta=fields.Text("Terminos generales en las ordenes de venta",default=lambda self: self.env.user.company_id.terminos_generales_venta)
+    formas_pago=fields.Text("Formas de pago",default=lambda self: self.env.user.company_id.formas_pago)
+    garantia=fields.Text("Garantia",default=lambda self: self.env.user.company_id.garantia)
+    notas=fields.Text("Notas",default=lambda self: self.env.user.company_id.notas)
+    otros=fields.Text("Otros parametros",default=lambda self: self.env.user.company_id.otros)
+    entrega=fields.Text("Tiempos de entrega",default=lambda self: self.env.user.company_id.entrega)
+
 
     @api.constrains('partner_id','ruta_id','canal_id')
     def _check_restriciones(self):

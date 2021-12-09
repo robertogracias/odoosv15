@@ -19,6 +19,11 @@
                             </tree>
                         </field>
                     </page>
+                    <page string="Especificacion Tecnica">
+                        <field name="especificacion" widget="html">
+                           
+                        </field>
+                    </page>
                 </xpath>
             </field>
         </record>
@@ -62,7 +67,14 @@
             <field name="arch" type="xml">
                 <xpath expr="//page[@name='general_info']" position="after">
                     <page string="Terminos de Venta">
-                        <field name="terminos_generales_venta" widget="html"/>
+                        <group>
+                            <field name="terminos_generales_venta" widget="html"/>
+                            <field name="formas_pago" widget="html" />
+                            <field name="garantia" widget="html" />
+                            <field name="notas" widget="html"  />
+                            <field name="otros" widget="html"  />
+                            <field name="entrega" widget="html" />
+                        </group>
                     </page>
                 </xpath>
             </field>
@@ -77,6 +89,20 @@
                 <xpath expr="//page[@name='customer_signature']" position="after">
                     <page string="Terminos de Venta">
                         <field name="terminos_generales_venta" widget="html"/>
+                    </page>
+                    <page string="Grupo HMT">
+                        <group>
+                        <label for="formas_pago" string="Formas de Pago"/>
+                        <field name="formas_pago" widget="html" nolabel="1"/>
+                        <label for="garantia" string="Garantía"/>
+                        <field name="garantia" widget="html"  nolabel="1"/>
+                        <label for="notas" string="Notas"/>
+                        <field name="notas" widget="html"  nolabel="1"/>
+                        <label for="otros" string="Otros Parámetros"/>
+                        <field name="otros" widget="html"  nolabel="1"/>
+                        <label for="entrega" string="Tiempos de entrega"/>
+                        <field name="entrega" widget="html"  nolabel="1"/>
+                    </group>
                     </page>
                 </xpath>
             </field>
