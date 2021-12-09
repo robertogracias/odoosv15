@@ -57,16 +57,16 @@ class odoosv_aproval_category(models.Model):
     _inherit='approval.category'
     code=fields.Char("Codigo")
 
-class odoosv_aproval(models.Model):
-    _inherit='approval.request'
-    def action_approve(self):
-        res=super(odoosv_aproval,self).action_approve()
-        for r in self:
-            if r.category_id.code=='credit_limit':
-                if r.request_owner_id.id==self.env.user.id:
-                    raise ValidationError('La solicitud no puede ser probada por el usuario que la presento')
-                if r.partner_id:
-                    r.partner_id.write({'credit_limit':r.amount})
-        return res
+#class odoosv_aproval(models.Model):
+#    _inherit='approval.request'
+#    def action_approve(self):
+#        res=super.action_approve()
+#        for r in self:
+#            if r.category_id.code=='credit_limit':
+#                if r.request_owner_id.id==self.env.user.id:
+#                    raise ValidationError('La solicitud no puede ser probada por el usuario que la presento')
+#                if r.partner_id:
+#                    r.partner_id.write({'credit_limit':r.amount})
+#        return res
 
 
