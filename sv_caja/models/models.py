@@ -9,7 +9,7 @@ import json
 import requests
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timedelta,date
 from collections import OrderedDict
 from odoo import api, fields, models,_
 from odoo.exceptions import ValidationError
@@ -59,15 +59,40 @@ class sucursales_sale_order(models.Model):
     
 class sucursales_account_move(models.Model):
     _inherit='account.move'
-    caja_id=fields.Many2one(comodel_name='odoosv.caja', string="Caja")
+    caja_id=fields.Many2one(comodel_name='odoosv.caja', string="Caja", default=lambda self: self.env.user.caja_id)
     cierre_id=fields.Many2one(comodel_name='odoosv.cierre', string="Cierre")
     serie=fields.Char('Serie')
+    
+    def set_access_for_caja(self):
+        self.ensure_one()
+        self.able_to_modify_caja = self.env['res.users'].has_group('sv_caja.odoosv_cambia_caja')
+
+    able_to_modify_caja = fields.Boolean(compute=set_access_for_caja, string='puede modificar caja')
+
     
 
 class sucursales_account_payment(models.Model):
     _inherit='account.payment'
-    sucursal_id=fields.Many2one(comodel_name='odoosv.caja', string="Caja")
+    sucursal_id=fields.Many2one(comodel_name='odoosv.caja', string="Caja", default=lambda self: self.env.user.caja_id)
     cierre_id=fields.Many2one(comodel_name='odoosv.cierre', string="Cierre")
+    facturas=fields.Char("Facturas",compute='calcular_facturas',store=False)
+
+
+    def calcular_facturas(self):
+        for r in self:
+            text=''
+            for l in r.reconciled_invoice_ids:
+                if l.tipo_documento_id:
+                    text=text+' '+l.tipo_documento_id.name
+                    if l.doc_numero:
+                        text=text+':'+l.doc_numero+ '  '
+            r.facturas=text
+        
+    def set_access_for_caja(self):
+        self.ensure_one()
+        self.able_to_modify_caja = self.env['res.users'].has_group('sv_caja.odoosv_cambia_caja')
+
+    able_to_modify_caja = fields.Boolean(compute=set_access_for_caja, string='puede modificar caja')
     
 
     

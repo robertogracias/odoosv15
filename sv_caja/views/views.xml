@@ -1,6 +1,10 @@
 <odoo>
     <data>
       
+      <record model="res.groups" id="odoosv_cambia_caja">
+        <field name="name">Puede Cambiar Caja</field>           
+      </record>
+
       <record model="ir.ui.view" id="odoosv_caja_form">
         <field name="name">odoosv_caja_form</field>
         <field name="model">odoosv.caja</field>
@@ -68,13 +72,28 @@
     <!--menu del pei-->
        <menuitem 
        id="odoosv_caja" 
-       parent="base.menu_users"
-       name="caja"
+       parent="account.menu_finance_configuration"
+       name="Caja"
        action="caja_action"
        sequence="1"
        /> 
     
-  
+       <record model="ir.actions.act_window" id="cierre_action">
+        <field name="name">Cierre de Caja</field>
+        <field name="res_model">odoosv.cierre</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">Cierre
+            </p>
+        </field>
+    </record>
+    <menuitem 
+    id="odoosv_cierre" 
+    parent="account.menu_finance_receivables"
+    name="Cierre de caja"
+    action="cierre_action"
+    sequence="1"
+    />
   
   
   
@@ -121,8 +140,8 @@
                                        <field name="name"/>
                                   <field name="partner_id" string="Cliente"/>
                                   <field name="invoice_source_email" invisible="1"/>
-                                  <field name="invoice_origin" optional="show" string="Source Document"/>
-                                  <field name="ref" />
+                                  <field name="tipo_documento_id" optional="show" />
+                                  <field name="doc_numero" />
                                   <field name="invoice_user_id" optional="show" invisible="context.get('default_type') not in ('out_invoice', 'out_refund','out_receipt')" string="Sales Person"/>
                                   <field name="invoice_date" optional="show"/>
                                   <field name="amount_untaxed_signed" string="Tax Excluded" sum="Total" optional="show"/>
@@ -136,20 +155,30 @@
                                   <field name="move_type" invisible="context.get('default_type', True)"/>
                                      </tree>
                                   </field>
-                                   <field name="pago_ids"  readonly="1"/>
+                                   <field name="pago_ids"  readonly="1">
+                                     <tree>
+                                       <field name="date" />
+                                       <field name="name" />
+                                       <field name="journal_id" />
+                                       <field name="amount" />
+                                       <field name="facturas" />
+                                       <field name="state" />
+                                       <field name="currency_id" />
+                                     </tree>
+                                   </field>
                                    <field name="cierrepago_ids" readonly="1">
                                      <tree string="Metodos de pago">
                                        <field name="name" />
                                        <field name="monto" />
                                     </tree>
                                    </field>
-                                   <field name="remesa_ids" readonly="1">
+                                   <!--field name="remesa_ids" readonly="1">
                                      <tree string="Remesas">
                                        <field name="origen_id" />
                                        <field name="destino_id" />
                                        <field name="monto" />
                                     </tree>
-                                   </field>
+                                   </field-->
                            </group>
               
                        </sheet>
@@ -170,8 +199,10 @@
       <field name="model">res.users</field>
       <field name="inherit_id" ref="base.view_users_form" />
       <field name="arch" type="xml">
-        <xpath expr="//field[@name='partner_id']" position="after">
+        <xpath expr="//notebook" position="before">
+          <group>
           <field name="caja_id" string='Caja'/>
+        </group>
         </xpath>
       </field>
     </record>
@@ -195,7 +226,21 @@
       <field name="inherit_id" ref="account.view_move_form" />
       <field name="arch" type="xml">
         <xpath expr="//field[@name='invoice_date']" position="after">
-          <field name="caja_id" string='Caja'/>
+          <field name="able_to_modify_caja" invisible="1"/>
+          <field name="caja_id" string='Caja' attrs="{'readonly':[('able_to_modify_caja','=',False)]}"/>
+        </xpath>
+      </field>
+    </record>
+
+
+    <record id="odoosv_payment_form" model="ir.ui.view">
+      <field name="name">odoosv_payment_form</field>
+      <field name="model">account.payment</field>
+      <field name="inherit_id" ref="account.view_account_payment_form" />
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='move_id']" position="after">
+          <field name="able_to_modify_caja" invisible="1"/>
+          <field name="caja_id" string='Caja' attrs="{'readonly':[('able_to_modify_caja','=',False)]}"/>
         </xpath>
       </field>
     </record>
@@ -208,8 +253,8 @@
     string="Reporte de Cierre"
     model="odoosv.cierre"
     report_type="qweb-pdf"
-    file="sv_sucursal.template_cierre_report"
-    name="sv_sucursal.template_cierre_report"
+    file="sv_caja.template_cierre_report"
+    name="sv_caja.template_cierre_report"
     menu="True"/>
     
   
@@ -252,6 +297,7 @@
                                           <tr style="background:gray">
                                           <td>Cliente</td>
                                           <td>Fecha</td>
+                                          <td>Tipo</td>
                                           <td># Fact.</td>
                                           <td>Doc. Origen</td>
                                           <td>Vendedor</td>
@@ -271,7 +317,8 @@
                                               <tr>
                                                   <td><span t-field="i.partner_id"/></td>
                                                   <td><span t-field="i.invoice_date"/></td>
-                                                  <td><span t-field="i.ref"/></td>
+                                                  <td><span t-field="i.tipo_documento_id"/></td>
+                                                  <td><span t-field="i.doc_numero"/></td>
                                                   <td><span t-field="i.invoice_origin"/></td>
                                                   <td><span t-field="i.user_id"/></td>
                                                   <td class=" text-right"><span t-field="i.amount_untaxed" t-field-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: &quot;currency&quot;}"/></td>
@@ -280,7 +327,7 @@
                                               </tr>
                                           </t>
                                           <tr class="is-subtotal text-right" style="background:gray">
-                                                  <td colspan="5"><span>Total</span></td>
+                                                  <td colspan="6"><span>Total</span></td>
                                                   <td><span t-esc="'%.2f'% sin_impuestos"/></td>
                                                   <!--td><span t-esc="'%.2f'% impuestos"/></td-->
                                                   <td><span t-esc="'%.2f'% total"/></td>
@@ -310,16 +357,23 @@
                       </tr>
                   </thead>
                   <tbody class="sale_tbody">
+                    <t t-set="totalpagos" t-value="0"/>
                       <t t-foreach="doc.pago_ids" t-as="line">
                           <tr class="o_line_section" style="font-size:12px;color:#000000;">
                               <td class="text-left"><span t-field="line.create_date"/></td>
-                              <td class="text-left"><span t-field="line.x_doc"/></td>
+                              <td class="text-left"><span t-field="line.facturas"/></td>
                               <td class="text-left"><span t-field="line.partner_id.name"/></td>
                               <td class="text-left"><span t-field="line.journal_id.name"/></td>
                               <td class="text-right"><span t-field="line.amount"/></td>
-                              
+                              <t t-set="totalpagos" t-value="totalpagos+line.amount"/>
                           </tr>
                       </t>
+
+                      <tr class="is-subtotal text-right" style="background:gray">
+                        <td colspan="4"><span>Total</span></td>
+                        <td><span t-esc="'%.2f'% totalpagos"/></td>
+                      </tr>
+
                   </tbody>
               </table>
               
@@ -349,30 +403,7 @@
               
               
               
-                  <div class="row" >
-                  <h3>Remesas</h3>
-              </div>
-  
-              <!-- Is there a discount on at least one line? -->
-  
-              <table class="table table-sm o_main_table">
-                  <thead>
-                      <tr>
-                          <th name="th_origen" class="text-left">Origen</th>
-                          <th name="th_origen" class="text-left">Destino</th>
-                          <th name="th_monto" class="text-left">Monto</th>
-                      </tr>
-                  </thead>
-                  <tbody class="sale_tbody">
-                      <t t-foreach="doc.remesa_ids" t-as="line">
-                          <tr class="o_line_section" style="font-size:12px;color:#000000;">
-                              <td class="text-left"><span t-field="line.orgien_id.name"/></td>
-                              <td class="text-left"><span t-field="line.destino_id.name"/></td>
-                              <td class="text-right"><span t-field="line.monto"/></td>
-                          </tr>
-                      </t>
-                  </tbody>
-              </table>
+             
           </div>
       </t>
        </t>
