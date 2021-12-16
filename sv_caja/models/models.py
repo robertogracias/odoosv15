@@ -69,7 +69,17 @@ class sucursales_account_move(models.Model):
 
     able_to_modify_caja = fields.Boolean(compute=set_access_for_caja, string='puede modificar caja')
 
-    
+class sucursales_account_move_line(models.Model):
+    _inherit='account.move.line'
+    caja_id=fields.Many2one(comodel_name='odoosv.caja', string="Caja", related='move_id.caja_id',store=True)
+
+
+    def set_analityc(self):
+        for r in self:
+            if not r.analytic_account_id:
+                if r.caja_id:
+                    if r.caja_id.analytic_account_id:
+                        r.analytic_account_id=r.caja_id.analytic_account_id.id
 
 class sucursales_account_payment(models.Model):
     _inherit='account.payment'
