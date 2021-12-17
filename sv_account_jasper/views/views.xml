@@ -24,7 +24,44 @@
         </record>
         
 
+        <record id="jasper_journal_form" model="ir.ui.view">
+            <field name="name">jasper_journal_form</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account_check_printing.view_account_journal_form_inherited"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='check_next_number']" position="after">
+                
+                        <field name="formato"  attrs="{'invisible': [('check_manual_sequencing', '=', False)]}" />
+                </xpath>
+            </field>
+        </record>
+        
 
+        <record id="jasper_payment_form" model="ir.ui.view">
+            <field name="name">jasper_payment_form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='country_code']" position="after">
+                    <div style="display:none" id="formatofiscal">
+                        <field name="formato_fiscal" invisible="0" />
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
+                        <field name="a_nombre_de" />  
+                        <field name="no_negociable" />
+                   
+                </xpath>
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="imprimir" class="oe_stat_button" icon="fa-bars" type="object" 
+                    onclick="var url=document.getElementById('formatofiscal').children[0].innerHTML;
+                             url=url.split('amp;').join('');
+                             var windows=window.open(url);"                                      
+                    attrs="{'invisible': ['|',('state', 'in', ('draft','cancel')),('check_number', '=', False)]}" string="Imprimir">
+                    </button>
+                </xpath>
+            </field>
+        </record>
        
         
     </data>
