@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="bascula_form">
+            <field name="name">bascula_form</field>
+            <field name="model">odoosv.bascula</field>
+            <field name="arch" type="xml">
+                <form string="Basculas">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name" placeholder="Bascula"/>
+                            <field name="last_ping"/>
+                            <field name="port"/>
+                            <field name="baudrate"/>
+                            <field name="bits"/>
+                            <field name="parity"/>
+                            <field name="parse"/>
+                            <field name="url"/>
+                            <field name="url_reload" widget="html" />
+                            <field name="ultima_lectura" readonly="1"/>
+                            <button name="leer" type="object" string="Leer" />
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="bascula_tree">
+            <field name="name">bascula_tree</field>
+            <field name="model">odoosv.bascula</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" placeholder="Bascula"/>
+                            <field name="last_ping"/>
+                            <field name="state"/>
+                            <field name="url"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="bascula_action">
+            <field name="name">Basculas</field>
+            <field name="res_model">odoosv.bascula</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Basculas</p>
+            </field>
+            
+        </record>
+
+        <!--menu del objetivo-->
+        
+        <menuitem id="basculas_menu" parent="base.menu_custom" name="Basculas" action="bascula_action" sequence="9"/>
+
+
+      
+
+    </data>
+</odoo>
