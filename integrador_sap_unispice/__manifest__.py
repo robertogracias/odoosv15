@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "integrador_sap",
+    'name': "integrador_sap_unispice",
 
     'summary': """
         Permite realizar una intregracion entre SAP y ODOO""",

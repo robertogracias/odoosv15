@@ -19,94 +19,12 @@ _logger = logging.getLogger(__name__)
 
 class integrador_prodcut(models.Model):
     _inherit='product.template'
-    pounds=fields.Float("Libras")
+    foreignname=fields.Char("foreignName")
+    itemsgroup=fields.Char("itemsGroup")
+    uomgroup=fields.Char("uoMGroup")
 
-    def sync_price(self):
-        _logger.info('Integrador de Listas de precios por producto')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
-        lista_unica=self.env['integrador_sap.property'].search([('name','=','list_price')],limit=1)
-        if var:
-            url=var.valor+'/pricelists-detail'
-            response = requests.get(url)
-            resultado=json.loads(response.text)           
-            for r in resultado:
-                for p in self:
-                    if r['itemCode']==p.default_code:
-                        lista=self.env['product.pricelist'].search([('code','=',r['priceList'])],limit=1)
-                        if lista:
-                            pricelist_item=self.env['product.pricelist.item'].search([('product_tmpl_id','=',p.id),('pricelist_id','=',lista.id)],limit=1)
-                            if pricelist_item:
-                                pricelist_item.write({'fixed_price':r['price']})
-                            else:
-                                dic={}
-                                dic['product_tmpl_id']=p.id
-                                dic['pricelist_id']=lista.id
-                                dic['applied_on']='1_product'
-                                dic['compute_price']='fixed'
-                                dic['code_producto']=p.default_code
-                                dic['fixed_price']=r['price']
-                                self.env['product.pricelist.item'].create(dic)
-                            if lista.code==lista_unica.valor:
-                                if r['weightInPounds']>0:
-                                    p.write({'pounds':r['weightInPounds'],'list_price':r['price']})
-                                else:
-                                    p.write({'list_price':r['price']})
-                            else:
-                                if r['weightInPounds']>0:
-                                    p.write({'pounds':r['weightInPounds']})
-                                clientes=self.env['res.partner'].search([('lista_original','=',lista.code)])
-                                for c in clientes:
-                                    pricelist_item=self.env['product.pricelist.item'].search([('product_tmpl_id','=',p.id),('pricelist_id','=',c.property_product_pricelist.id)],limit=1)
-                                    if pricelist_item:
-                                        pricelist_item.write({'fixed_price':r['price']})
-                                    else:
-                                        dic={}
-                                        dic['product_tmpl_id']=p.id
-                                        dic['pricelist_id']=c.property_product_pricelist.id
-                                        dic['applied_on']='1_product'
-                                        dic['compute_price']='fixed'
-                                        dic['code_producto']=p.default_code
-                                        dic['fixed_price']=r['price']
-                                        self.env['product.pricelist.item'].create(dic)
-            url=var.valor+'/special-price'
-            response = requests.get(url)
-            resultado=json.loads(response.text)
-            for r in resultado:
-                for p in self:
-                    if r['itemCode']==r.default_code:
-                        rule=self.env['product.pricelist.item'].search([('code_producto','=',r['itemCode']),('code_cliente','=',r['clientCode'])])
-                        dic={}
-                        desde=r['fromDate'][:10]
-                        hasta=r['toDate'][:10]
-                        desdeyear=r['fromDate'][:4]
-                        hastayear=r['toDate'][:4]
-                        if rule:
-                            dic['applied_on']='1_product'
-                            dic['compute_price']='fixed'
-                            if hasta>desde:
-                                dic['date_start']=desde
-                                dic['date_end']=hasta
-                                dic['fixed_price']=r['periodPrice']
-                            else:
-                                dic['fixed_price']=r['specialPrice']
-                            rule.write(dic)
-                        else:
-                            cliente=None
-                            if r['clientCode'] in clientes:
-                                cliente=self.env['res.partner'].search([('ref','=',r['clientCode'])],limit=1)
-                            if cliente:
-                                dic['product_tmpl_id']=p.id
-                                dic['pricelist_id']=cliente.property_product_pricelist.id
-                                dic['applied_on']='1_product'
-                                dic['compute_price']='fixed'
-                                dic['code_cliente']=r['clientCode']
-                                if hasta>desde:
-                                    dic['date_start']=desde
-                                    dic['date_end']=hasta
-                                    dic['fixed_price']=r['periodPrice']
-                                else:
-                                    dic['fixed_price']=r['specialPrice']
-                                self.env['product.pricelist.item'].create(dic)
+
+   
                             
 
 
@@ -115,38 +33,48 @@ class integrador_task(models.Model):
     _inherit='ir.cron'
     sap_task=fields.Boolean("Tarea de syncronizacion SAP")
     
-class integrador_category(models.Model):
-    _inherit='product.category'
-    code=fields.Integer("Codigo",select=True)
+#class integrador_category(models.Model):
+#    _inherit='product.category'
+#    code=fields.Integer("Codigo",select=True)
 
-class integrador_user(models.Model):
-    _inherit='res.users'
-    code=fields.Integer("Codigo",select=True)
-    soporte=fields.Integer("Soporte de ventas",select=True)
+#class integrador_user(models.Model):
+#    _inherit='res.users'
+#    code=fields.Integer("Codigo",select=True)
+#    soporte=fields.Integer("Soporte de ventas",select=True)
 
-class integrador_pricelist(models.Model):
-    _inherit='product.pricelist'
-    code=fields.Char("Codigo",select=True)
-    factor=fields.Float("Factor")
-    sap=fields.Char("Factor",select=True)
+#class integrador_pricelist(models.Model):
+#    _inherit='product.pricelist'
+#    code=fields.Char("Codigo",select=True)
+#    factor=fields.Float("Factor")
+#    sap=fields.Char("Factor",select=True)
 
-class integrador_pricelistitem(models.Model):
-    _inherit='product.pricelist.item'
-    code_producto=fields.Char("Codigo producto",select=True)
-    code_cliente=fields.Char("Codigo cliente",select=True)
+#class integrador_pricelistitem(models.Model):
+#    _inherit='product.pricelist.item'
+#    code_producto=fields.Char("Codigo producto",select=True)
+#    code_cliente=fields.Char("Codigo cliente",select=True)
     
-class integrador_location(models.Model):
-    _inherit='stock.location'
-    code=fields.Char("Codigo",select=True)
+#class integrador_location(models.Model):
+#    _inherit='stock.location'
+#    code=fields.Char("Codigo",select=True)
 
 class integrador_partner(models.Model):
     _inherit='res.partner'
-    nrc=fields.Char("NRC")
-    nit=fields.Char("NIT",select=True)
-    giro=fields.Char("Giro")
-    razon_social=fields.Char("Razón social")
-    taxcode=fields.Char("taxcode")
-    lista_original=fields.Char("Lista Original",select=True)
+    foreingName=fields.Char("foreingName")
+    groupCode=fields.Integer("groupCode")
+    phone2=fields.Char("Telefono 2")
+    contactPerson=fields.Char("contactPerson")
+    empresa=fields.Integer("empresa")
+    almacen=fields.Integer("almacen")
+    tipoProductor=fields.Integer("Tipo Productor")
+    coordinadorAgricola=fields.Integer("Coordinador Agricola")
+    paymentTermsCode=fields.Integer("paymentTermsCode")
+    priceListCode=fields.Integer("priceListCode")
+    creditLimit=fields.Float("creditLimit")
+    firstname=fields.Char("first name")
+    lastname=fields.Char("last name")
+    territories=fields.Char("last name")
+    taxcode=fields.Char("taxCode")
+    sap_state=fields.Char("state")
 
 class integrador_property(models.Model):
     _name='integrador_sap.property'
@@ -154,259 +82,334 @@ class integrador_property(models.Model):
     name=fields.Char('Atributo',select=True)
     valor=fields.Char('Valor')
     
-class integrador_ruta(models.Model):
-    _name='integrador_sap.ruta'
-    _description='Ruta'
-    codigo=fields.Char('Codigo')
-    name=fields.Char('Ruta')
+#class integrador_ruta(models.Model):
+#    _name='integrador_sap.ruta'
+#    _description='Ruta'
+#    codigo=fields.Char('Codigo')
+#    name=fields.Char('Ruta')
     
-class integrador_taxcode(models.Model):
-    _name='integrador_sap.taxcode'
-    _description='Impuesto'
-    codigo=fields.Char('Codigo')
-    name=fields.Char('Impuesto')
-    Rate=fields.Char('Rate')
+#class integrador_taxcode(models.Model):
+#    _name='integrador_sap.taxcode'
+#    _description='Impuesto'
+#    codigo=fields.Char('Codigo')
+#    name=fields.Char('Impuesto')
+#    Rate=fields.Char('Rate')
     
-class integrador_taxcode(models.Model):
-    _name='integrador_sap.gestion'
-    _description='Gestion'
-    codigo=fields.Char('Codigo')
-    name=fields.Char('Name')
+#class integrador_taxcode(models.Model):
+#    _name='integrador_sap.gestion'
+#    _description='Gestion'
+#    codigo=fields.Char('Codigo')
+#    name=fields.Char('Name')
 
-class integrador_sucursal(models.Model):
-    _name='integrador_sap.sucursal'
-    _description='Sucursal'
-    name=fields.Char('Sucursal')
-    codigo=fields.Char('Codigo')
+#class integrador_sucursal(models.Model):
+#    _name='integrador_sap.sucursal'
+#    _description='Sucursal'
+#    name=fields.Char('Sucursal')
+#    codigo=fields.Char('Codigo')
     
-class integrador_price_item(models.Model):
-    _name='integrador_sap.item_price'
-    _description='Item de la cola de syncronizacion de precios'
-    name=fields.Char('Item')
-    #tipo de item 0:Lista de precios  1: Precio especial
-    tipo=fields.Integer("Tipo de Item")
-    item_code=fields.Char("Codigo del producto")
-    pricelist=fields.Char("Codigo de la lista de precios")
-    weightpound=fields.Float("Peso en Libras")
-    price=fields.Float("Precio")
-    client_code=fields.Char("Codigo del cliente")
-    fromdate=fields.Date("Desde")
-    todate=fields.Date("Hasta")
-    period_price=fields.Float("Precio del periodo")
-    procesado=fields.Boolean("Procesado")
+#class integrador_price_item(models.Model):
+#    _name='integrador_sap.item_price'
+#    _description='Item de la cola de syncronizacion de precios'
+#    name=fields.Char('Item')
+#    #tipo de item 0:Lista de precios  1: Precio especial
+#    tipo=fields.Integer("Tipo de Item")
+#    item_code=fields.Char("Codigo del producto")
+#    pricelist=fields.Char("Codigo de la lista de precios")
+#    weightpound=fields.Float("Peso en Libras")
+#    price=fields.Float("Precio")
+#    client_code=fields.Char("Codigo del cliente")
+#    fromdate=fields.Date("Desde")
+#    todate=fields.Date("Hasta")
+#    period_price=fields.Float("Precio del periodo")
+#    procesado=fields.Boolean("Procesado")
     
 
-class integrador_orderline(models.Model):
-    _inherit='sale.order.line'
-    user_id = fields.Many2one('res.users', required=False,string='Vendedor')
-    pound_price=fields.Float("Precio por libra")
+#class integrador_orderline(models.Model):
+#    _inherit='sale.order.line'
+#    user_id = fields.Many2one('res.users', required=False,string='Vendedor')
+#    pound_price=fields.Float("Precio por libra")
+#    
+#    @api.onchange('price_unit','product_id')
+#    def set_pound_price(self):
+#        for r in self:
+#            if r.product_id:
+#                if r.product_id.product_tmpl_id.pounds:
+#                    r.pound_price=r.price_unit/r.product_id.product_tmpl_id.pounds
+
+#class integrador_order(models.Model):
+#    _inherit='sale.order'
+#    code=fields.Integer("Codigo")
+#    ruta_id = fields.Many2one('integrador_sap.ruta', required=False,string='Ruta')
+#    sucursal_id = fields.Many2one('integrador_sap.sucursal', required=False,string='Ruta')
+#    gestion=fields.Many2one('integrador_sap.gestion', required=False,string='gestion')
+#    sap_order=fields.Char("Orden en SAP")
     
-    @api.onchange('price_unit','product_id')
-    def set_pound_price(self):
-        for r in self:
-            if r.product_id:
-                if r.product_id.product_tmpl_id.pounds:
-                    r.pound_price=r.price_unit/r.product_id.product_tmpl_id.pounds
-
-class integrador_order(models.Model):
-    _inherit='sale.order'
-    code=fields.Integer("Codigo")
-    ruta_id = fields.Many2one('integrador_sap.ruta', required=False,string='Ruta')
-    sucursal_id = fields.Many2one('integrador_sap.sucursal', required=False,string='Ruta')
-    gestion=fields.Many2one('integrador_sap.gestion', required=False,string='gestion')
-    sap_order=fields.Char("Orden en SAP")
-    
-    def sync_sap(self):
-        _logger.info('Integrador de ordenes')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
-        if var:
-            for r in self:
-                dic={}
-                dic['clientCode']=r.partner_id.ref
-                dic['clientName']=r.partner_id.name
-                dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
-                dic['documentDueDate']=r.validity_date.strftime("%Y-%m-%d")
-                dic['salesPersonCode']=r.user_id.code
-                dic['comments']=r.note
-                dic['nrc']=r.partner_id.nrc
-                dic['nit']=r.partner_id.nit
-                dic['giro']=r.partner_id.giro
-                dic['fechaDocumento']=r.date_order.strftime("%Y-%m-%d")
-                dic['razonSocial']=r.partner_id.razon_social
-                dic['direccion']=r.partner_shipping_id.street
-                dic['sucursal']=r.sucursal_id.codigo
-                dic['ruta']=r.ruta_id.codigo
-                dic['responsable']=r.ruta_id.codigo
-                dic['gestion']=r.gestion.codigo
-                lines=[]
-                for l in r.order_line:
-                    line={}
-                    line['itemCode']=l.product_id.default_code
-                    line['quantity']=l.product_uom_qty
-                    for t in l.tax_id:
-                        line['taxCode']=t.name
-                    line['price']=l.price_unit
-                    line['discountPercent']=l.discount
-                    line['salesPersonCode']=r.user_id.code
-                    line['text']=l.name
-                    lines.append(line)
-                dic['orderDetail']=lines
-                encabezado = {"content-type": "application/json"}
-                json_datos = json.dumps(dic)
-                result = requests.post(var.valor+'/sales-order',data = json_datos, headers=encabezado)
-                _logger.info('RESULTADO:'+result.text)
-                respuesta=json.loads(result.text)
-                if 'order' in respuesta:
-                    r.sap_order=respuesta['order']
-                else:
-                    raise ValidationError('No se pudo crear la orden en SAP:'+respuesta['message'])
+#    def sync_sap(self):
+#        _logger.info('Integrador de ordenes')
+#        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+#        if var:
+#            for r in self:
+#                dic={}
+#                dic['clientCode']=r.partner_id.ref
+#                dic['clientName']=r.partner_id.name
+#                dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
+#                dic['documentDueDate']=r.validity_date.strftime("%Y-%m-%d")
+#                dic['salesPersonCode']=r.user_id.code
+#                dic['comments']=r.note
+#                dic['nrc']=r.partner_id.nrc
+#                dic['nit']=r.partner_id.nit
+#                dic['giro']=r.partner_id.giro
+#                dic['fechaDocumento']=r.date_order.strftime("%Y-%m-%d")
+#                dic['razonSocial']=r.partner_id.razon_social
+#                dic['direccion']=r.partner_shipping_id.street
+#                dic['sucursal']=r.sucursal_id.codigo
+#                dic['ruta']=r.ruta_id.codigo
+#                dic['responsable']=r.ruta_id.codigo
+#                dic['gestion']=r.gestion.codigo
+#                lines=[]
+#                for l in r.order_line:
+#                    line={}
+#                    line['itemCode']=l.product_id.default_code
+#                    line['quantity']=l.product_uom_qty
+#                    for t in l.tax_id:
+#                        line['taxCode']=t.name
+#                    line['price']=l.price_unit
+#                    line['discountPercent']=l.discount
+#                    line['salesPersonCode']=r.user_id.code
+#                    line['text']=l.name
+#                    lines.append(line)
+#                dic['orderDetail']=lines
+#                encabezado = {"content-type": "application/json"}
+#                json_datos = json.dumps(dic)
+#                result = requests.post(var.valor+'/sales-order',data = json_datos, headers=encabezado)
+#                _logger.info('RESULTADO:'+result.text)
+#                respuesta=json.loads(result.text)
+#                if 'order' in respuesta:
+#                    r.sap_order=respuesta['order']
+#                else:
+#                    raise ValidationError('No se pudo crear la orden en SAP:'+respuesta['message'])
 
 
-class intregrador_sap_partner(models.Model):
+class intregrador_sap_task(models.Model):
     _name='integrador_sap.task'
     _description='Tarea de integracion con sap'
     name=fields.Char('Tarea')
     
-    
-    def sync_sucursales(self):
-        _logger.info('Integrador de sucursales')
+    def sync_cliente(self):
+        _logger.info('Integrador de Clientes')
         var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
         if var:
-            url=var.valor+'/sucursales'
+            mapa={'ref':'code','name':'name','foreingName':'foreingName','groupCode':'groupCode','vat':'taxID','phone':'phone1','phone2':'phone2','mobile':'cellular','email':'email','contactPerson':'contactPerson','empresa':'empresa','almacen':'almacen','tipoProductor':'tipoProductor','coordinadorAgricola':'coordinadorAgricola','paymentTermsCode':'paymentTermsCode','priceListCode':'priceListCode','creditLimit':'creditLimit'}
+            mapa_contact={'name':'name','firstname':'firstName','lastname':'lastName','function':'position','email':'email'}
+            mapa_addres={'name':'addressName','street':'street','city':'city','taxcode':'taxCode','zip':'zipCode','sap_state':'state'}
+            url=var.valor+'/business-partners/customers'
             response = requests.get(url)
-            resultado=json.loads(response.text)
-            for r in resultado:
-                code=r['code']
-                partner=self.env['integrador_sap.sucursal'].search([('codigo','=',code)])
-                if partner:
-                    dic={}
-                    dic['name']=r['name']
-                    partner.write(dic)
-                else:
-                    dic={}
-                    dic['codigo']=r['code']
-                    dic['name']=r['name']
-                    self.env['integrador_sap.sucursal'].create(dic)
-
-    def sync_ruta(self):
-        _logger.info('Integrador de rutas')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
-        if var:
-            url=var.valor+'/rutas'
-            response = requests.get(url)
-            resultado=json.loads(response.text)
-            for r in resultado:
-                code=r['code']
-                partner=self.env['integrador_sap.ruta'].search([('codigo','=',code)])
-                if partner:
-                    dic={}
-                    dic['name']=r['name']
-                    partner.write(dic)
-                else:
-                    dic={}
-                    dic['codigo']=r['code']
-                    dic['name']=r['name']
-                    self.env['integrador_sap.ruta'].create(dic)
-    
-    def sync_gestiones(self):
-        _logger.info('Integrador de gestiones')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
-        if var:
-            url=var.valor+'/gestion-venta'
-            response = requests.get(url)
-            resultado=json.loads(response.text)
-            for r in resultado:
-                code=r['code']
-                partner=self.env['integrador_sap.gestion'].search([('codigo','=',code)])
-                if partner:
-                    dic={}
-                    dic['name']=r['description']
-                    partner.write(dic)
-                else:
-                    dic={}
-                    dic['codigo ']=r['code']
-                    dic['name']=r['description']
-                    self.env['integrador_sap.gestion'].create(dic)
-                    
-    
-    
-    def sync_partner(self):
-        _logger.info('Integrador de Partners')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
-        if var:
-            url=var.valor+'/business-partners'
-            response = requests.get(url)
-            resultado=json.loads(response.text)
+            resultado=json.loads(response.text)            
             for r in resultado:
                 code=r['code']
                 partner=self.env['res.partner'].search([('ref','=',code)])
+
                 if partner:
+                    #editando la compania
+                    #partner_dic=json.dumps(partner)
                     dic={}
                     editado=False
-                    if partner.name!=r['name']:
-                        editado=True
-                        dic['name']=r['name']
-                    if partner.street!=r['address']:
-                        editado=True
-                        dic['street']=r['address']
-                    if partner.phone!=r['phone']:
-                        editado=True
-                        dic['phone']=r['phone']
-                    if partner.mobile!=r['mobile']:
-                        editado=True
-                        dic['mobile']=r['mobile']
-                    if partner.email!=r['email']:
-                        editado=True
-                        dic['email']=r['email']
-                    if partner.giro!=r['giro']:
-                        editado=True
-                        dic['giro']=r['giro']
-                    if partner.nit!=r['nit']:
-                        editado=True
-                        dic['nit']=r['nit']
-                    if partner.nrc!=r['nrc']:
-                        editado=True
-                        dic['nrc']=r['nrc']
-                    if 'salesEmployeeCode' in r:
-                        salesman=self.env['res.users'].search([('code','=',r['salesEmployeeCode'])],limit=1)
-                        if salesman:
-                            if partner.user_id:
-                                if partner.user_id!=salesman.id:
-                                    editado=True
-                            else:
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            if partner.__getitem__(odookey)!=r[sapkey]:
                                 editado=True
-                            dic['user_id']=salesman.id
+                                dic[odookey]=r[sapkey]
                     if editado:
-                        partner.write(dic)
+                        partner.write(dic)                    
                 else:
                     dic={}
-                    dic['ref']=r['code']
-                    dic['name']=r['name']
-                    dic['street']=r['address']
-                    dic['phone']=r['phone']
-                    dic['mobile']=r['mobile']
-                    dic['email']=r['email']
-                    dic['giro']=r['giro']
-                    dic['nit']=r['nit']
-                    dic['nrc']=r['nrc']
-                    if 'salesEmployeeCode' in r:
-                        salesman=self.env['res.users'].search([('code','=',r['salesEmployeeCode'])],limit=1)
-                        if salesman:
-                            dic['user_id']=salesman.id
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            dic[odookey]=r[sapkey]
+                    dic['company_type']='company'                 
                     partner=self.env['res.partner'].create(dic)
-                #creando la lista de precios
-                pricelist=self.env['product.pricelist'].search([('code','=',r['code'])])
-                if not pricelist:
-                    dic={}
-                    dic['code']=r['code']
-                    dic['name']=r['name']
-                    dic['factor']=1
-                    pricelist=self.env['product.pricelist'].create(dic)
-                partner.write({'property_product_pricelist':pricelist.id,'lista_original':r['listPriceCode']})
-                vendedor=self.env['res.users'].search([('code','=',r['salesEmployeeCode'])],limit=1)
-                if vendedor:
-                    partner.write({'user_id':vendedor.id})
+                #Contactos
+                contactos=r['contacts']
+                for c in contactos:
+                    contacto=self.env['res.partner'].search([('type','=','contact'),('name','=',c['name']),('parent_id','=',partner.id)],limit=1)
+                    if contacto:
+                        #contacto_dic=json.dumps(contacto)
+                        diccontacto={}
+                        editado=False
+                        for odookey,sapkey in mapa_contact.items():
+                            if c[sapkey]!='null':
+                                if contacto.__getitem__(odookey)!=c[sapkey]:
+                                    editado=True
+                                    diccontacto[odookey]=c[sapkey]
+                        if editado:
+                            contacto.write(diccontacto)
+                    else:
+                        diccontacto={}
+                        for odookey,sapkey in mapa_contact.items():
+                            if c[sapkey]!='null':
+                                diccontacto[odookey]=c[sapkey]
+                        diccontacto['type']='contact'
+                        diccontacto['parent_id']=partner.id           
+                        contacto=self.env['res.partner'].create(diccontacto)
                 
+                #direcciones
+                direcciones=r['addresses']
+                for c in direcciones:
+                    direccion=self.env['res.partner'].search([('type','in',('invoice','delivery')),('name','=',c['addressName']),('parent_id','=',partner.id)],limit=1)
+                    if direccion:
+                        #direccion_dic=json.dumps(direccion)
+                        dicdireccion={}
+                        editado=False
+                        for odookey,sapkey in mapa_addres.items():
+                            if c[sapkey]!='null':
+                                if direccion.__getitem__(odookey)!=c[sapkey]:
+                                    editado=True                                    
+                                    dicdireccion[odookey]=c[sapkey]
+                        country=self.env['res.country'].search([('code','=',c['country'])],limit=1)
+                        if country:
+                            if direccion.country_id.id!=country.id:
+                                editado=True
+                                dicdireccion['country_id']=country.id
+                        if editado:
+                            direccion.write(dicdireccion)
+                    else:
+                        dicdireccion={}
+                        for odookey,sapkey in mapa_addres.items():
+                            if c[sapkey]!='null':
+                                dicdireccion[odookey]=c[sapkey]
+                        if c['addressType']=='BillTo':
+                            dicdireccion['type']='invoice'
+                        else:
+                            dicdireccion['type']='delivery'
+                        country=self.env['res.country'].search([('code','=',c['country'])],limit=1)
+                        if country:
+                            dicdireccion['country_id']=country.id
+                        dicdireccion['parent_id']=partner.id           
+                        direccion=self.env['res.partner'].create(dicdireccion)
+
+    def sync_vendors(self):
+        _logger.info('Integrador de Proveedores')
+        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        if var:
+            mapa={'ref':'code','name':'name','foreingName':'foreingName','groupCode':'groupCode','vat':'taxID','phone':'phone1','phone2':'phone2','mobile':'cellular','email':'email','contactPerson':'contactPerson','empresa':'empresa','almacen':'almacen','tipoProductor':'tipoProductor','coordinadorAgricola':'coordinadorAgricola','paymentTermsCode':'paymentTermsCode','priceListCode':'priceListCode','creditLimit':'creditLimit'}
+            mapa_contact={'name':'name','firstname':'firstName','lastname':'lastName','function':'position','email':'email'}
+            mapa_addres={'name':'addressName','street':'street','city':'city','taxcode':'taxCode','zip':'zipCode','sap_state':'state'}
+            url=var.valor+'/business-partners/vendors'
+            response = requests.get(url)
+            resultado=json.loads(response.text)            
+            for r in resultado:
+                code=r['code']
+                partner=self.env['res.partner'].search([('ref','=',code)])
+
+                if partner:
+                    #editando la compania
+                    #partner_dic=json.dumps(partner)
+                    dic={}
+                    editado=False
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            if partner.__getitem__(odookey)!=r[sapkey]:
+                                editado=True
+                                dic[odookey]=r[sapkey]
+                    if editado:
+                        partner.write(dic)                    
+                else:
+                    dic={}
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            dic[odookey]=r[sapkey]
+                    dic['company_type']='company'                 
+                    partner=self.env['res.partner'].create(dic)
+                #Contactos
+                contactos=r['contacts']
+                for c in contactos:
+                    contacto=self.env['res.partner'].search([('type','=','contact'),('name','=',c['name']),('parent_id','=',partner.id)],limit=1)
+                    if contacto:
+                        #contacto_dic=json.dumps(contacto)
+                        diccontacto={}
+                        editado=False
+                        for odookey,sapkey in mapa_contact.items():
+                            if c[sapkey]!='null':
+                                if contacto.__getitem__(odookey)!=c[sapkey]:
+                                    editado=True
+                                    diccontacto[odookey]=c[sapkey]
+                        if editado:
+                            contacto.write(diccontacto)
+                    else:
+                        diccontacto={}
+                        for odookey,sapkey in mapa_contact.items():
+                            if c[sapkey]!='null':
+                                diccontacto[odookey]=c[sapkey]
+                        diccontacto['type']='contact'
+                        diccontacto['parent_id']=partner.id           
+                        contacto=self.env['res.partner'].create(diccontacto)
+                
+                #direcciones
+                direcciones=r['addresses']
+                for c in direcciones:
+                    direccion=self.env['res.partner'].search([('type','in',('invoice','delivery')),('name','=',c['addressName']),('parent_id','=',partner.id)],limit=1)
+                    if direccion:
+                        #direccion_dic=json.dumps(direccion)
+                        dicdireccion={}
+                        editado=False
+                        for odookey,sapkey in mapa_addres.items():
+                            if c[sapkey]!='null':
+                                if direccion.__getitem__(odookey)!=c[sapkey]:
+                                    editado=True                                    
+                                    dicdireccion[odookey]=c[sapkey]
+                        country=self.env['res.country'].search([('code','=',c['country'])],limit=1)
+                        if country:
+                            if direccion.country_id.id!=country.id:
+                                editado=True
+                                dicdireccion['country_id']=country.id
+                        if editado:
+                            direccion.write(dicdireccion)
+                    else:
+                        dicdireccion={}
+                        for odookey,sapkey in mapa_addres.items():
+                            if c[sapkey]!='null':
+                                dicdireccion[odookey]=c[sapkey]
+                        if c['addressType']=='BillTo':
+                            dicdireccion['type']='invoice'
+                        else:
+                            dicdireccion['type']='delivery'
+                        country=self.env['res.country'].search([('code','=',c['country'])],limit=1)
+                        if country:
+                            dicdireccion['country_id']=country.id
+                        dicdireccion['parent_id']=partner.id           
+                        direccion=self.env['res.partner'].create(dicdireccion)
+
+
+    def sync_product(self):
+        _logger.info('Integrador de producto')
+        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        if var:
+            url=var.valor+'/items'
+            mapa={'default_code':'code','name':'name','foreignname':'foreignName','itemsgroup':'itemsGroup','uomgroup':'uoMGroup'}
+            response = requests.get(url)
+            resultado=json.loads(response.text)            
+            for r in resultado:
+                code=r['code']
+                product=self.env['product.template'].search([('default_code','=',code)])
+                if product:
+                    dic={}
+                    editado=False
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            if product.__getitem__(odookey)!=r[sapkey]:
+                                editado=True
+                                dic[odookey]=r[sapkey]
+                    if editado:
+                        product.write(dic)                    
+                else:
+                    dic={}
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            dic[odookey]=r[sapkey]
+                    product=self.env['product.template'].create(dic)
+            
+                      
+
     
     def sync_categorias(self):
         _logger.info('Integrador de Categorias')
@@ -428,7 +431,7 @@ class intregrador_sap_partner(models.Model):
                     dic['name']=r['name']
                     self.env['product.category'].create(dic)
     
-    
+
     def sync_vendedores(self):
         _logger.info('Integrador de Vendedores')
         var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
@@ -775,37 +778,7 @@ class intregrador_sap_partner(models.Model):
                             self.env['product.pricelist.item'].create(dic)
             _logger.info('time 3:'+str(fields.Datetime.now()))
 
-    def sync_product(self):
-        _logger.info('Integrador de producto')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
-        if var:
-            url=var.valor+'/items'
-            response = requests.get(url)
-            resultado=json.loads(response.text)
-            for r in resultado:
-                code=r['code']
-                product=self.env['product.template'].search([('default_code','=',code)])
-                if product:
-                    dic={}
-                    dic['name']=r['name']
-                    dic['type']='product'
-                    if r['groupCode']:
-                        categ=self.env['product.category'].search([('code','=',r['groupCode'])],limit=1)
-                        if categ:
-                            dic['categ_id']=categ.id
-                    dic['standard_price']=r['productCost']
-                    product.write(dic)
-                else:
-                    dic={}
-                    dic['default_code']=r['code']
-                    dic['name']=r['name']
-                    dic['type']='product'
-                    if r['groupCode']:
-                        categ=self.env['product.category'].search([('code','=',r['groupCode'])],limit=1)
-                        if categ:
-                            dic['categ_id']=categ.id
-                    dic['standard_price']=r['productCost']
-                    self.env['product.template'].create(dic)
+    
 
     def sync_stock(self):
         var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)

@@ -2,24 +2,24 @@
 <odoo>
     <data>
 
-        <record model="res.groups" id="integrador_sap.manager">
+        <record model="res.groups" id="integrador_sap_unispice.manager">
             <field name="name">Administrador de Intergracion con sap</field>
         </record>
 
 
-        <record model="integrador_sap.property" id="integrador_sap.url">
+        <record model="integrador_sap.property" id="integrador_sap_unispice.url">
             <field name="name">sap_url</field>
-            <field name="valor">http://192.168.1.91:8000/ags/v1</field>
+            <field name="valor">http://localhost:8069</field>
         </record>
-        <record model="integrador_sap.property" id="integrador_sap.user_field">
+        <record model="integrador_sap.property" id="integrador_sap_unispice.user_field">
             <field name="name">sap_user_field</field>
             <field name="valor">sel_groups_1_9_10</field>
         </record>
-        <record model="integrador_sap.property" id="integrador_sap.suser_type">
+        <record model="integrador_sap.property" id="integrador_sap_unispice.suser_type">
             <field name="name">sap_user_type</field>
             <field name="valor">9</field>
         </record>
-        <record model="integrador_sap.property" id="integrador_sap.location">
+        <record model="integrador_sap.property" id="integrador_sap_unispice.location">
             <field name="name">sap_location_parent</field>
             <field name="valor">7</field>
         </record>
@@ -47,7 +47,7 @@
         </record>
 
         <!--menu del pei-->
-        <menuitem id="sap_cron_mnu" parent="integrador_sap.integrador_sap_mnu" name="Tareas de Syncronizacion" action="sap_cron" sequence="11" />
+        <menuitem id="sap_cron_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" name="Tareas de Syncronizacion" action="sap_cron" sequence="11" />
 
 
         <record model="ir.ui.view" id="sap_var_form">
@@ -95,7 +95,7 @@
         </record>
 
         <!--menu del pei-->
-        <menuitem id="sap_var_mnu" parent="integrador_sap.integrador_sap_mnu" name="Variables de configuracion" action="spa_var_action" sequence="12" />
+        <menuitem id="sap_var_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" name="Variables de configuracion" action="spa_var_action" sequence="12" />
 
 
     </data>
