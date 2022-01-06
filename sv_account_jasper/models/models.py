@@ -43,6 +43,7 @@ class jasper_account_move(models.Model):
 class jasrper_journal(models.Model):
     _inherit='account.journal'
     formato=fields.Char("Formato Preimpreso")
+    formato_voucher=fields.Char("Formato Voucher")
     numero_cheque_maximo=fields.Char("Último numero de queque")
     cheques_disponibles=fields.Integer("Cheques disponibles", compute='_get_disponible')
 
@@ -64,6 +65,7 @@ class jasper_account_move(models.Model):
     _inherit='account.payment'
     impreso=fields.Boolean("Impreso")
     formato_fiscal=fields.Char("formato fiscal",compute='compute_fiscalreport',store=False)
+    formato_voucher=fields.Char("formato voucher",compute='compute_fiscalreport',store=False)
     no_negociable=fields.Boolean("No Negociable")
     a_nombre_de=fields.Char("A nombre de ")
 
@@ -74,10 +76,14 @@ class jasper_account_move(models.Model):
     def compute_fiscalreport(self):
         for r in self:
             texto=''
+            texto2=''
             jasper=r.company_id.jasper
             if not jasper:
                 jasper=self.env['odoosv.jasper'].search([('name','=','odoo')],limit=1)
             if jasper:
                 if r.journal_id.formato:
                     texto=jasper.create_link_report('/sv/reportes/transacciones',r.journal_id.formato,r.id,'pdf')
+                if r.journal_id.formato_voucher:
+                    texto2=jasper.create_link_report('/sv/reportes/transacciones',r.journal_id.formato_voucher,r.id,'pdf')
             r.formato_fiscal=texto
+            r.formato_voucher=texto2

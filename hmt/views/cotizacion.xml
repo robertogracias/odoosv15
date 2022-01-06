@@ -1,67 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <template id="template_hmt_digital">
-            <t t-if="not o" t-set="o" t-value="doc"/>
-            <t t-if="not company">
-                <!-- Multicompany -->
-                <t t-if="company_id">
-                    <t t-set="company" t-value="company_id"/>
-                </t>
-                <t t-elif="o and 'company_id' in o">
-                    <t t-set="company" t-value="o.company_id.sudo()"/>
-                </t>
-                <t t-else="else">
-                    <t t-set="company" t-value="res_company"/>
-                </t>
-            </t>
-            <t t-call="hmt.hmt_digital"><t t-raw="0"/></t>
-        </template>
+        
+
+
+
    
-
-
-
-    <template id="hmt_digital">
-        <t t-name="hmt.hmt_digital">
-            <div class="header" t-att-style="report_header_style">
-                <div class="row">
-                    <div class="col-12 mb4">
-                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 45px;" alt="Logo"/>
-                    </div>
-                    <div class="col-9 text-right" style="margin-top:22px;" t-field="company.report_header" name="moto"/>
-                </div>
-                <!--div class="row">
-                    <div class="col-6" name="company_address">
-                        <div t-field="company.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: true}"/>
-                    </div>
-                </div-->
-            </div>
-    
-            <div style="" t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
-                <t t-raw="0"/>
-                
-            </div>
-    
-            
-            <div t-attf-class="footer">
-                <div class="text-center">
-                    <b><span t-field="company.name"/></b>
-                    <span><b></b><span t-field="company.partner_id.street"/>,<span t-field="company.partner_id.city"/>, <span t-field="company.partner_id.country_id"/></span>
-                    <br/>
-                    <span><span t-field="company.partner_id.phone"/>, <span t-field="company.partner_id.phone"/></span>
-                </div>
-            </div>
-        </t>
-    </template>
-
-
-    <template id="hmt_container">
-            <t t-set="body_classname" t-value="'container'"/>
-            <t t-call="hmt.template_hmt_digital">
-                <t t-raw="0"/>
-            </t>
-    </template>
-
 
 
     <report
@@ -95,7 +39,7 @@
      
     <template id="saleorderdigital_document">
         <t t-name="hmt.saleorderdigital_document">
-        <t t-call="hmt.template_hmt_digital">
+        <t t-call="web.external_layout">
             <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
             <div class="page">
               
@@ -135,8 +79,7 @@
                 </p>
                 
                 <p>
-                    Reciba un cordial y atento saludo conuestros mejores deseos de éxito en sus actividades diarias. Con base en su
-amable solicitud le presentamos nuestra propuesta económica.
+                    Estimados, Reciba un cordial y atento saludo con nuestros mejores deseos de éxito en sus actividades diarias. Con base en su amable solicitud Ie presentamos nuestra propuesta económica
                 </p>
                 
                 <!-- Is there a discount on at least one line? -->
@@ -266,8 +209,8 @@ amable solicitud le presentamos nuestra propuesta económica.
                 <span t-raw="doc.notas"/>
                 <span t-raw="doc.otros"/>
                 <span t-raw="doc.entrega"/>
-
-                <span t-raw="doc.terminos_generales_venta"/>
+                <div style="page-break-before:always;"></div>
+                <span  t-raw="doc.terminos_generales_venta"/>
 
             </div>
         </t>
@@ -292,7 +235,7 @@ amable solicitud le presentamos nuestra propuesta económica.
      
     <template id="saleorderdigital_espc_document">
         <t t-name="hmt.saleorderdigital_espc_document">
-        <t t-call="hmt.template_hmt_digital">
+        <t t-call="web.external_layout">
             <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
             <div class="page">
               
@@ -332,8 +275,7 @@ amable solicitud le presentamos nuestra propuesta económica.
                 </p>
                 
                 <p>
-                    Reciba un cordial y atento saludo conuestros mejores deseos de éxito en sus actividades diarias. Con base en su
-amable solicitud le presentamos nuestra propuesta económica.
+                    Estimados, Reciba un cordial y atento saludo con nuestros mejores deseos de éxito en sus actividades diarias. Con base en su amable solicitud Ie presentamos nuestra propuesta económica.
                 </p>
                 
                 <!-- Is there a discount on at least one line? -->
@@ -463,9 +405,9 @@ amable solicitud le presentamos nuestra propuesta económica.
                 <span t-raw="doc.notas"/>
                 <span t-raw="doc.otros"/>
                 <span t-raw="doc.entrega"/>
-
-                <span t-raw="doc.terminos_generales_venta"/>
-
+                <div style="page-break-before:always;"></div>
+                <span  t-raw="doc.terminos_generales_venta"/>
+                <div style="page-break-before:always;"></div>
                 <t t-foreach="doc.order_line" t-as="line">
                     <t t-if="line.product_id">
                         <t t-if="line.product_id.especificacion">

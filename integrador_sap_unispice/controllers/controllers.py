@@ -69,8 +69,9 @@ class test_agrosania(http.Controller):
     
     
     @http.route('/business-partners/customers', auth='public')
-    def partners(self, **kw):
-        return """[
+    def partnercustomer(self, **kw):
+        return """
+        [
     {
         "code": "CLFD020",
         "name": "Fresh Delight UK Ltd.",

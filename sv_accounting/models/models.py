@@ -763,7 +763,7 @@ class odoosv_move(models.Model):
     nofiscal=fields.Boolean("Fuera del ambito fiscal")
     sv_numerado=fields.Boolean("Numerado",copy=False)
     sv_numerado_doc=fields.Boolean("Numerado en documento",copy=False)
-    doc_numero=fields.Char("Numero de documento")
+    doc_numero=fields.Char("Numero de documento",copy=False)
     requiere_poliza=fields.Boolean("Requiere Poliza",related='tipo_documento_id.requiere_poliza')
     poliza=fields.Char("Poliza")
     #caja_id=fields.Many2one('odoosv.caja',string="Caja",default=lambda self: self.env.user.caja_id.id)
