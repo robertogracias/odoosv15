@@ -95,7 +95,7 @@
         </record>
 
         <!--menu del pei-->
-        <menuitem id="sap_var_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" name="Variables de configuracion" action="spa_var_action" sequence="12" />
+        <menuitem id="sap_var_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" groups="" name="Variables de configuracion" action="spa_var_action" sequence="12" />
 
 
     </data>

@@ -122,9 +122,9 @@
             <field name="arch" type="xml">
                  <xpath expr="//field[@name='invoice_vendor_bill_id']" position="after">
                         <field name="numeracion_automatica" invisible="1"/>
-                        <field name="requiere_poliza" invisible="1"/>
-                        <field name="doc_numero" attrs="{'readonly':[('numeracion_automatica','=',True)]}"/>
+                        <field name="requiere_poliza" invisible="1"/>                        
                         <field name="tipo_documento_id" domain="[('tipo_movimiento','=',move_type)]"/>
+                        <field name="doc_numero" attrs="{'readonly':[('numeracion_automatica','=',True)]}"/>
                         <field name="nofiscal"/>
                         <field name="razon_notacredito_id" attrs="{'invisible':[('move_type','in',('in_invoice','out_invoice','entry'))]}"/>
                         <field name="poliza" attrs="{'invisible':[('requiere_poliza','=',False)]}"/>

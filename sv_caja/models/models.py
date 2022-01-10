@@ -50,7 +50,7 @@ class sucursales_sale_order(models.Model):
     _inherit='sale.order'
     caja_id=fields.Many2one(comodel_name='odoosv.caja', string="Caja")
     
-    @api.onchange('sucursal_id')
+    @api.onchange('caja_id')
     def get_warehouse_id(self):
         for r in self:
             if r.caja_id:
@@ -83,7 +83,7 @@ class sucursales_account_move_line(models.Model):
 
 class sucursales_account_payment(models.Model):
     _inherit='account.payment'
-    sucursal_id=fields.Many2one(comodel_name='odoosv.caja', string="Caja", default=lambda self: self.env.user.caja_id)
+    caja_id=fields.Many2one(comodel_name='odoosv.caja', string="Caja", default=lambda self: self.env.user.caja_id)
     cierre_id=fields.Many2one(comodel_name='odoosv.cierre', string="Cierre")
     facturas=fields.Char("Facturas",compute='calcular_facturas',store=False)
 
