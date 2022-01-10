@@ -1,0 +1,166 @@
+<odoo>
+    <data>
+
+    <record model="res.groups" id="hmt_vendedor">
+        <field name="name">Vendedores TTAISA</field>
+    </record>
+
+    <record model="res.groups" id="hmt_vendedor_hmt">
+      <field name="name">Vendedores HMT</field>
+    </record>
+
+      <menuitem id="hmt_vendedor_main"  name="Vendedores" groups="hmt_suplatation.hmt_vendedor" sequence="19"/>
+
+      <record model="ir.ui.view" id="hmt_login_form">
+        <field name="name">hmt_login_form</field>
+        <field name="model">hmt.login</field>
+        <field name="arch" type="xml">
+            <form string="Ingreso">
+               
+                <sheet>
+                    <group>
+                        <field name="vendedor_id" placeholder="Vendedor"/>
+                        <field name="pin" />
+                        <field name="mensaje" readonly="1"/>
+                        <button name="login" type="object" string="Ingresar"/> 
+                    </group>
+                </sheet>
+                <!--div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div-->
+            </form>
+        </field>
+    </record>
+
+      <record model="ir.actions.act_window" id="hmt_vendedor_login_action">
+        <field name="name">Login HMT</field>
+        <field name="res_model">hmt.login</field>
+        <!--field name="view_type">form</field-->
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">Login</p>
+        </field>
+      </record>
+
+      <menuitem id="hmt_vendedorlogin"  name="Ingreso" sequence="1" parent="hmt_vendedor_main" action="hmt_vendedor_login_action"/>
+
+
+
+      <record id="docfiscal_hmt_move_form" model="ir.ui.view">
+        <field name="name">docfiscal_hmt_move_form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+          <xpath expr="//field[@name='invoice_date']" position="attributes">
+            <attribute name="invisible">1</attribute> 
+        </xpath>
+        <xpath expr="//label[@for='invoice_date']" position="attributes">
+          <attribute name="invisible">1</attribute> 
+      </xpath>
+       
+            <xpath expr="//field[@name='invoice_date']" position="after">
+              <field name="mirror_date" groups="hmt_suplatation.hmt_vendedor"/>
+            </xpath>
+            <xpath expr="//field[@name='pricelist_id']" position="attributes">
+              <attribute name="invisible">1</attribute> 
+          </xpath>
+              <xpath expr="//field[@name='pricelist_id']" position="after">
+                <field name="mirror_price_list" />
+              </xpath>
+            <xpath expr="//field[@name='nofiscal']" position="attributes">
+                <attribute name="groups">hmt_suplatation.hmt_vendedor_hmt</attribute> 
+            </xpath>
+            <xpath expr="//field[@name='payment_reference']" position="attributes">
+              <attribute name="groups">hmt_suplatation.hmt_vendedor_hmt</attribute> 
+          </xpath>
+          <xpath expr="//field[@name='purchase_id']" position="attributes">
+            <attribute name="groups">hmt_suplatation.hmt_vendedor_hmt</attribute> 
+        </xpath>
+            <xpath expr="//field[@name='tipo_documento_id']" position="attributes">
+              <attribute name="widget">selection</attribute> 
+          </xpath>
+          <xpath expr="//div[@name='journal_div']" position="attributes">
+            <attribute name="groups">hmt_suplatation.hmt_vendedor_hmt</attribute> 
+        </xpath>
+        <xpath expr="//page[@id='aml_tab']" position="attributes">
+          <attribute name="groups">account.group_account_user</attribute> 
+      </xpath>
+        <xpath expr="//page//field[@name='name']" position="attributes">
+          <attribute name="groups">hmt_suplatation.hmt_vendedor_hmt</attribute> 
+      </xpath>
+      <xpath expr="//page//field[@name='analytic_account_id']" position="attributes">
+        <attribute name="groups">hmt_suplatation.hmt_vendedor_hmt</attribute> 
+    </xpath>
+    <xpath expr="//page//field[@name='analytic_tag_ids']" position="attributes">
+      <attribute name="groups">hmt_suplatation.hmt_vendedor_hmt</attribute> 
+  </xpath>
+  <xpath expr="//page//field[@name='price_unit']" position="attributes">
+    <attribute name="groups">hmt_suplatation.hmt_vendedor_hmt</attribute> 
+</xpath>
+<xpath expr="//page//field[@name='price_unit']" position="after">
+  <field name="mirror_price_unit" groups="hmt_suplatation.hmt_vendedor"/>
+</xpath>
+        </field>
+    </record>
+
+
+
+    <record id="hmt_suplantantion_move_form" model="ir.ui.view">
+      <field name="name">hmt_suplantantion_move_form</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="account.view_move_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='country_code']" position="after">
+          <div>
+            <h1 style="color:red">
+              <field name="invoice_user_id" readonly="1" groups="hmt_suplatation.hmt_vendedor"></field> 
+            </h1>
+          </div>
+          
+        </xpath>
+      
+      </field>
+  </record>
+
+
+  <record id="hmt_transfer_move_form" model="ir.ui.view">
+    <field name="name">hmt_transfer_move_form</field>
+    <field name="model">stock.picking</field>
+    <field name="inherit_id" ref="stock.view_picking_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//div[@name='button_box']" position="after">
+        <div>
+          <h1 style="color:red">
+            <field name="user_id" readonly="1" groups="hmt_suplatation.hmt_vendedor"></field> 
+          </h1>
+        </div>
+        
+      </xpath>
+    
+    </field>
+</record>
+
+
+
+
+
+
+  <record id="hmt_suplantantion_location_form" model="ir.ui.view">
+    <field name="name">hmt_suplantantion_location_form</field>
+    <field name="model">stock.location</field>
+    <field name="inherit_id" ref="stock.view_location_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='return_location']" position="after">
+       <field name="principal"/>        
+      </xpath>
+    
+    </field>
+</record>
+
+
+
+
+    </data>
+  </odoo>

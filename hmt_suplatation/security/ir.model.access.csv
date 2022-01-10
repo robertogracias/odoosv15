@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+vendedores,vendedores,model_hmt_vendedor,base.group_user,1,0,0,0
+vendedores1,vendedores1,model_hmt_vendedor,account.group_account_user,1,1,1,1
+vendedoreslogin,vendedoreslogin1,model_hmt_login,base.group_user,1,1,1,1
+
