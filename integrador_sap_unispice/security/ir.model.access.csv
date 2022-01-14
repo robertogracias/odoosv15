@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-integrador_sap_var1,integrador_sap_var1,model_integrador_sap_property,integrador_sap_unispice.manager,1,1,1,1
-integrador_sap_task1,integrador_sap_task1,model_integrador_sap_task,integrador_sap_unispice.manager,1,1,1,1
+integrador_sap_var1,integrador_sap_var1,model_integrador_sap_unispice_property,integrador_sap_unispice.manager,1,1,1,1
+integrador_sap_task1,integrador_sap_task1,model_integrador_sap_unispice_task,integrador_sap_unispice.manager,1,1,1,1
+integrador_sap_territorio,integrador_sap_territorio,model_integrador_sap_unispice_territory,integrador_sap_unispice.manager,1,1,1,1
+integrador_sap_territorio1,integrador_sap_territorio1,model_integrador_sap_unispice_territory,base.group_user,1,0,0,0

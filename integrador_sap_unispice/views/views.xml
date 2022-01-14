@@ -7,19 +7,19 @@
         </record>
 
 
-        <record model="integrador_sap.property" id="integrador_sap_unispice.url">
+        <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.url">
             <field name="name">sap_url</field>
             <field name="valor">http://localhost:8069</field>
         </record>
-        <record model="integrador_sap.property" id="integrador_sap_unispice.user_field">
+        <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.user_field">
             <field name="name">sap_user_field</field>
             <field name="valor">sel_groups_1_9_10</field>
         </record>
-        <record model="integrador_sap.property" id="integrador_sap_unispice.suser_type">
+        <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.suser_type">
             <field name="name">sap_user_type</field>
             <field name="valor">9</field>
         </record>
-        <record model="integrador_sap.property" id="integrador_sap_unispice.location">
+        <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.location">
             <field name="name">sap_location_parent</field>
             <field name="valor">7</field>
         </record>
@@ -52,7 +52,7 @@
 
         <record model="ir.ui.view" id="sap_var_form">
             <field name="name">sap_cron_form</field>
-            <field name="model">integrador_sap.property</field>
+            <field name="model">integrador_sap_unispice.property</field>
             <field name="arch" type="xml">
                 <form string="Propiedades de la integracion">
                     <header></header>
@@ -73,7 +73,7 @@
         <!--tree del pei-->
         <record model="ir.ui.view" id="sap_var_tree">
             <field name="name">sap_var_tree</field>
-            <field name="model">integrador_sap.property</field>
+            <field name="model">integrador_sap_unispice.property</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="name" placeholder="variable" />
@@ -86,7 +86,7 @@
         <!--action del pei-->
         <record model="ir.actions.act_window" id="spa_var_action">
             <field name="name">Variables</field>
-            <field name="res_model">integrador_sap.property</field>
+            <field name="res_model">integrador_sap_unispice.property</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">Variables
@@ -97,6 +97,154 @@
         <!--menu del pei-->
         <menuitem id="sap_var_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" groups="" name="Variables de configuracion" action="spa_var_action" sequence="12" />
 
+
+
+
+        <record model="ir.ui.view" id="sap_territoro_form">
+            <field name="name">sap_territoro_form</field>
+            <field name="model">integrador_sap_unispice.territory</field>
+            <field name="arch" type="xml">
+                <form string="Territorios">
+                    <header></header>
+                    <sheet>
+
+                        <group>
+                            <field name="name"  />
+                            <field name="code" />
+                        </group>
+
+                    </sheet>
+
+                </form>
+            </field>
+        </record>
+
+
+        <!--tree del pei-->
+        <record model="ir.ui.view" id="sap_territorio_tree">
+            <field name="name">sap_territorio_tree</field>
+            <field name="model">integrador_sap_unispice.territory</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"  />
+                    <field name="code" />
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del pei-->
+        <record model="ir.actions.act_window" id="sap_territory_action">
+            <field name="name">Territorios</field>
+            <field name="res_model">integrador_sap_unispice.territory</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Territorio
+                </p>
+            </field>
+        </record>
+
+        <!--menu del pei-->
+        <menuitem id="sap_territory_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" groups="" name="Territorios" action="sap_territory_action" sequence="12" />
+
+
+
+
+
+        <record id="unispice_product_form" model="ir.ui.view">
+            <field name="name">unispice_product_form</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//page[@name='inventory']" position="after">
+                    <page string="Unispice" name="unispice">
+                        <group>
+                            <group string="Datos Generales">
+                                <field name="foreignname"/>
+                                <field name="itemsgroup"/>
+                                <field name="uomgroup"/>
+                            </group>
+                            <group string="Pedido">
+                                <field name="itemsperpurchaseunit"/>
+                                <field name="planingmethod"/>
+                                <field name="procurementmethod"/>
+                                <field name="orderinterval"/>
+                                <field name="ordermultiple"/>
+                                <field name="minimumorderquantity"/>
+                                <field name="leadtime"/>
+                                <field name="tolerancedays"/>
+                            </group>
+                            <group string="Dimensiones">
+                                <field name="length"/>
+                                <field name="width"/>
+                                <field name="height"/>
+                                <field name="volume"/>
+                                <field name="weight"/>
+                            </group>
+                            <group string="Pesos">
+                                <field name="pesoreferencia"/>
+                                <field name="pesoreferenciaminimo"/>
+                                <field name="pesoreferenciamaximo"/>
+                                <field name="pesoneto"/>
+                                <field name="pesobruto"/>
+                            </group>
+                            <group string="Empacado">
+                                <field name="camaaereo"/>
+                                <field name="filasaereo"/>
+                                <field name="cajaspalletaereo"/>
+                                <field name="camamaritimo"/>
+                                <field name="filasmaritimo"/>
+                                <field name="cajaspalletmaritimo"/>
+                            </group>
+                            <group string="Otros">
+                                <field name="grupomp"/>
+                                <field name="grupotipomp"/>
+                                <field name="grupomppermitida"/>
+                                <field name="grupopt"/>
+                                <field name="grupopresentacion"/>
+                                <field name="grupotipoempaque"/>
+                                <field name="cantidadporposicion"/>
+                            </group>
+                        </group>
+                    </page>
+                       
+                </xpath>
+            </field>
+        </record>
+
+
+
+
+        <record id="sap_territory_form" model="ir.ui.view">
+            <field name="name">sap_territory_form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                 
+                
+                <xpath expr="//page[@name='contact_addresses']" position="after">
+                    <page string="Unispice">
+                        <group>
+                                <field name="foreingName"/>
+                                <field name="groupCode"/>
+                                <field name="contactPerson"/>
+                                <field name="empresa"/>
+                                <field name="almacen"/>
+                                <field name="tipoProductor"/>
+                                <field name="coordinadorAgricola"/>
+                                <field name="paymentTermsCode"/>
+                                <field name="priceListCode"/>
+                                <field name="creditLimit"/>
+                                <field name="firstname"/>
+                                <field name="lastname"/>
+                                <field name="territory_id"/>
+                                <field name="taxcode"/>
+                                <field name="sap_state"/>
+                        </group>    
+                    </page>
+                </xpath>
+            </field>
+        </record>
 
     </data>
 </odoo>

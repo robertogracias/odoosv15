@@ -16,12 +16,53 @@ from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
 _logger = logging.getLogger(__name__)
 
+class integrador_territory(models.Model):
+    _name='integrador_sap_unispice.territory'
+    _description='Territorio importado de SAP'
+    name=fields.Char("Name")
+    code=fields.Char("Codigo")
+
 
 class integrador_prodcut(models.Model):
     _inherit='product.template'
     foreignname=fields.Char("foreignName")
-    itemsgroup=fields.Char("itemsGroup")
-    uomgroup=fields.Char("uoMGroup")
+    itemsgroup=fields.Integer("itemsGroup")
+    uomgroup=fields.Integer("uoMGroup")
+    itemsperpurchaseunit=fields.Float("Items por unidad de compra")
+    length=fields.Float("Longitud")
+    width=fields.Float("Ancho")
+    height=fields.Float("Alto")
+    volume=fields.Float("Volumen")
+    weight=fields.Float("Peso")
+    planingmethod=fields.Char("planingMethod")
+    procurementmethod=fields.Char("procurementmethod")
+    orderinterval=fields.Char("orderInterval")
+    ordermultiple=fields.Float("orderMultiple")
+    minimumorderquantity=fields.Float("Cantidad minima de orden")
+    leadtime=fields.Integer("leadTime")
+    tolerancedays=fields.Integer("Dias de tolerancia")
+    pesoreferencia=fields.Float("Peso de referencia")
+    pesoreferenciaminimo=fields.Float("Peso de referencia mínimo")
+    pesoreferenciamaximo=fields.Float("Peso de referencia máximo")
+    pesoneto=fields.Float("Peso Neto")
+    pesobruto=fields.Float("Peso Bruto")
+    camaaereo=fields.Integer("Cama Aereo")
+    filasaereo=fields.Integer("Filas Aereo")
+    cajaspalletaereo=fields.Integer("Cajas pallet aereo")
+    camamaritimo=fields.Integer("Cama maritimo")
+    filasmaritimo=fields.Integer("Filas Maritimo")
+    cajaspalletmaritimo=fields.Integer("Cajas pallet maritimo")
+    grupomp=fields.Char("grupoMP")
+    grupotipomp=fields.Char("grupoTipoMP")
+    grupomppermitida=fields.Char("grupoMPPermitida")
+    grupopt=fields.Char("grupoPT")
+    grupopresentacion=fields.Char("grupoPresentacion")
+    grupotipoempaque=fields.Char("grupoTipoEmpaque")
+    cantidadporposicion=fields.Float("Cantidad por posición")
+
+
+
+
 
 
    
@@ -72,12 +113,12 @@ class integrador_partner(models.Model):
     creditLimit=fields.Float("creditLimit")
     firstname=fields.Char("first name")
     lastname=fields.Char("last name")
-    territories=fields.Char("last name")
+    territory_id=fields.Many2one(comodel_name='integrador_sap_unispice.territory', string="Territorio")
     taxcode=fields.Char("taxCode")
     sap_state=fields.Char("state")
 
 class integrador_property(models.Model):
-    _name='integrador_sap.property'
+    _name='integrador_sap_unispice.property'
     _description='Atributo de una tarea de integracion'
     name=fields.Char('Atributo',select=True)
     valor=fields.Char('Valor')
@@ -191,13 +232,13 @@ class integrador_property(models.Model):
 
 
 class intregrador_sap_task(models.Model):
-    _name='integrador_sap.task'
+    _name='integrador_sap_unispice.task'
     _description='Tarea de integracion con sap'
     name=fields.Char('Tarea')
     
     def sync_cliente(self):
         _logger.info('Integrador de Clientes')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:
             mapa={'ref':'code','name':'name','foreingName':'foreingName','groupCode':'groupCode','vat':'taxID','phone':'phone1','phone2':'phone2','mobile':'cellular','email':'email','contactPerson':'contactPerson','empresa':'empresa','almacen':'almacen','tipoProductor':'tipoProductor','coordinadorAgricola':'coordinadorAgricola','paymentTermsCode':'paymentTermsCode','priceListCode':'priceListCode','creditLimit':'creditLimit'}
             mapa_contact={'name':'name','firstname':'firstName','lastname':'lastName','function':'position','email':'email'}
@@ -219,6 +260,11 @@ class intregrador_sap_task(models.Model):
                             if partner.__getitem__(odookey)!=r[sapkey]:
                                 editado=True
                                 dic[odookey]=r[sapkey]
+                    territory=self.env['integrador_sap_unispice.territory'].search([('code','=',r['territory'])],limit=1)
+                    if territory:
+                        if  partner.territory_id and (partner.territory_id.id!=territory.id):
+                            editado=True
+                            dic['territory_id']=territory.id
                     if editado:
                         partner.write(dic)                    
                 else:
@@ -226,7 +272,12 @@ class intregrador_sap_task(models.Model):
                     for odookey,sapkey in mapa.items():
                         if r[sapkey]!='null':
                             dic[odookey]=r[sapkey]
-                    dic['company_type']='company'                 
+                    dic['company_type']='company' 
+                    territory=self.env['integrador_sap_unispice.territory'].search([('code','=',r['territory'])],limit=1)
+                    if territory:
+                        if  partner.territory_id and (partner.territory_id.id!=territory.id):
+                            editado=True
+                            dic['territory_id']=territory.id                
                     partner=self.env['res.partner'].create(dic)
                 #Contactos
                 contactos=r['contacts']
@@ -267,7 +318,7 @@ class intregrador_sap_task(models.Model):
                                     dicdireccion[odookey]=c[sapkey]
                         country=self.env['res.country'].search([('code','=',c['country'])],limit=1)
                         if country:
-                            if direccion.country_id.id!=country.id:
+                            if direccion.country_id and (direccion.country_id.id!=country.id):
                                 editado=True
                                 dicdireccion['country_id']=country.id
                         if editado:
@@ -289,7 +340,7 @@ class intregrador_sap_task(models.Model):
 
     def sync_vendors(self):
         _logger.info('Integrador de Proveedores')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:
             mapa={'ref':'code','name':'name','foreingName':'foreingName','groupCode':'groupCode','vat':'taxID','phone':'phone1','phone2':'phone2','mobile':'cellular','email':'email','contactPerson':'contactPerson','empresa':'empresa','almacen':'almacen','tipoProductor':'tipoProductor','coordinadorAgricola':'coordinadorAgricola','paymentTermsCode':'paymentTermsCode','priceListCode':'priceListCode','creditLimit':'creditLimit'}
             mapa_contact={'name':'name','firstname':'firstName','lastname':'lastName','function':'position','email':'email'}
@@ -311,6 +362,11 @@ class intregrador_sap_task(models.Model):
                             if partner.__getitem__(odookey)!=r[sapkey]:
                                 editado=True
                                 dic[odookey]=r[sapkey]
+                    territory=self.env['integrador_sap_unispice.territory'].search([('code','=',r['territory'])],limit=1)
+                    if territory:
+                        if  partner.territory_id and (partner.territory_id.id!=territory.id):
+                            editado=True
+                            dic['territory_id']=territory.id
                     if editado:
                         partner.write(dic)                    
                 else:
@@ -318,6 +374,11 @@ class intregrador_sap_task(models.Model):
                     for odookey,sapkey in mapa.items():
                         if r[sapkey]!='null':
                             dic[odookey]=r[sapkey]
+                    territory=self.env['integrador_sap_unispice.territory'].search([('code','=',r['territory'])],limit=1)
+                    if territory:
+                        if  partner.territory_id and (partner.territory_id.id!=territory.id):
+                            editado=True
+                            dic['territory_id']=territory.id
                     dic['company_type']='company'                 
                     partner=self.env['res.partner'].create(dic)
                 #Contactos
@@ -359,7 +420,7 @@ class intregrador_sap_task(models.Model):
                                     dicdireccion[odookey]=c[sapkey]
                         country=self.env['res.country'].search([('code','=',c['country'])],limit=1)
                         if country:
-                            if direccion.country_id.id!=country.id:
+                            if direccion.country_id and direccion.country_id.id!=country.id:
                                 editado=True
                                 dicdireccion['country_id']=country.id
                         if editado:
@@ -382,10 +443,46 @@ class intregrador_sap_task(models.Model):
 
     def sync_product(self):
         _logger.info('Integrador de producto')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:
             url=var.valor+'/items'
-            mapa={'default_code':'code','name':'name','foreignname':'foreignName','itemsgroup':'itemsGroup','uomgroup':'uoMGroup'}
+            mapa={'default_code':'code'
+                ,'name':'name'
+                ,'foreignname':'foreignName'
+                ,'itemsgroup':'itemsGroup'
+                ,'uomgroup':'uoMGroup'
+                ,'itemsperpurchaseunit':'itemsPerPurchaseUnit'
+                ,'length':'length'
+                ,'width':'width'
+                ,'height':'height'
+                ,'volume':'volume'
+                ,'weight':'weight'
+                ,'planingmethod':'planingMethod'
+                ,'procurementmethod':'procurementMethod'
+                ,'orderinterval':'orderInterval'
+                ,'ordermultiple':'orderMultiple'
+                ,'minimumorderquantity':'minimumOrderQuantity'
+                ,'leadtime':'leadTime'
+                ,'tolerancedays':'toleranceDays'
+                ,'pesoreferencia':'pesoReferencia'
+                ,'pesoreferenciaminimo':'pesoReferenciaMinimo'
+                ,'pesoreferenciamaximo':'pesoReferenciaMaximo'
+                ,'pesoneto':'pesoNeto'
+                ,'pesobruto':'pesoBruto'
+                ,'camaaereo':'camaAereo'
+                ,'filasaereo':'filasAereo'
+                ,'cajaspalletaereo':'cajasPalletAereo'
+                ,'camamaritimo':'camaMaritimo'
+                ,'filasmaritimo':'filasMaritimo'
+                ,'cajaspalletmaritimo':'cajasPalletMaritimo'
+                ,'grupomp':'grupoMP'
+                ,'grupotipomp':'grupoTipoMP'
+                ,'grupomppermitida':'grupoMPPermitida'
+                ,'grupopt':'grupoPT'
+                ,'grupopresentacion':'grupoPresentacion'
+                ,'grupotipoempaque':'grupoTipoEmpaque'
+                ,'cantidadporposicion':'cantidadporposicion'
+                }
             response = requests.get(url)
             resultado=json.loads(response.text)            
             for r in resultado:
@@ -408,12 +505,88 @@ class intregrador_sap_task(models.Model):
                             dic[odookey]=r[sapkey]
                     product=self.env['product.template'].create(dic)
             
-                      
+    def sync_territory(self):
+        _logger.info('Integrador de territorios')
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
+        if var:
+            url=var.valor+'/territories'
+            mapa={'code':'territoryID'
+                ,'name':'description'
+                }
+            response = requests.get(url)
+            resultado=json.loads(response.text)            
+            for r in resultado:
+                code=r['territoryID']
+                product=self.env['integrador_sap_unispice.territory'].search([('code','=',code)])
+                if product:
+                    dic={}
+                    editado=False
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            if product.__getitem__(odookey)!=r[sapkey]:
+                                editado=True
+                                dic[odookey]=r[sapkey]
+                    if editado:
+                        product.write(dic)                    
+                else:
+                    dic={}
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            dic[odookey]=r[sapkey]
+                    product=self.env['integrador_sap_unispice.territory'].create(dic)                  
 
     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def sync_categorias(self):
         _logger.info('Integrador de Categorias')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:
             url=var.valor+'/item-groups'
             response = requests.get(url)
@@ -432,12 +605,38 @@ class intregrador_sap_task(models.Model):
                     self.env['product.category'].create(dic)
     
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     def sync_vendedores(self):
         _logger.info('Integrador de Vendedores')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:
-            user_field=self.env['integrador_sap.property'].search([('name','=','sap_user_field')],limit=1)
-            user_type=self.env['integrador_sap.property'].search([('name','=','sap_user_type')],limit=1)
+            user_field=self.env['integrador_sap_unispice.property'].search([('name','=','sap_user_field')],limit=1)
+            user_type=self.env['integrador_sap_unispice.property'].search([('name','=','sap_user_type')],limit=1)
             url=var.valor+'/sales-employee'
             response = requests.get(url)
             resultado=json.loads(response.text)
@@ -469,12 +668,12 @@ class intregrador_sap_task(models.Model):
     
     def sync_locations(self):
         _logger.info('Integrador de ubicaciones')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:
             url=var.valor+'/warehouse'
             response = requests.get(url)
             resultado=json.loads(response.text)
-            parent_location=self.env['integrador_sap.property'].search([('name','=','sap_location_parent')],limit=1)
+            parent_location=self.env['integrador_sap_unispice.property'].search([('name','=','sap_location_parent')],limit=1)
             for r in resultado:
                 code=r['warehouseCode']
                 location=self.env['stock.location'].search([('code','=',code)])
@@ -493,8 +692,8 @@ class intregrador_sap_task(models.Model):
 
     def sync_pricelist_by_items(self):
         _logger.info('Integrador de Listas de precios por cola de items')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
-        lista_unica=self.env['integrador_sap.property'].search([('name','=','list_price')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
+        lista_unica=self.env['integrador_sap_unispice.property'].search([('name','=','list_price')],limit=1)
         if var:
             _logger.info('time 1:'+str(fields.Datetime.now()))
             url=var.valor+'/pricelist'
@@ -562,9 +761,9 @@ class intregrador_sap_task(models.Model):
     
     def proccess_pricelist_items(self):
         _logger.info('Procesando Items de Precios')
-        var=self.env['integrador_sap.property'].search([('name','=','item_price_batch')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','item_price_batch')],limit=1)
         count=int(var.valor)
-        lista_unica=self.env['integrador_sap.property'].search([('name','=','list_price')],limit=1)
+        lista_unica=self.env['integrador_sap_unispice.property'].search([('name','=','list_price')],limit=1)
         lst=self.env['integrador_sap.item_price'].search([('procesado','=',False)],limit=count,order="id asc")
         item=0
         time1 = time.time()
@@ -636,14 +835,14 @@ class intregrador_sap_task(models.Model):
 
     def sync_pricelist(self):
         _logger.info('Integrador de Listas de precios')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
-        lista_unica=self.env['integrador_sap.property'].search([('name','=','list_price')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
+        lista_unica=self.env['integrador_sap_unispice.property'].search([('name','=','list_price')],limit=1)
         if var:
             _logger.info('time 1:'+str(fields.Datetime.now()))
             url=var.valor+'/pricelist'
             response = requests.get(url)
             resultado=json.loads(response.text)
-            #parent_location=self.env['integrador_sap.property'].search([('name','=','sap_location_parent')],limit=1)
+            #parent_location=self.env['integrador_sap_unispice.property'].search([('name','=','sap_location_parent')],limit=1)
             for r in resultado:
                 code=r['listNumber']
                 pricelist=self.env['product.pricelist'].search([('code','=',code)])
@@ -716,8 +915,8 @@ class intregrador_sap_task(models.Model):
 
     def sync_preciosespeciales(self):
         _logger.info('Integrador de precios especiales')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
-        lista_unica=self.env['integrador_sap.property'].search([('name','=','list_price')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
+        lista_unica=self.env['integrador_sap_unispice.property'].search([('name','=','list_price')],limit=1)
         if var:
             url=var.valor+'/special-price'
             response = requests.get(url)
@@ -781,7 +980,7 @@ class intregrador_sap_task(models.Model):
     
 
     def sync_stock(self):
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:
             url=var.valor+'/items-stock'
             ubicaciones={}

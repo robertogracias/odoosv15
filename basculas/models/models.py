@@ -18,7 +18,7 @@ _logger = logging.getLogger(__name__)
 
 
 class bascula(models.Model):
-    _name='odoosv.bascula'
+    _name='basculas.bascula'
     _inherit='mail.thread'
     _description='Bascula'
     name=fields.Char("Bascula",tracking=True)
@@ -29,7 +29,7 @@ class bascula(models.Model):
     bits=fields.Integer("Bits",tracking=True)
     parity=fields.Integer("Paridad",tracking=True)
     parse=fields.Char("Parser",tracking=True)
-    ultima_lectura=fields.Float("Ultima Lectura")
+    ultima_lectura=fields.Float("Ultima Lectura",digits=(20, 4))
     url=fields.Char("URL")
     url_reload=fields.Text("Url para Reload",compute='calcular_urls')
     url_get=fields.Text("Url para obtener datos",compute='calcular_urls')

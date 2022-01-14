@@ -3,7 +3,7 @@
     <data>
         <record model="ir.ui.view" id="bascula_form">
             <field name="name">bascula_form</field>
-            <field name="model">odoosv.bascula</field>
+            <field name="model">basculas.bascula</field>
             <field name="arch" type="xml">
                 <form string="Basculas">
                     <header>
@@ -35,7 +35,7 @@
         <!--tree del objetivo-->
         <record model="ir.ui.view" id="bascula_tree">
             <field name="name">bascula_tree</field>
-            <field name="model">odoosv.bascula</field>
+            <field name="model">basculas.bascula</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="name" placeholder="Bascula"/>
@@ -50,7 +50,7 @@
         <!--action del objetivo-->
         <record model="ir.actions.act_window" id="bascula_action">
             <field name="name">Basculas</field>
-            <field name="res_model">odoosv.bascula</field>
+            <field name="res_model">basculas.bascula</field>
             <!--field name="view_type">form</field-->
             <field name="view_mode">tree,form</field>
             <field name="target">current</field>

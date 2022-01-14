@@ -77,7 +77,7 @@ class hmt_vendedor(models.Model):
     caja_id=fields.Many2one(comodel_name='odoosv.caja', string="Caja",tracking=True)
     warehouse_id=fields.Many2one(comodel_name='stock.warehouse', string="Almacen",tracking=True)
     user_id=fields.Many2one(comodel_name='res.users', string="Usuario",tracking=True)
-    state=fields.Selection(selection=[('new','Nuevo'),('habilitado','Habilitado'),('deshabilitado','Deshabilitado')],default='new',store=False)
+    state=fields.Selection(selection=[('new','Nuevo'),('habilitado','Habilitado'),('deshabilitado','Deshabilitado')],default='new')
 
     def habilitar(self):
         for r in self:
@@ -120,7 +120,7 @@ class hmt_vendedor(models.Model):
             dic1['default_location_dest_id']=r.warehouse_id.lot_stock_id.id
             self.env['stock.picking.type'].create(dic1)
             dic2={}
-            dic2['name']='Recarga:'+r.name
+            dic2['name']='Liquidacion:'+r.name
             dic2['sequence_code']='L'+str(r.id)
             dic2['warehouse_id']=r.warehouse_id.id
             dic2['code']='internal'
@@ -129,7 +129,7 @@ class hmt_vendedor(models.Model):
             dic2['default_location_src_id']=r.warehouse_id.lot_stock_id.id
             self.env['stock.picking.type'].create(dic2)
             dic3={}
-            dic3['name']='Recarga:'+r.name
+            dic3['name']='Devolucion:'+r.name
             dic3['sequence_code']='D'+str(r.id)
             dic3['warehouse_id']=r.warehouse_id.id
             dic3['code']='incoming'

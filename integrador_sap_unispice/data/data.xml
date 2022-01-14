@@ -4,7 +4,7 @@
 
         <record model="ir.cron" id="integrador_sap_unispice.clientes">
             <field name="name">Integreador de clientes</field>
-            <field name="model_id" ref="integrador_sap_unispice.model_integrador_sap_task"></field>
+            <field name="model_id" ref="integrador_sap_unispice.model_integrador_sap_unispice_task"></field>
             <field name="user_id" ref="base.user_root"></field>
             <field name="active">True</field>
             <field name="sap_task">True</field>
@@ -15,7 +15,7 @@ model.sync_cliente()
 
         <record model="ir.cron" id="integrador_sap_unispice.proveedores">
             <field name="name">Integreador de Proveedores</field>
-            <field name="model_id" ref="integrador_sap_unispice.model_integrador_sap_task"></field>
+            <field name="model_id" ref="integrador_sap_unispice.model_integrador_sap_unispice_task"></field>
             <field name="user_id" ref="base.user_root"></field>
             <field name="active">True</field>
             <field name="sap_task">True</field>
@@ -27,12 +27,24 @@ model.sync_vendors()
 
         <record model="ir.cron" id="integrador_sap_unispice.productos">
             <field name="name">Integreador de productos</field>
-            <field name="model_id" ref="integrador_sap_unispice.model_integrador_sap_task"></field>
+            <field name="model_id" ref="integrador_sap_unispice.model_integrador_sap_unispice_task"></field>
             <field name="user_id" ref="base.user_root"></field>
             <field name="active">True</field>
             <field name="sap_task">True</field>
             <field name="code">
 model.sync_product()
+            </field>
+        </record>
+
+
+        <record model="ir.cron" id="integrador_sap_unispice.territorios">
+            <field name="name">Integreador de Territorios</field>
+            <field name="model_id" ref="integrador_sap_unispice.model_integrador_sap_unispice_task"></field>
+            <field name="user_id" ref="base.user_root"></field>
+            <field name="active">True</field>
+            <field name="sap_task">True</field>
+            <field name="code">
+model.sync_territory()
             </field>
         </record>
 

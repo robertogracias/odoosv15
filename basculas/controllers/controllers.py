@@ -30,14 +30,14 @@ class basculas(http.Controller):
             if field_name=='url':
                 url=field_value
         if name:
-            bascula=request.env['odoosv.bascula'].sudo().search([('name','=',name)],limit=1)
+            bascula=request.env['basculas.bascula'].sudo().search([('name','=',name)],limit=1)
             if bascula:
                 if url!=bascula.url:
                     bascula.write({'url':url,'last_ping':datetime.now()})
                 else:
                     bascula.write({'last_ping':datetime.now()})
             else:
-                bascula=request.env['odoosv.bascula'].sudo().create({'name':name,'url':url,'port':'comm1','baudrate':9600,'parity':0,'parse':''})
+                bascula=request.env['basculas.bascula'].sudo().create({'name':name,'url':url,'port':'comm1','baudrate':9600,'parity':0,'parse':''})
             dic={}
             dic['name']=bascula.name
             dic['url']=bascula.url

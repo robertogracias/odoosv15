@@ -75,9 +75,7 @@
             <xpath expr="//field[@name='payment_reference']" position="attributes">
               <attribute name="groups">hmt_suplatation.hmt_vendedor_hmt</attribute> 
           </xpath>
-          <xpath expr="//field[@name='purchase_id']" position="attributes">
-            <attribute name="groups">hmt_suplatation.hmt_vendedor_hmt</attribute> 
-        </xpath>
+        
             <xpath expr="//field[@name='tipo_documento_id']" position="attributes">
               <attribute name="widget">selection</attribute> 
           </xpath>
