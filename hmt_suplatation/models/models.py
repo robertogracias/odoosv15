@@ -77,7 +77,7 @@ class hmt_vendedor(models.Model):
     caja_id=fields.Many2one(comodel_name='odoosv.caja', string="Caja",tracking=True)
     warehouse_id=fields.Many2one(comodel_name='stock.warehouse', string="Almacen",tracking=True)
     user_id=fields.Many2one(comodel_name='res.users', string="Usuario",tracking=True)
-    state=fields.Selection(selection=[('new','Nuevo'),('habilitado','Habilitado'),('deshabilitado','Deshabilitado')],default='new')
+    state=fields.Selection(selection=[('new','Nuevo'),('habilitado','Habilitado'),('deshabilitado','Deshabilitado')],default='new',store=False)
 
     def habilitar(self):
         for r in self:
@@ -88,6 +88,7 @@ class hmt_vendedor(models.Model):
                 dic['reception_steps']='one_step'
                 dic['delivery_steps']='ship_only'
                 dic['buy_to_resupply']=False
+                #dic['company_id']=self.env.user.company_id.id
                 wh=self.env['stock.warehouse'].create(dic)
                 r.warehouse_id=wh.id
             if not r.caja_id:

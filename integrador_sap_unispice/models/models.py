@@ -100,17 +100,17 @@ class integrador_task(models.Model):
 
 class integrador_partner(models.Model):
     _inherit='res.partner'
-    foreingName=fields.Char("foreingName")
-    groupCode=fields.Integer("groupCode")
+    foreingname=fields.Char("foreingName")
+    groupcode=fields.Integer("groupCode")
     phone2=fields.Char("Telefono 2")
-    contactPerson=fields.Char("contactPerson")
+    contactperson=fields.Char("contactPerson")
     empresa=fields.Integer("empresa")
     almacen=fields.Integer("almacen")
-    tipoProductor=fields.Integer("Tipo Productor")
-    coordinadorAgricola=fields.Integer("Coordinador Agricola")
-    paymentTermsCode=fields.Integer("paymentTermsCode")
-    priceListCode=fields.Integer("priceListCode")
-    creditLimit=fields.Float("creditLimit")
+    tipoproductor=fields.Integer("Tipo Productor")
+    coordinadoragricola=fields.Integer("Coordinador Agricola")
+    paymenttermscode=fields.Integer("paymentTermsCode")
+    pricelistcode=fields.Integer("priceListCode")
+    creditlimit=fields.Float("creditLimit")
     firstname=fields.Char("first name")
     lastname=fields.Char("last name")
     territory_id=fields.Many2one(comodel_name='integrador_sap_unispice.territory', string="Territorio")
@@ -240,7 +240,23 @@ class intregrador_sap_task(models.Model):
         _logger.info('Integrador de Clientes')
         var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:
-            mapa={'ref':'code','name':'name','foreingName':'foreingName','groupCode':'groupCode','vat':'taxID','phone':'phone1','phone2':'phone2','mobile':'cellular','email':'email','contactPerson':'contactPerson','empresa':'empresa','almacen':'almacen','tipoProductor':'tipoProductor','coordinadorAgricola':'coordinadorAgricola','paymentTermsCode':'paymentTermsCode','priceListCode':'priceListCode','creditLimit':'creditLimit'}
+            mapa={'ref':'code'
+                ,'name':'name'
+                ,'foreingname':'foreingName'
+                ,'groupcode':'groupCode'
+                ,'vat':'taxID'
+                ,'phone':'phone1'
+                ,'phone2':'phone2'
+                ,'mobile':'cellular'
+                ,'email':'email'
+                ,'contactperson':'contactPerson'
+                ,'empresa':'empresa'
+                ,'almacen':'almacen'
+                ,'tipoproductor':'tipoProductor'
+                ,'coordinadoragricola':'coordinadorAgricola'
+                ,'paymenttermscode':'paymentTermsCode'
+                ,'pricelistcode':'priceListCode'
+                ,'creditLimit':'creditLimit'}
             mapa_contact={'name':'name','firstname':'firstName','lastname':'lastName','function':'position','email':'email'}
             mapa_addres={'name':'addressName','street':'street','city':'city','taxcode':'taxCode','zip':'zipCode','sap_state':'state'}
             url=var.valor+'/business-partners/customers'
@@ -342,7 +358,23 @@ class intregrador_sap_task(models.Model):
         _logger.info('Integrador de Proveedores')
         var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:
-            mapa={'ref':'code','name':'name','foreingName':'foreingName','groupCode':'groupCode','vat':'taxID','phone':'phone1','phone2':'phone2','mobile':'cellular','email':'email','contactPerson':'contactPerson','empresa':'empresa','almacen':'almacen','tipoProductor':'tipoProductor','coordinadorAgricola':'coordinadorAgricola','paymentTermsCode':'paymentTermsCode','priceListCode':'priceListCode','creditLimit':'creditLimit'}
+            mapa={'ref':'code'
+                ,'name':'name'
+                ,'foreingname':'foreingName'
+                ,'groupcode':'groupCode'
+                ,'vat':'taxID'
+                ,'phone':'phone1'
+                ,'phone2':'phone2'
+                ,'mobile':'cellular'
+                ,'email':'email'
+                ,'contactperson':'contactPerson'
+                ,'empresa':'empresa'
+                ,'almacen':'almacen'
+                ,'tipoproductor':'tipoProductor'
+                ,'coordinadoragricola':'coordinadorAgricola'
+                ,'paymenttermscode':'paymentTermsCode'
+                ,'pricelistcode':'priceListCode'
+                ,'creditlimit':'creditLimit'}
             mapa_contact={'name':'name','firstname':'firstName','lastname':'lastName','function':'position','email':'email'}
             mapa_addres={'name':'addressName','street':'street','city':'city','taxcode':'taxCode','zip':'zipCode','sap_state':'state'}
             url=var.valor+'/business-partners/vendors'
