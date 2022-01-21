@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       
+
+        <menuitem id="etiquetas_menu"  name="Etiquetas" sequence="90"/>
+
+
+        <record model="ir.ui.view" id="label_form">
+            <field name="name">label_form</field>
+            <field name="model">etiquetas.label</field>
+            <field name="arch" type="xml">
+                <form string="Etiqueta">
+                    <header>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name" placeholder="Etiqueta"/>
+                            <field name="tipo"/>
+                            <field name="comment"/>
+                            <field name="contenido"  attrs="{'invisible':[('tipo','=','html')]}"/>   
+                            <field name="contenido_html" widget="html" attrs="{'invisible':[('tipo','!=','html')]}"/>                         
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="label_tree">
+            <field name="name">label_tree</field>
+            <field name="model">etiquetas.label</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" placeholder="Etiqueta"/>
+                    <field name="tipo"/>
+                    <field name="comment" />
+                    
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="label_action">
+            <field name="name">Etiquetas</field>
+            <field name="res_model">etiquetas.label</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Etiquetas</p>
+            </field>
+            
+        </record>
+
+        <!--menu del objetivo-->
+        
+        <menuitem id="label_menu" parent="etiquetas_menu" name="Etiquetas" action="label_action" sequence="40"/>
+
+      
+
+
+
+        <record model="ir.ui.view" id="labelgroup_form">
+            <field name="name">labelgroup_form</field>
+            <field name="model">etiquetas.group</field>
+            <field name="arch" type="xml">
+                <form string="Grupo">
+                    <header>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name" placeholder="Etiqueta"/>
+                            <field name="product_tmpl_id"/>
+                            <field name="comment"/>
+                            <field name="items_id">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="label_id"/>
+                                    <field name="quantity"/>
+                                </tree>
+                            </field>
+                            
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="labelgroup_tree">
+            <field name="name">labelgroup_tree</field>
+            <field name="model">etiquetas.group</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                    <field name="product_tmpl_id"/>
+                    <field name="comment" />
+                    
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="labelgroup_action">
+            <field name="name">Grupo de etiquetas</field>
+            <field name="res_model">etiquetas.group</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Grupo de etiquetas</p>
+            </field>
+            
+        </record>
+
+        <!--menu del objetivo-->
+        
+        <menuitem id="labelgroup_menu" parent="etiquetas_menu" name="Grupo de Etiquetas" action="labelgroup_action" sequence="50"/>
+
+      
+
+
+
+        <report
+        id="action_etiqueta_pdf"
+        model="etiquetas.run.item"
+        string="Etiquetas"
+        report_type="qweb-pdf"
+        name="etiquetas.report_etiqueta_html"
+        file="etiquetas.report_etiqueta_html"
+        attachment_use="False"
+        />
+
+        <report
+        id="action_etiqueta_html"
+        model="etiquetas.run.item"
+        string="Etiquetas"
+        report_type="qweb-html"
+        name="etiquetas.report_etiqueta_html"
+        file="etiquetas.report_etiqueta_html"
+        attachment_use="False"
+        />
+        
+        
+        
+        <template id="report_etiqueta_html">            
+            <t t-call="web.basic_layout">
+                <div class="page">
+                    <t t-foreach="docs" t-as="label">
+                        <t t-raw="label.content"/>
+                    </t>
+                </div>
+            </t>
+        </template>
+
+
+
+        <record model="ir.ui.view" id="labelrun_form">
+            <field name="name">labelrun_form</field>
+            <field name="model">etiquetas.run</field>
+            <field name="arch" type="xml">
+                <form string="Ejecucion">
+                    <script type="text/javascript">
+                        var selected_device;
+                        var devices = [];
+                        function setup()
+                        {
+                            BrowserPrint.getDefaultDevice('printer', function(device)
+                                    {
+                                        selected_device = device;
+                                        devices.push(device);
+                                        
+                                    }, function(error){
+                                    });
+                        }
+                        
+                        function getConfig(){
+                            BrowserPrint.getApplicationConfiguration(function(config){
+                                alert(JSON.stringify(config))
+                            }, function(error){
+                                alert(JSON.stringify(new BrowserPrint.ApplicationConfiguration()));
+                            })
+                        }
+                        function writeToSelectedPrinter(dataToWrite)
+                        {
+                          try {
+                                selected_device.send(dataToWrite, undefined, errorCallback);
+                          } catch (error) {
+                          }
+                        
+                        }
+                        var readCallback = function(readData) {
+                            if(readData === undefined || readData === null || readData === '')
+                            {
+                                
+                            }
+                            else
+                            {
+                                
+                            }
+                            
+                        }
+                        var errorCallback = function(errorMessage){
+                            
+                        }
+                        function readFromSelectedPrinter()
+                        {
+                        
+                            selected_device.read(readCallback, errorCallback);
+                            
+                        }
+                        function getDeviceCallback(deviceList)
+                        {
+                            
+                        }
+                        $( document ).ready(function() {
+                            setup();
+                        });
+                        
+                        </script>  
+                    <header>
+                        <button name="run" type="object" string="Ejecutar"></button>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            
+                            <field name="name" readonly="1"/>
+                            <field name="product_id"/>
+                            <field name="product_tmpl_id" invisible="1"/>
+                            <field name="group_id" domain="[('product_tmpl_id','=',product_tmpl_id)]"/>
+                            <field name="lot_id" domain="[('product_id','=',product_id)]"/>
+                            <field name="quantity"/>
+                            <field name="items_id">
+                                <tree >
+                                    <field name="name" readonly="1"/>
+                                    <field name="quantity"/>
+                                    <field name="content" invisible="1"/>
+                                    <field name="counter" readonly="1"/>
+                                    <field name="tipo" readonly="1"/>
+                                </tree>
+                                <form string="Ejecucion-Etiqueta">
+                                    <header>
+                                        <button name="%(action_etiqueta_pdf)d" string="Imprimir PDF" type="action" attrs="{'invisible':[('tipo','!=','html')]}" class="oe_highlight"/>
+                                        <button name="imprimirzpl" string="Imprimir ZPL" type="object" attrs="{'invisible':[('tipo','!=','zpl')]}" 
+                                            onclick="var x=document.getElementById('etiqueta').children[0].innerHTML;alert(x);writeToSelectedPrinter(x)"
+                                            class="oe_highlight"/>
+                                        
+                                    </header>
+                                    <sheet>
+                                        
+                                        <group>
+                                            <field name="name" readonly="1"/>
+                                            <field name="quantity"/>                                                                                       
+                                            <field name="counter" readonly="1"/>
+                                            <field name="tipo" readonly="1"/>                            
+                                        </group>
+                                        <group>
+                                            <div id="etiqueta" style="display:block">
+                                                <field name="content" invisible="0"/>
+                                            </div> 
+                                        </group>
+                                    </sheet>
+                                   
+                                </form>
+                            </field>
+                            
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+      
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="labelrun_tree">
+            <field name="name">labelrun_tree</field>
+            <field name="model">etiquetas.run</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                    <field name="product_id"/>
+                    <field name="group_id"/>
+                    <field name="lot_id"/>
+                    <field name="quantity"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="labelrun_action">
+            <field name="name">Ejecucion de etiquetas</field>
+            <field name="res_model">etiquetas.run</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Ejecucion de etiquetas</p>
+            </field>
+            
+        </record>
+
+        <!--menu del objetivo-->
+        
+        <menuitem id="labelrun_menu" parent="etiquetas_menu" name="Ejecucion de Etiquetas" action="labelrun_action" sequence="20"/>
+
+
+
+      
+      
+
+    </data>
+</odoo>

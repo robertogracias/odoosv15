@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="res.groups" id="label_designer">
+        <field name="name">Disenador de etiquetas</field>
+    </record>
+    <record model="res.groups" id="label_user">
+        <field name="name">Usuario de etiquetas</field>
+    </record>
+
+    <record id="sequence_etiquetas_op" model="ir.sequence">
+        <field name="name">sequence_etiquetas_op</field>
+        <field name="code">etiquetas.run</field>
+        <field name="prefix">ETI/</field>
+        <field name="padding">6</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="company_id"></field>
+    </record>
+</odoo>

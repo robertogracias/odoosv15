@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+labels,labels,model_etiquetas_label,etiquetas.label_designer,1,1,1,1
+labels1,labels1,model_etiquetas_label,etiquetas.label_user,1,0,0,0
+
+labelgrupo,labelgrupo,model_etiquetas_group,etiquetas.label_designer,1,1,1,1
+labelgrupo1,labelgrupo1,model_etiquetas_group,etiquetas.label_user,1,0,0,0
+
+labelgrupoitem,labelgrupoitem,model_etiquetas_group_item,etiquetas.label_designer,1,1,1,1
+labelsgroupitem1,labelgroupitems1,model_etiquetas_group_item,etiquetas.label_user,1,0,0,0
+
+labelrun,labelrun,model_etiquetas_run,etiquetas.label_designer,1,1,1,1
+labelrun1,labelrun1,model_etiquetas_run,etiquetas.label_user,1,1,1,1
+
+labelrunitem,labelrunitem,model_etiquetas_run_item,etiquetas.label_designer,1,1,1,1
+labelrunitem1,labelrunitem1,model_etiquetas_run_item,etiquetas.label_user,1,1,1,1

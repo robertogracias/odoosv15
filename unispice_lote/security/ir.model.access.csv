@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+unispice_lote_location,unispice_lote_location,model_unispice_lote_location,stock.group_stock_user,1,1,1,1
+unispice_lote_alternative,unispice_lote_alternative,model_unispice_lote_alternative,stock.group_stock_user,1,1,1,1
+unispice_lote_log,unispice_lote_log,model_unispice_lote_log,stock.group_stock_user,1,1,1,1

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2017-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
+<!-- See LICENSE file for full copyright and licensing details. -->
+<!-- "License URL : <https://store.webkul.com/license.html/>" -->
+<odoo>
+    <data>
+    <record model="ir.ui.view" id="unispice_company_form">
+        <field name="name">unispice_company_form</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_info']" position="after">
+                <page string="Unispice" name="unispice">
+                    <group>
+                        <field name="internal_transfer_id" />
+                    </group>
+                </page>
+            </xpath>
+        </field>
+     </record>
+
+
+     <record model="ir.ui.view" id="unispice_location_form">
+        <field name="name">unispice_location_form</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="crear_unispice_location" type="object" class="oe_stat_button" string="Crear Pantalla de Recepcion"/>
+                
+            </xpath>
+        </field>
+     </record>
+
+
+     
+    </data>
+</odoo>
