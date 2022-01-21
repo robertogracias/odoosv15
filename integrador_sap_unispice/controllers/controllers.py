@@ -138,6 +138,36 @@ class test_unispice(http.Controller):
 
         """
 
+
+    @http.route('/sales-order', auth='public')
+    def get_salesorder(self, **kw):
+        return """
+{
+        "clientCode": "", // Código de cliente/proveedor
+        "clientName": "", // Nombre de cliente/proveedor
+        "customerReferenceNo": "",  // Número de referencia de deudor
+        "documentDate": "", // Fecha de contabilización
+        "serie": 6, // Serie
+        "documentNum": 1, // Número de documento
+        "comments": null, // Comentarios
+        "documentTotal": 0.570000, // Total (doc.)
+        "shipTo": "", // Destino.
+        "billTo": "", // Destinatario de factura.
+        "rows": [
+            {
+                "itemCode": "", // Número de artículo
+                "quantity": 1.000000, // Cantidad
+                "price": 0.500000, // Precio por unidad
+                "discountPrecentage": 0.000000, // Descuento % por linea
+                "taxCode": "", // Indicador de impuestos
+                "grossPrice": 0.565000, // Precio Bruto
+                "warehouse": "" // Código de almacén
+            }
+        ]
+    }
+
+        """
+
     @http.route('/items', auth='public')
     def get_sucursales(self, **kw):
         return """

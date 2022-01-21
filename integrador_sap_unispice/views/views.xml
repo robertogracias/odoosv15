@@ -225,16 +225,16 @@
                 <xpath expr="//page[@name='contact_addresses']" position="after">
                     <page string="Unispice">
                         <group>
-                                <field name="foreingName"/>
-                                <field name="groupCode"/>
-                                <field name="contactPerson"/>
+                                <field name="foreingname"/>
+                                <field name="groupcode"/>
+                                <field name="contactperson"/>
                                 <field name="empresa"/>
                                 <field name="almacen"/>
-                                <field name="tipoProductor"/>
-                                <field name="coordinadorAgricola"/>
-                                <field name="paymentTermsCode"/>
-                                <field name="priceListCode"/>
-                                <field name="creditLimit"/>
+                                <field name="tipoproductor"/>
+                                <field name="coordinadoragricola"/>
+                                <field name="paymenttermscode"/>
+                                <field name="pricelistcode"/>
+                                <field name="creditlimit"/>
                                 <field name="firstname"/>
                                 <field name="lastname"/>
                                 <field name="territory_id"/>

@@ -59,7 +59,10 @@ class integrador_prodcut(models.Model):
     grupopresentacion=fields.Char("grupoPresentacion")
     grupotipoempaque=fields.Char("grupoTipoEmpaque")
     cantidadporposicion=fields.Float("Cantidad por posición")
-
+    subgrupo1=fields.Char("Sub grupo 1")
+    subgrupo2=fields.Char("Sub grupo 2")
+    subgrupo3=fields.Char("Sub grupo 3")
+    formatoliquidacion=fields.Char("Formato de liquidacion")
 
 
 
@@ -116,6 +119,8 @@ class integrador_partner(models.Model):
     territory_id=fields.Many2one(comodel_name='integrador_sap_unispice.territory', string="Territorio")
     taxcode=fields.Char("taxCode")
     sap_state=fields.Char("state")
+    grupoproducto=fields.Char("Grupo Productor")
+    codigocosto=fields.Char("Codigo de costo")
 
 class integrador_property(models.Model):
     _name='integrador_sap_unispice.property'
@@ -165,11 +170,12 @@ class integrador_property(models.Model):
 #    procesado=fields.Boolean("Procesado")
     
 
-#class integrador_orderline(models.Model):
-#    _inherit='sale.order.line'
-#    user_id = fields.Many2one('res.users', required=False,string='Vendedor')
-#    pound_price=fields.Float("Precio por libra")
-#    
+class integrador_orderline(models.Model):
+    _inherit='sale.order.line'
+    taxcode=fields.Char("TAX CODE")
+    grossprice=fields.Float("Gross Price")
+    warehouse=fields.Char("Codigo del almacen")
+    
 #    @api.onchange('price_unit','product_id')
 #    def set_pound_price(self):
 #        for r in self:
@@ -177,13 +183,15 @@ class integrador_property(models.Model):
 #                if r.product_id.product_tmpl_id.pounds:
 #                    r.pound_price=r.price_unit/r.product_id.product_tmpl_id.pounds
 
-#class integrador_order(models.Model):
-#    _inherit='sale.order'
-#    code=fields.Integer("Codigo")
-#    ruta_id = fields.Many2one('integrador_sap.ruta', required=False,string='Ruta')
-#    sucursal_id = fields.Many2one('integrador_sap.sucursal', required=False,string='Ruta')
-#    gestion=fields.Many2one('integrador_sap.gestion', required=False,string='gestion')
-#    sap_order=fields.Char("Orden en SAP")
+class integrador_order(models.Model):
+    _inherit='sale.order'
+    code=fields.Integer("Codigo")
+    customerreferenceno=fields.Char("Número de referencia de deudor")
+    serie=fields.Char("Serie")
+    documentnum=fields.Char("Numero de documento")
+    shipto=fields.Char("Destino")
+    billto=fields.Char("Destinatario de factura")
+    sap_order=fields.Char("Orden en SAP")
     
 #    def sync_sap(self):
 #        _logger.info('Integrador de ordenes')
@@ -235,6 +243,9 @@ class intregrador_sap_task(models.Model):
     _name='integrador_sap_unispice.task'
     _description='Tarea de integracion con sap'
     name=fields.Char('Tarea')
+
+
+                
     
     def sync_cliente(self):
         _logger.info('Integrador de Clientes')
@@ -256,7 +267,7 @@ class intregrador_sap_task(models.Model):
                 ,'coordinadoragricola':'coordinadorAgricola'
                 ,'paymenttermscode':'paymentTermsCode'
                 ,'pricelistcode':'priceListCode'
-                ,'creditLimit':'creditLimit'}
+                ,'creditlimit':'creditLimit'}
             mapa_contact={'name':'name','firstname':'firstName','lastname':'lastName','function':'position','email':'email'}
             mapa_addres={'name':'addressName','street':'street','city':'city','taxcode':'taxCode','zip':'zipCode','sap_state':'state'}
             url=var.valor+'/business-partners/customers'
