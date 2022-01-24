@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="nic_multicurrency_form" model="ir.ui.view">
+            <field name="name">nic_multicurrency_form</field>
+            <field name="model">res.currency.rate</field>
+            <field name="inherit_id" ref="base.view_currency_rate_tree"/>
+            <field name="arch" type="xml">
+                 <xpath expr="//field[@name='rate']" position="before">
+                    <field name="inverse_rate" digits="[12,12]"/>
+                </xpath>
+            </field>
+        </record>
+
+        
+    </data>
+</odoo>

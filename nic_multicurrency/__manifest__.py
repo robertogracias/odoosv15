@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "integrador_sap_unispice",
+    'name': "nic_multicurrency",
 
     'summary': """
-        Permite realizar una intregracion entre SAP y ODOO""",
+       Agregar las modificaciones para el manejo de las varias monedas""",
 
     'description': """
-        Pemite mediante la invocacion de servicios REST la intregración entre ODOO y SAP
+        Agregar las modificaciones para el manejo de las varias monedas
     """,
 
     'author': "Exelity",
@@ -19,7 +19,7 @@
     'version': '14.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['sale_management','base_automation'],
+    'depends': ['base','account'],
 
     # always loaded
     'data': [
