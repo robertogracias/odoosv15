@@ -25,15 +25,19 @@ class integrador_territory(models.Model):
 
 class integrador_prodcut(models.Model):
     _inherit='product.template'
-    foreignname=fields.Char("foreignName")
+    foreignname=fields.Char("Descripción en ingles")
     itemsgroup=fields.Integer("itemsGroup")
     uomgroup=fields.Integer("uoMGroup")
+    subgrupoventa1=fields.Char("Sub Grupo de Venta")
     itemsperpurchaseunit=fields.Float("Items por unidad de compra")
-    length=fields.Float("Longitud")
-    width=fields.Float("Ancho")
-    height=fields.Float("Alto")
-    volume=fields.Float("Volumen")
-    weight=fields.Float("Peso")
+    uomembalaje=fields.Char("Unidad de Embalaje")
+    quantityperpackage=fields.Float("Items por paquete")
+    length=fields.Float("Slength1")
+    width=fields.Float("SWidth1")
+    height=fields.Float("SHeight1")
+    volume=fields.Float("Volumen Cm3")
+    uomvolumen=fields.Char("Unidad de volumen")
+    weight=fields.Float("SWeight1")
     planingmethod=fields.Char("planingMethod")
     procurementmethod=fields.Char("procurementmethod")
     orderinterval=fields.Char("orderInterval")
@@ -41,6 +45,9 @@ class integrador_prodcut(models.Model):
     minimumorderquantity=fields.Float("Cantidad minima de orden")
     leadtime=fields.Integer("leadTime")
     tolerancedays=fields.Integer("Dias de tolerancia")
+    codigosap=fields.Char("Codigo SAP")
+    subgrupoventa2=fields.Char("Sub Grupo de Venta 2")
+    subgrupoventa3=fields.Char("Sub Grupo de Venta 3")
     pesoreferencia=fields.Float("Peso de referencia")
     pesoreferenciaminimo=fields.Float("Peso de referencia mínimo")
     pesoreferenciamaximo=fields.Float("Peso de referencia máximo")
@@ -109,8 +116,8 @@ class integrador_partner(models.Model):
     contactperson=fields.Char("contactPerson")
     empresa=fields.Integer("empresa")
     almacen=fields.Integer("almacen")
-    tipoproductor=fields.Integer("Tipo Productor")
-    coordinadoragricola=fields.Integer("Coordinador Agricola")
+    tipoproductor=fields.Char("Tipo Productor")
+    coordinadoragricola=fields.Char("Coordinador Agricola")
     paymenttermscode=fields.Integer("paymentTermsCode")
     pricelistcode=fields.Integer("priceListCode")
     creditlimit=fields.Float("creditLimit")
@@ -121,6 +128,9 @@ class integrador_partner(models.Model):
     sap_state=fields.Char("state")
     grupoproducto=fields.Char("Grupo Productor")
     codigocosto=fields.Char("Codigo de costo")
+
+    bptype=fields.Char("bpType")
+    currency=fields.Char("currency")
 
 class integrador_property(models.Model):
     _name='integrador_sap_unispice.property'
@@ -254,13 +264,17 @@ class intregrador_sap_task(models.Model):
             mapa={'ref':'code'
                 ,'name':'name'
                 ,'foreingname':'foreingName'
+                ,'bptype':'bpType'
                 ,'groupcode':'groupCode'
+                ,'currency':'currency'
                 ,'vat':'taxID'
                 ,'phone':'phone1'
                 ,'phone2':'phone2'
                 ,'mobile':'cellular'
                 ,'email':'email'
                 ,'contactperson':'contactPerson'
+#                ,'territory':'territory'
+#                ,'codigocosto':'codigoCosto'
                 ,'empresa':'empresa'
                 ,'almacen':'almacen'
                 ,'tipoproductor':'tipoProductor'
@@ -268,8 +282,17 @@ class intregrador_sap_task(models.Model):
                 ,'paymenttermscode':'paymentTermsCode'
                 ,'pricelistcode':'priceListCode'
                 ,'creditlimit':'creditLimit'}
-            mapa_contact={'name':'name','firstname':'firstName','lastname':'lastName','function':'position','email':'email'}
-            mapa_addres={'name':'addressName','street':'street','city':'city','taxcode':'taxCode','zip':'zipCode','sap_state':'state'}
+            mapa_contact={'name':'name'
+                ,'firstname':'firstName'
+                ,'lastname':'lastName'
+                ,'function':'position'
+                ,'email':'email'}
+            mapa_addres={'name':'addressName'
+                ,'street':'street'
+                ,'city':'city'
+                ,'taxcode':'taxCode'
+                ,'zip':'zipCode'
+                ,'sap_state':'state'}
             url=var.valor+'/business-partners/customers'
             response = requests.get(url)
             resultado=json.loads(response.text)            
@@ -372,13 +395,17 @@ class intregrador_sap_task(models.Model):
             mapa={'ref':'code'
                 ,'name':'name'
                 ,'foreingname':'foreingName'
+                ,'bptype':'bpType'
                 ,'groupcode':'groupCode'
+                ,'currency':'currency'
                 ,'vat':'taxID'
                 ,'phone':'phone1'
                 ,'phone2':'phone2'
                 ,'mobile':'cellular'
                 ,'email':'email'
                 ,'contactperson':'contactPerson'
+#                ,'territory':'territory'
+                ,'codigocosto':'codigoCosto'
                 ,'empresa':'empresa'
                 ,'almacen':'almacen'
                 ,'tipoproductor':'tipoProductor'
@@ -386,8 +413,17 @@ class intregrador_sap_task(models.Model):
                 ,'paymenttermscode':'paymentTermsCode'
                 ,'pricelistcode':'priceListCode'
                 ,'creditlimit':'creditLimit'}
-            mapa_contact={'name':'name','firstname':'firstName','lastname':'lastName','function':'position','email':'email'}
-            mapa_addres={'name':'addressName','street':'street','city':'city','taxcode':'taxCode','zip':'zipCode','sap_state':'state'}
+            mapa_contact={'name':'name'
+                ,'firstname':'firstName'
+                ,'lastname':'lastName'
+                ,'function':'position'
+                ,'email':'email'}
+            mapa_addres={'name':'addressName'
+                ,'street':'street'
+                ,'city':'city'
+                ,'taxcode':'taxCode'
+                ,'zip':'zipCode'
+                ,'sap_state':'state'}            
             url=var.valor+'/business-partners/vendors'
             response = requests.get(url)
             resultado=json.loads(response.text)            
@@ -489,16 +525,20 @@ class intregrador_sap_task(models.Model):
         var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:
             url=var.valor+'/items'
-            mapa={'default_code':'code'
+            mapa={'default_code':'codigoOdoo'
                 ,'name':'name'
                 ,'foreignname':'foreignName'
                 ,'itemsgroup':'itemsGroup'
                 ,'uomgroup':'uoMGroup'
+                ,'subgrupoventa1':'subGrupoVenta1'
                 ,'itemsperpurchaseunit':'itemsPerPurchaseUnit'
+                ,'uomembalaje':'uoMEmbalaje'
+                ,'quantityperpackage':'quantityPerPackage'
                 ,'length':'length'
                 ,'width':'width'
                 ,'height':'height'
                 ,'volume':'volume'
+                ,'uomvolumen':'uoMVolumen'
                 ,'weight':'weight'
                 ,'planingmethod':'planingMethod'
                 ,'procurementmethod':'procurementMethod'
@@ -507,6 +547,9 @@ class intregrador_sap_task(models.Model):
                 ,'minimumorderquantity':'minimumOrderQuantity'
                 ,'leadtime':'leadTime'
                 ,'tolerancedays':'toleranceDays'
+                ,'codigosap':'code'
+                ,'subgrupoventa2':'subGrupoVenta2'
+                ,'subgrupoventa3':'subGrupoVenta3'
                 ,'pesoreferencia':'pesoReferencia'
                 ,'pesoreferenciaminimo':'pesoReferenciaMinimo'
                 ,'pesoreferenciamaximo':'pesoReferenciaMaximo'

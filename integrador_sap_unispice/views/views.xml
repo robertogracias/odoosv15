@@ -161,23 +161,28 @@
                         <group>
                             <group string="Datos Generales">
                                 <field name="foreignname"/>
-                                <field name="itemsgroup"/>
-                                <field name="uomgroup"/>
+                                <!--field name="itemsgroup"/-->
+                                <!--field name="uomgroup"/-->
+                                <field name="subgrupoventa1"/>
+                                <field name="subgrupoventa2"/>
+                                <field name="subgrupoventa3"/>
                             </group>
                             <group string="Pedido">
                                 <field name="itemsperpurchaseunit"/>
-                                <field name="planingmethod"/>
-                                <field name="procurementmethod"/>
-                                <field name="orderinterval"/>
+                                <!--field name="planingmethod"/-->
+                                <!--field name="procurementmethod"/-->
+                                <!--field name="orderinterval"/-->
                                 <field name="ordermultiple"/>
                                 <field name="minimumorderquantity"/>
                                 <field name="leadtime"/>
                                 <field name="tolerancedays"/>
+                                
                             </group>
                             <group string="Dimensiones">
                                 <field name="length"/>
                                 <field name="width"/>
                                 <field name="height"/>
+                                <field name="uomvolumen"/>
                                 <field name="volume"/>
                                 <field name="weight"/>
                             </group>
@@ -195,6 +200,8 @@
                                 <field name="camamaritimo"/>
                                 <field name="filasmaritimo"/>
                                 <field name="cajaspalletmaritimo"/>
+                                <field name="uomembalaje"/>
+                                <field name="quantityperpackage"/>
                             </group>
                             <group string="Otros">
                                 <field name="grupomp"/>
@@ -226,7 +233,9 @@
                     <page string="Unispice">
                         <group>
                                 <field name="foreingname"/>
+                                <field name="bptype"/>
                                 <field name="groupcode"/>
+                                <field name="currency"/>
                                 <field name="contactperson"/>
                                 <field name="empresa"/>
                                 <field name="almacen"/>
