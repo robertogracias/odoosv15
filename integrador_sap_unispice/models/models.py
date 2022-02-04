@@ -126,7 +126,7 @@ class integrador_partner(models.Model):
     territory_id=fields.Many2one(comodel_name='integrador_sap_unispice.territory', string="Territorio")
     taxcode=fields.Char("taxCode")
     sap_state=fields.Char("state")
-    grupoproducto=fields.Char("Grupo Productor")
+    grupoproductor=fields.Char("Grupo Productor")
     codigocosto=fields.Char("Codigo de costo")
 
     bptype=fields.Char("bpType")
@@ -409,6 +409,7 @@ class intregrador_sap_task(models.Model):
                 ,'empresa':'empresa'
                 ,'almacen':'almacen'
                 ,'tipoproductor':'tipoProductor'
+                ,'grupoproductor':'grupoProductor'
                 ,'coordinadoragricola':'coordinadorAgricola'
                 ,'paymenttermscode':'paymentTermsCode'
                 ,'pricelistcode':'priceListCode'
