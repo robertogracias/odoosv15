@@ -153,6 +153,64 @@ class caja_chica(models.Model):
     sv_fecha_apertura = fields.Date("Fecha de apertura")
     sv_fecha_cierre = fields.Date("Fecha de cierre")
     state = fields.Selection([('draft','Borrador'), ('open','Abierto'),('closed','Cerrado')],default='draft')
+    pagos_por_liquidacion=fields.Boolean("Pagos por liquidacion",related='journal_id.pagos_por_liquidacion')
+
+    #pagos para cerrar caja
+    payment_id=fields.Many2one('account.payment',string='Pago asociado',help='Pago asociado')
+    invoice_ids=fields.Many2many('account.move',string="Facturas")
+    account_dif_id=fields.Many2one('account.account',string='Cuenta de diferencia',help='Cuenta de diferencia')
+    move_id=fields.Many2one('account.move',string="Partida de Cierre")
+
+
+    def cerrar_por_liquidacion(self):
+        for r in self:
+            partida={}
+            partida['name']='/'
+            partida['ref']='Liquidacion de caja'
+            journal_id=r.journal_id.id
+            partida['journal_id']=journal_id
+            partida['company_id']=self.env.user.company_id.id
+            partida['move_type']='entry'
+            lines=[]
+            total=r.payment_id.amount
+            lineap={}
+            lineap['name']=r.name
+            if r.payment_id:
+                lineap['partner_id']=r.payment_id.partner_id.id
+            lineap['account_id']=r.payment_id.destination_account_id.id
+            lineap['debit']=0
+            lineap['credit']=r.payment_id.amount
+            linea1=(0,0,lineap)
+            lines.append(linea1)
+            for f in r.invoice_ids:
+                linea={}
+                linea['name']=f.tipo_documento_id.name+' '+f.doc_numero
+                if f.partner_id:
+                    linea['partner_id']=f.partner_id.id                
+                linea['account_id']=f.partner_id.property_account_payable_id.id
+                linea['debit']=f.amount_residual
+                linea['credit']=0.0        
+                linea2=(0,0,linea)
+                lines.append(linea2)
+                total=total-f.amount_residual
+            if total>0:
+                linead={}
+                linead['name']=r.name+ " Remanente"
+                linead['account_id']=r.account_dif_id.id
+                linead['debit']=total
+                linead['credit']=0.0
+                linea3=(0,0,linead)
+                lines.append(linea3)
+            partida['line_ids']=lines
+            move=self.env['account.move'].create(partida)
+            move.action_post()
+            r.move_id=move.id
+            r.state='closed'
+            for f in r.invoice_ids:
+                namef=f.tipo_documento_id.name+' '+f.doc_numero
+                for l in move.line_ids:                    
+                    if namef==l.name:
+                        f.js_assign_outstanding_line(l.id)
 
     def open_cc(self):
         for cc in self:
@@ -244,7 +302,6 @@ class caja_chica_factura(models.Model):
     """
     _inherit='account.move'
     vale_id=fields.Many2one(comodel_name='odoosv.vale_caja', string=' Vale Caja chica')
-    
 
 
 
@@ -290,6 +347,7 @@ class caja_chica_journal(models.Model):
     """
     _inherit='account.journal'
     sv_caja_chica = fields.Boolean("Caja chica")
+    pagos_por_liquidacion=fields.Boolean("Pagos por liquidacion")
     usuario_ids=fields.One2many(comodel_name='odoosv.usuario_caja',inverse_name='journal_id', string='Pagos')
     usuarios_permitido_ids=fields.Many2many('res.users', 'journal_user_rel', 'journal_id', 'user_id', 'Usuarios')
     utiliza_vales=fields.Boolean(string='Utiliza vales')

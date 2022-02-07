@@ -249,6 +249,62 @@ class integrador_order(models.Model):
 #                    raise ValidationError('No se pudo crear la orden en SAP:'+respuesta['message'])
 
 
+class integrador_purchase_order(models.Model):
+    _inherit='purchase.order'
+    code=fields.Integer("Codigo")
+    customerreferenceno=fields.Char("Número de referencia de deudor")
+    serie=fields.Char("Serie")
+    documentnum=fields.Char("Numero de documento")
+#    shipto=fields.Char("Destino")
+#    billto=fields.Char("Destinatario de factura")
+    sap_order=fields.Char("Orden en SAP")
+    
+#    def sync_sap(self):
+#        _logger.info('Integrador de ordenes')
+#        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+#        if var:
+#            for r in self:
+#                dic={}
+#                dic['clientCode']=r.partner_id.ref
+#                dic['clientName']=r.partner_id.name
+#                dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
+#                dic['documentDueDate']=r.validity_date.strftime("%Y-%m-%d")
+#                dic['salesPersonCode']=r.user_id.code
+#                dic['comments']=r.note
+#                dic['nrc']=r.partner_id.nrc
+#                dic['nit']=r.partner_id.nit
+#                dic['giro']=r.partner_id.giro
+#                dic['fechaDocumento']=r.date_order.strftime("%Y-%m-%d")
+#                dic['razonSocial']=r.partner_id.razon_social
+#                dic['direccion']=r.partner_shipping_id.street
+#                dic['sucursal']=r.sucursal_id.codigo
+#                dic['ruta']=r.ruta_id.codigo
+#                dic['responsable']=r.ruta_id.codigo
+#                dic['gestion']=r.gestion.codigo
+#                lines=[]
+#                for l in r.order_line:
+#                    line={}
+#                    line['itemCode']=l.product_id.default_code
+#                    line['quantity']=l.product_uom_qty
+#                    for t in l.tax_id:
+#                        line['taxCode']=t.name
+#                    line['price']=l.price_unit
+#                    line['discountPercent']=l.discount
+#                    line['salesPersonCode']=r.user_id.code
+#                    line['text']=l.name
+#                    lines.append(line)
+#                dic['orderDetail']=lines
+#                encabezado = {"content-type": "application/json"}
+#                json_datos = json.dumps(dic)
+#                result = requests.post(var.valor+'/sales-order',data = json_datos, headers=encabezado)
+#                _logger.info('RESULTADO:'+result.text)
+#                respuesta=json.loads(result.text)
+#                if 'order' in respuesta:
+#                    r.sap_order=respuesta['order']
+#                else:
+#                    raise ValidationError('No se pudo crear la orden en SAP:'+respuesta['message'])
+
+
 class intregrador_sap_task(models.Model):
     _name='integrador_sap_unispice.task'
     _description='Tarea de integracion con sap'
