@@ -19,7 +19,7 @@
     'version': '14.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','stock'],
+    'depends': ['base','stock','etiquetas','basculas'],
 
     # always loaded
     'data': [

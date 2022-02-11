@@ -153,3 +153,16 @@ class unispice_lot_log(models.Model):
     name=fields.Char('Movimiento')
     picking_id=fields.Many2one(comodel_name='stock.picking', string='picking')
     unispice_location_id=fields.Many2one(comodel_name='unispice_lote.location', string='Ubicacion')
+
+
+class unispice_lote_canasta(models.Model):
+    _name='unispice_lote.canasta'
+    _description='Tipo de canasta'
+    name=fields.Char('Tipo de canasta')
+    tara=fields.Float('Tara de la canasta')
+
+class unispice_lote_pallet(models.Model):
+    _name='unispice_lote.pallet'
+    _description='Tipo de Pallet'
+    name=fields.Char('Tipo de pallet')
+    tara=fields.Float('Tara del pallet')
