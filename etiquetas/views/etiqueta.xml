@@ -288,6 +288,95 @@
         </record>
 
 
+        <record model="ir.ui.view" id="labelrun_item_form">
+            <field name="name">labelrun_item_form</field>
+            <field name="model">etiquetas.run.item</field>
+            <field name="arch" type="xml">
+                <form string="Etiqueta">
+                    <script type="text/javascript">
+                        var selected_device;
+                        var devices = [];
+                        function setup()
+                        {
+                            BrowserPrint.getDefaultDevice('printer', function(device)
+                                    {
+                                        selected_device = device;
+                                        devices.push(device);
+                                        
+                                    }, function(error){
+                                    });
+                        }
+                        
+                        function getConfig(){
+                            BrowserPrint.getApplicationConfiguration(function(config){
+                                alert(JSON.stringify(config))
+                            }, function(error){
+                                alert(JSON.stringify(new BrowserPrint.ApplicationConfiguration()));
+                            })
+                        }
+                        function writeToSelectedPrinter(dataToWrite)
+                        {
+                          try {
+                                selected_device.send(dataToWrite, undefined, errorCallback);
+                          } catch (error) {
+                          }
+                        
+                        }
+                        var readCallback = function(readData) {
+                            if(readData === undefined || readData === null || readData === '')
+                            {
+                                
+                            }
+                            else
+                            {
+                                
+                            }
+                            
+                        }
+                        var errorCallback = function(errorMessage){
+                            
+                        }
+                        function readFromSelectedPrinter()
+                        {
+                        
+                            selected_device.read(readCallback, errorCallback);
+                            
+                        }
+                        function getDeviceCallback(deviceList)
+                        {
+                            
+                        }
+                        $( document ).ready(function() {
+                            setup();
+                        });
+                        
+                        </script>  
+                    <header>
+                        <button name="%(action_etiqueta_pdf)d" string="Imprimir PDF" type="action" attrs="{'invisible':[('tipo','!=','html')]}" class="oe_highlight"/>
+                        <button name="imprimirzpl" string="Imprimir ZPL" type="object" attrs="{'invisible':[('tipo','!=','zpl')]}" 
+                            onclick="var x=document.getElementById('etiqueta').children[0].innerHTML;alert(x);writeToSelectedPrinter(x)"
+                            class="oe_highlight"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="quantity" readonly="1"/>                                                                                       
+                            <field name="counter" readonly="1"/>
+                            <field name="tipo" readonly="1"/>                            
+                        </group>
+                        <group>
+                            <div id="etiqueta" style="display:none">
+                                <field name="content" invisible="0"/>
+                            </div> 
+                        </group>
+                       
+                    </sheet>
+                    
+                </form>
+            </field>
+        </record>
+
+
       
 
         <!--tree del objetivo-->

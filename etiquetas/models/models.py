@@ -95,7 +95,7 @@ class etiqueta_corrida(models.Model):
         if self.state!='nuevo':
             raise ValidationError('La ejecucion ya fue ejecutada')
         for l in self.group_id.items_id:
-            x=0
+            x=1
             y=l.quantity
             i=0
             texto=''
@@ -125,6 +125,7 @@ class etiqueta_corrida_item(models.Model):
     counter=fields.Integer("Cantidad de impresiones")
     run_id=fields.Many2one(comodel_name='etiquetas.run', string="Ejecucion")
     tipo=fields.Selection(selection=[('zpl','zpl'),('dml','dml'),('html','html'),('otro','otro')],defautl='zpl')
+    label_id=fields.Many2one(comodel_name='etiquetas.label', string="Etiqueta")
     
     
     def imprimir(self):
