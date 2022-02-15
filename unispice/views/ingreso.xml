@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       
+
+       
+
+        <record model="ir.ui.view" id="unispice_ingreso_form">
+            <field name="name">unispice_ingreso_form</field>
+            <field name="model">unispice.recepcion</field>
+            <field name="arch" type="xml">
+                <form string="Ingreso">
+                    <header>
+                        <button name="confirmar" type="object" states="draft" string="Confirmar" class="oe_highlight"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <h1>
+                           
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="name" readonly="0"/>
+                                <field name="proveedor_id"/>
+                                <field name="producto_id"/>
+                                <field name="etapa"/>
+                                <field name="viaje_id"/>
+                                <field name="location_id"/>
+                                <field name="label_id"/>
+                            </group>
+                            <group>
+                                <field name="fecha_ingreso"/>
+                                <field name="fecha_cosecha"/>
+                                <field name="peso_campo"/>
+                                <field name="canasta_id"/>
+                                <field name="pallet_id"/>
+                            </group>
+                            <label for="notas"/>
+                            <field name="notas"/>                           
+                            <group>
+                                <field name="bascula_id"/>
+                            </group>
+                            <group>
+                                <button name="agregar_linea" type="object" string="Agregar Pallet"/>
+                            </group>
+                        </group>
+                        <field name="detalle_ids">
+                            <tree editable="top">
+                                <field name="name"/>
+                                <field name="temperatura"/>
+                                <field name="canastas" sum="Total"/>
+                                <field name="peso_bruto"  sum="Total"/>
+                                <field name="tara_canasta"/>
+                                <field name="tara_pallet"/>
+                                <field name="peso_neto"  sum="Total"/>
+                                <field name="picking_id" readonly="1"/>
+                                <field name="etiqueta_id" invisible="1"/>
+                                <button name="imprimir" type="object" string="Imprimir" attrs="{'invisible':[('etiqueta_id','=',False)]}"/>
+                            </tree>
+                        </field>
+                        
+                    </sheet>
+                    
+                </form>
+            </field>
+        </record>
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="unispice_ingreso_tree">
+            <field name="name">unispice_ingreso_tree</field>
+            <field name="model">unispice.recepcion</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                    <field name="proveedor_id" />
+                    <field name="producto_id" />
+                    <field name="fecha_ingreso" />
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="unispice_ingreso_action">
+            <field name="name">Ingreso</field>
+            <field name="res_model">unispice.recepcion</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Ingresos</p>
+            </field>
+            
+        </record>
+
+        <!--menu del objetivo-->
+        
+        <menuitem id="ingreso_menu" parent="stock.menu_stock_warehouse_mgmt" name="Ingreso Materia Prima" action="unispice_ingreso_action" sequence="50"/>
+
+      
+
+      
+      
+
+    </data>
+</odoo>

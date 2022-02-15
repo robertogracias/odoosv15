@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       
+
+       
+
+        <record model="ir.ui.view" id="unispicelote_form">
+            <field name="name">unispicelote_form</field>
+            <field name="model">unispice.location</field>
+            <field name="arch" type="xml">
+                <form string="Traslados">
+                    <header>
+                    </header>
+                    <sheet>
+                        <group style="display:none;">
+                            <field name="_barcode_scanned" widget="barcode_handler"/>
+                        </group>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <separator/>
+                        <group>
+                            <field name="id" invisible="1"/>                            
+                            <field name="error" invisible="1"/>
+                            <field name="cantidad" invisible="1"/>
+                            <field name="multiples_alternatives" invisible="1"/>
+                            <field name="alternative_id" domain="[('unispice_location_id','=',id)]"/>                            
+                        </group>
+                        <field name="texto" widget="html"/>
+                        <p/>
+                        <p/>
+                        <p/>
+                        <p/>
+                        <p/>
+                        <p/>
+                        <separator/>
+                            <button name="procesar" type="object" string="PROCESAR" attrs="{'invisile':[('error','=',False)]}" class="oe_highlight" stryle=""/>
+                        <separator/>
+                        <h2 style="color:Red !important" attrs="{'invisible':[('error','=',False)]}">
+                            <field name="mensaje" readonly="1"/>
+                        </h2>
+                         <h2 style="color:Blue  !important" attrs="{'invisible':[('error','=',True)]}">
+                            <field name="mensaje" readonly="1"/>
+                        </h2>
+                    </sheet>
+                    
+                </form>
+            </field>
+        </record>
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="unispicelote_tree">
+            <field name="name">unispicelote_tree</field>
+            <field name="model">unispice.location</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" placeholder="Etiqueta"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="unispicelote_action">
+            <field name="name">Traslados</field>
+            <field name="res_model">unispice.location</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Traslados</p>
+            </field>
+            
+        </record>
+
+        <!--menu del objetivo-->
+        
+        <menuitem id="traslado_menu" parent="stock.menu_stock_warehouse_mgmt" name="Traslados de lote" action="unispicelote_action" sequence="40"/>
+
+      
+
+      
+      
+
+    </data>
+</odoo>
