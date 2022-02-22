@@ -26,6 +26,7 @@
         'views/views.xml',
         'views/traslado.xml',
         'views/ingreso.xml',
+        'views/transformacion.xml',
         'security/ir.model.access.csv',
     ],
     # only loaded in demonstration mode

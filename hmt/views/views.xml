@@ -20,9 +20,8 @@
                         </field>
                     </page>
                     <page string="Especificacion Tecnica">
-                        <field name="especificacion" widget="html">
-                           
-                        </field>
+                        <field name="ficha" widget="pdf_viewer"/>
+                       
                     </page>
                 </xpath>
             </field>
@@ -104,6 +103,10 @@
                         <label for="entrega" string="Tiempos de entrega"/>
                         <field name="entrega" widget="html"  nolabel="1"/>
                     </group>
+                    </page>
+                    <page string="Fichas">
+                        <button name="crear_fichas" type="object" string="Crear fichas"/>
+                        <field name="fichas" widget="pdf_viewer"/>
                     </page>
                 </xpath>
             </field>

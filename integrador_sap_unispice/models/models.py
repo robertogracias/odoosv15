@@ -388,7 +388,7 @@ class intregrador_sap_task(models.Model):
                 #Contactos
                 contactos=r['contacts']
                 for c in contactos:
-                    contacto=self.env['res.partner'].search([('type','=','contact'),('name','=',c['name']),('parent_id','=',partner.id)],limit=1)
+                    contacto=self.env['res.partner'].search([('type','=','other'),('name','=',c['name']),('parent_id','=',partner.id)],limit=1)
                     if contacto:
                         #contacto_dic=json.dumps(contacto)
                         diccontacto={}
@@ -405,7 +405,7 @@ class intregrador_sap_task(models.Model):
                         for odookey,sapkey in mapa_contact.items():
                             if c[sapkey]!='null':
                                 diccontacto[odookey]=c[sapkey]
-                        diccontacto['type']='contact'
+                        diccontacto['type']='other'
                         diccontacto['parent_id']=partner.id           
                         contacto=self.env['res.partner'].create(diccontacto)
                 
@@ -520,7 +520,7 @@ class intregrador_sap_task(models.Model):
                 #Contactos
                 contactos=r['contacts']
                 for c in contactos:
-                    contacto=self.env['res.partner'].search([('type','=','contact'),('name','=',c['name']),('parent_id','=',partner.id)],limit=1)
+                    contacto=self.env['res.partner'].search([('type','=','other'),('name','=',c['name']),('parent_id','=',partner.id)],limit=1)
                     if contacto:
                         #contacto_dic=json.dumps(contacto)
                         diccontacto={}
@@ -537,7 +537,7 @@ class intregrador_sap_task(models.Model):
                         for odookey,sapkey in mapa_contact.items():
                             if c[sapkey]!='null':
                                 diccontacto[odookey]=c[sapkey]
-                        diccontacto['type']='contact'
+                        diccontacto['type']='other'
                         diccontacto['parent_id']=partner.id           
                         contacto=self.env['res.partner'].create(diccontacto)
                 

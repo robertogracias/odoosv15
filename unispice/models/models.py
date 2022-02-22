@@ -20,6 +20,8 @@ class unispice_company(models.Model):
     _inherit='res.company'
     internal_transfer_id=fields.Many2one(comodel_name='stock.picking.type', string='Transferencia interna')
     inbound_transfer_id=fields.Many2one(comodel_name='stock.picking.type', string='Transferencia de ingreso')
+    transform_transfer_id=fields.Many2one(comodel_name='stock.picking.type', string='Transferencia de Transformacion')
+    tranformacion_seq_id=fields.Many2one(comodel_name='ir.sequence', string='Numeracion')
 
 class unispice_location(models.Model):
     _inherit='stock.location'
@@ -163,9 +165,20 @@ class unispice_product(models.Model):
     is_pallet=fields.Boolean('Es Pallet')
     tara=fields.Float('Tara')
 
+    tipo_produccion=fields.Selection(selection=[('Materia Prima','Materia Prima'),('Producto Terminado','Producto Terminado'),('Sub Producto','Sub Producto'),('Otro','Otro')],string="Tipo(Produccion)",default='Materia Prima')
+
+
+class unispice_lote(models.Model):
+    _inherit='stock.production.lot'
+    canastas=fields.Integer("Canastas")
+    canasta_id=fields.Many2one(comodel_name='product.product', string='Tipo Canasta')
+    tara_canasta=fields.Float('Tara canasta',related='canasta_id.tara',store=True)
+    pallet_id=fields.Many2one(comodel_name='product.product', string='Tipo Pallet')
+    tara_pallet=fields.Float('Tara pallet',related='pallet_id.tara',store=True)
 
 class unispice_recepcion(models.Model):
     _name='unispice.recepcion'
+    _inherit='mail.thread'
     _description='Recepcion'
     _sql_constraints = [
         ('Boleta_Unico', 'unique (name)', 'El Numero de boleta debe ser unico')
@@ -216,6 +229,7 @@ class unispice_recepcion(models.Model):
                 dic1['name']=l.name
                 dic1['product_id']=r.producto_id.id
                 dic1['company_id']=r.location_id.company_id.id
+                
                 lote=self.env['stock.production.lot'].create(dic1)
                 #creando el picking
                 dic={}
@@ -252,18 +266,18 @@ class unispice_recepcion(models.Model):
                 dicl['picking_id']=pick.id
                 self.env['stock.move'].create(dicl)
                 #creando la linea del palet
-                dicl={}
-                dicl['company_id']=r.location_id.company_id.id
-                dicl['date']=datetime.today()
-                dicl['location_dest_id']=r.location_id.id
-                dicl['location_id']=r.location_id.company_id.inbound_transfer_id.default_location_src_id.id
-                dicl['name']=l.name
-                dicl['origin']=r.name
-                dicl['product_id']=r.pallet_id.id                
-                dicl['product_uom']=1
-                dicl['product_uom_qty']=1
-                dicl['picking_id']=pick.id
-                self.env['stock.move'].create(dicl)
+                #dicl={}
+                #dicl['company_id']=r.location_id.company_id.id
+                #dicl['date']=datetime.today()
+                #dicl['location_dest_id']=r.location_id.id
+                #dicl['location_id']=r.location_id.company_id.inbound_transfer_id.default_location_src_id.id
+                #dicl['name']=l.name
+                #dicl['origin']=r.name
+                #dicl['product_id']=r.pallet_id.id                
+                #dicl['product_uom']=1
+                #dicl['product_uom_qty']=1
+                #dicl['picking_id']=pick.id
+                #self.env['stock.move'].create(dicl)
                 pick.action_confirm()
                 pick.action_assign()
                 for x in pick.move_line_ids_without_package:
@@ -272,6 +286,8 @@ class unispice_recepcion(models.Model):
                     else:
                         x.write({'qty_done':x.product_uom_qty,'origin':r.name})
                 pick.button_validate()
+                #actualizando las taras
+                lote.write({'canastas':l.canastas,'canasta_id':r.canasta_id.id,'pallet_id':r.pallet_id})
                 #ejecutando las etiquetas
                 dice={}
                 dice['name']=r.name+'-'+r.producto_id.name
@@ -325,5 +341,166 @@ class unispice_reception_line(models.Model):
             'context': ctx
         }
 
-    
 
+class unispice_production_order(models.Model):
+    _name='unispice.transformacion'
+    _description='Ingreso a las ordenes de produccion'
+    _inherit='mail.thread'
+    name=fields.Char('Orden de transformacion')
+    state=fields.Selection(selection=[('draft','Borrador'),('Iniciado','Iniciado'),('Finalizado','Finalizaro')],string="Estado",default='draft')
+    proceso_id=fields.Many2one(comodel_name='mrp.workcenter', string='Proceso')
+    product_id=fields.Many2one(comodel_name='product.product', string='Producto')
+    location_id=fields.Many2one(comodel_name='stock.location', string='Ubicacion')
+    fecha_start=fields.Datetime("Fecha de Inicio")
+    fecha_end=fields.Datetime("Fecha de Finalizacion")    
+    ingresos_mp_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Materia Prima',inverse_name='transformacion_id')
+
+    order_ids=fields.One2many(comodel_name='mrp.production', string='Ordenes de Produccion',inverse_name='transformacion_id')
+
+    picking_ids=fields.One2many(comodel_name='stock.picking', string='Movimientos de canastas',inverse_name='transformacion_id')
+
+
+    def iniciar(self):
+        for r in self:
+            r.name=r.location_id.company_id.tranformacion_seq_id.next_by_id()
+            for l in r.ingresos_mp_ids:
+                quant=None
+                quants=self.env['stock.quant'].search([('lot_id', '=', l.lot_id.id),('available_quantity','>',0)])
+                if quants:
+                    x=0
+                    for q in quants:
+                        if q.location_id.usage=='internal':
+                            x=x+1
+                            quant=q
+                if x>1:
+                    raise UserError('El Lote ha sido divido')
+                dp={}
+                dp['product_id']=r.product_id.id
+                dp['company_id']=r.location_id.company_id.id
+                dp['consumption']='flexible'
+                dp['date_planned_start']=datetime.now()
+                dp['location_dest_id']=r.location_id.id
+                dp['location_src_id']=quant.location_id.id
+                dp['picking_type_id']=r.location_id.company_id.transform_transfer_id.id
+                dp['product_qty']=quant.available_quantity
+                dp['product_uom_qty']=quant.product_uom_id.id
+                dp['transformacion_id']=r.id
+                dp['product_uom_id']=quant.product_uom_id.id
+                production=self.env['mrp.production'].create(dp)
+                #movimiento del producto
+                dic1={}
+                dic1['product_id']=quant.product_id.id
+                dic1['location_id']=quant.location_id.id
+                dic1['location_dest_id']=r.location_id.id
+                dic1['company_id']=r.location_id.company_id.id
+                dic1['date']=datetime.now()
+                dic1['product_uom']=quant.product_uom_id.id
+                dic1['product_uom_qty']=quant.available_quantity
+                dic1['state']='confirmed'
+                dic1['name']=r.name+' - '+l.lot_id.name
+                dic1['raw_material_production_id']=production.id
+                self.env['stock.move'].create(dic1)
+                production.action_toggle_is_locked()
+                for m in production.move_raw_ids:
+                    dl={}
+                    dl['location_id']=quant.location_id.id
+                    dl['product_id']=quant.product_id.id
+                    dl['product_uom_id']=quant.product_uom_id.id
+                    dl['location_dest_id']=r.location_id.id
+                    dl['lot_id']=quant.lot_id.id
+                    dl['product_uom_qty']=quant.available_quantity
+                    dl['qty_done']=quant.available_quantity
+                    dl['move_id']=m.id
+                    self.env['stock.move.line'].create(dl)
+                production.action_assign()
+                #for m in production.move_raw_ids:
+                #    if m.reserved_availability==0:
+                #        raise UserError('El Material no esta disponible')
+                production.action_confirm()
+                #production.button_mark_done()
+
+                ####Creacion del pickin de las canastas
+                dic={}
+                dic['picking_type_id']=r.location_id.company_id.transform_transfer_id.id
+                dic['move_type']='one'
+                dic['origin']=r.name
+                dic['location_dest_id']=r.location_id.id
+                dic['location_id']=quant.location_id.id
+                dic['transformacion_id']=r.id
+                pick=self.env['stock.picking'].create(dic)                
+                #creando la linea de las canastas
+                dicl={}
+                dicl['company_id']=r.location_id.company_id.id
+                dicl['date']=datetime.today()
+                dicl['location_dest_id']=r.location_id.id
+                dicl['location_id']=r.location_id.company_id.inbound_transfer_id.default_location_src_id.id
+                dicl['name']='Canastas'+l.lot_id.name
+                dicl['origin']=r.name
+                dicl['product_id']=l.lot_id.canasta_id.id                
+                dicl['product_uom']=1
+                dicl['product_uom_qty']=l.canastas
+                dicl['picking_id']=pick.id
+                
+                pick.action_confirm()
+                #pick.action_assign()
+                for x in pick.move_line_ids_without_package:
+                    if x.product_id.tracking=='lot':
+                        x.write({'qty_done':x.product_uom_qty,'lot_id':lote.id,'origin':r.name})
+                    else:
+                        x.write({'qty_done':x.product_uom_qty,'origin':r.name})
+                #pick.button_validate()
+
+
+
+
+class unispice_production_line_ingreso(models.Model):
+    _name='unispice.transformacion.ingreso_mp'
+    _description='Ingreso a las ordenes de produccion'
+    lot_id=fields.Many2one(comodel_name='stock.production.lot', string='Lote')
+    product_id=fields.Many2one(comodel_name='product.product', string='Producto',related='lot_id.product_id',store=True)
+    canastas=fields.Integer('Canastas',compute='get_pesos',store=True)
+    tara_canasta=fields.Float('Tara canasta',related='lot_id.tara_canasta',store=True)
+    tara_pallet=fields.Float('Tara Palet',related='lot_id.tara_pallet',store=True)
+    peso_bruto=fields.Float('Peso Bruto',compute='get_pesos')
+    peso_neto=fields.Float('Peso neto',compute='get_pesos')
+    transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
+
+    @api.onchange('lot_id')
+    def get_pesos(self):
+        for r in self:
+            r.canastas=r.lot_id.canastas
+            r.peso_neto=r.lot_id.product_qty
+            r.peso_bruto=r.lot_id.product_qty+(r.lot_id.canastas*r.tara_canasta)+r.tara_pallet
+
+
+class unispice_production_line_ingreso(models.Model):
+    _name='unispice.transformacion.salida_mp'
+    _description='Salida a las ordenes de produccion'
+    lot_id=fields.Many2one(comodel_name='stock.production.lot', string='Lote')
+    product_id=fields.Many2one(comodel_name='product.product', string='Producto',related='lot_id.product_id',store=True)
+    canastas=fields.Integer('Canastas',compute='get_pesos',store=True)
+    tara_canasta=fields.Float('Tara canasta',related='lot_id.tara_canasta',store=True)
+    tara_pallet=fields.Float('Tara Palet',related='lot_id.tara_pallet',store=True)
+    peso_bruto=fields.Float('Peso Bruto',compute='get_pesos')
+    peso_neto=fields.Float('Peso neto',compute='get_pesos')
+    transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
+
+    @api.onchange('lot_id')
+    def get_pesos(self):
+        for r in self:
+            r.canastas=r.lot_id.canastas
+            r.peso_neto=r.lot_id.product_qty
+            r.peso_bruto=r.lot_id.product_qty+(r.lot_id.canastas*r.tara_canasta)+r.tara_pallet
+
+
+
+
+class unispice_production(models.Model):
+    _inherit='mrp.production'
+    transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Orden de traformacion')
+    #ingresos_mp_ids=fields.One2many(comodel_name='unispice.production.ingreso_mp', string='Ingresos Materia Prima',inverse_name='production_id')
+
+class unispice_picking(models.Model):
+    _inherit='stock.picking'
+    transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Orden de traformacion')
+    

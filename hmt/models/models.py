@@ -9,6 +9,8 @@ import json
 import requests
 import logging
 import time
+import PyPDF2
+import io
 from datetime import datetime
 from collections import OrderedDict
 from odoo import api, fields, models,_
@@ -44,6 +46,7 @@ class hmt_producto(models.Model):
     _inherit='product.template'
     restriccion_ids=fields.One2many(comodel_name='hmt.product.restriccion',inverse_name='product_id',string='Restricciones')
     especificacion=fields.Text("Especificacion Tecnica")
+    ficha=fields.Binary(string="Ficha Tecnica", attachment=True)
 
 class hmt_saleorder(models.Model):
     _inherit='sale.order'
@@ -54,6 +57,28 @@ class hmt_saleorder(models.Model):
     otros=fields.Text("Otros parametros",default=lambda self: self.env.user.company_id.otros)
     entrega=fields.Text("Tiempos de entrega",default=lambda self: self.env.user.company_id.entrega)
 
+    fichas=fields.Binary(string="Fichas Tecnica", attachment=True)
+
+    def crear_fichas(self):
+        for r in self:
+            report_name = ""
+            pdf = self.env.ref('hmt.saleordendigital_espc_report')._render_qweb_pdf(self.ids)
+            output = PyPDF2.PdfFileWriter()
+            pdf_content_stream = io.BytesIO(pdf[0])
+            input1 = PyPDF2.PdfFileReader(pdf_content_stream)
+            for page in range(input1.getNumPages()):
+                output.addPage(input1.getPage(page))
+            for l in r.order_line:
+                if l.product_id:
+                    if l.product_id.ficha:
+                        pdf_content_stream = io.BytesIO(base64.b64decode(l.product_id.ficha))
+                        input1 = PyPDF2.PdfFileReader(pdf_content_stream)
+                        for page in range(input1.getNumPages()):
+                            output.addPage(input1.getPage(page))
+            stream = io.BytesIO()
+            output.write(stream)    
+            #stream.close()
+            r.fichas = base64.b64encode(stream.getvalue())
 
     @api.constrains('partner_id','ruta_id','canal_id')
     def _check_restriciones(self):

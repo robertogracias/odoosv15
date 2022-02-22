@@ -268,7 +268,7 @@ class test_unispice(http.Controller):
             },
             {
                 "addressName": "Destinatario de factura",
-                "street": "Vista Business Centre, 50 Salisbury Road Heathrow",
+                 "street": "Vista Business Centre, 50 Salisbury Road Heathrow",
                 "city": "London",
                 "zipCode": "",
                 "state": "",
@@ -278,7 +278,7 @@ class test_unispice(http.Controller):
             },
             {
                 "addressName": "Destinatario factura",
-                "street": "Vista Business Centre, 50 Salisbury Road Heathrow",
+                 "street": "Vista Business Centre, 50 Salisbury Road Heathrow",
                 "city": "London",
                 "zipCode": "",
                 "state": "",
@@ -288,11 +288,11 @@ class test_unispice(http.Controller):
             },
             {
                 "addressName": "Ship To",
-                "street": "Vista Business Centre, 50 Salisbury Road Heathrow",
-                "city": null,
+                 "street": "Vista Business Centre, 50 Salisbury Road Heathrow",
+                "city": "London",
                 "zipCode": null,
                 "state": null,
-                "country": "GT",
+                "country": "GB",
                 "taxCode": "IVA",
                 "addressType": "ShipTo"
             }

@@ -14,6 +14,8 @@
                     <group>
                         <field name="internal_transfer_id" />
                         <field name="inbound_transfer_id" />
+                        <field name="transform_transfer_id" />
+                        <field name="tranformacion_seq_id" />
                     </group>
                 </page>
             </xpath>
@@ -41,6 +43,12 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
 
+            <xpath expr="//field[@name='type']" position="after">
+                    <field name="tipo_produccion"/>
+                    
+                    
+            </xpath>
+
             <xpath expr="//group[@name='group_lots_and_weight']" position="after">
                 <group string="Canas / Pallet">
                     <field name="is_canasta"/>
@@ -54,5 +62,26 @@
 
 
      
+    <record model="ir.ui.view" id="unispice_production_form">
+        <field name="name">unispice_production_form</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//page[@name='components']" position="before">
+                    <page string="UNISPICE">
+                    <group>
+                        <field name="transformacion_id"/>
+                    </group>
+                      
+                    </page>
+                    
+                    
+            </xpath>
+
+        </field>
+     </record>
+
+
     </data>
 </odoo>
