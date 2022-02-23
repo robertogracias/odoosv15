@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       
+
+       
+
+        <record model="ir.ui.view" id="unispice_transformacion_form">
+            <field name="name">unispice_transformacion_form</field>
+            <field name="model">unispice.transformacion</field>
+            <field name="arch" type="xml">
+                <form string="Transformaciones de materia prima">
+                    <header>
+                        <button name="iniciar" type="object" states="draft" string="Iniciar" class="oe_highlight"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <h1>
+                           
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="name" readonly="0"/>
+                                <field name="proceso_id"/>
+                                <field name="product_id"/>
+                                <field name="fecha_start" readonly="0"/>
+                                <field name="fecha_end" readonly="0"/>
+                            </group>
+                            <group>
+                               
+                            </group>
+                           
+                        </group>
+                        <notebook>
+                            <page string="Ingresos">
+                                  <label string="Ingreso Materia Prima" for="ingresos_mp_ids"/>
+                                <field name="ingresos_mp_ids">
+                                    <tree editable="button">
+                                        <field name="lot_id"/>
+                                        <field name="product_id"/>
+                                        <field name="peso_bruto_in"/>
+                                        <field name="canastas_in"/>
+                                        <field name="tara_canasta"/>
+                                        <field name="tara_pallet"/>
+                                        <field name="peso_neto_in"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            
+                           
+                        </notebook>
+                        
+                    </sheet>
+                     <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="unispice_transformacion_tree">
+            <field name="name">unispice_transformacion_tree</field>
+            <field name="model">unispice.transformacion</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                    <field name="proceso_id" />
+                    <field name="fecha_start" />
+                    <field name="fecha_end" />
+                    <field name="state" />
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="unispice_transformacion_action">
+            <field name="name">Transformacion</field>
+            <field name="res_model">unispice.transformacion</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Transformacion</p>
+            </field>
+            
+        </record>
+
+        <!--menu del objetivo-->
+        
+        <menuitem id="tranformacion_menu" parent="mrp.menu_mrp_manufacturing" name="Tranformaciones de Materia Prima" action="unispice_transformacion_action" sequence="50"/>
+
+      
+
+      
+      
+
+    </data>
+</odoo>
