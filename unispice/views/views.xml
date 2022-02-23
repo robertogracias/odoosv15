@@ -62,26 +62,7 @@
 
 
      
-    <record model="ir.ui.view" id="unispice_production_form">
-        <field name="name">unispice_production_form</field>
-        <field name="model">mrp.production</field>
-        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
-        <field name="arch" type="xml">
-
-            <xpath expr="//page[@name='components']" position="before">
-                    <page string="UNISPICE">
-                    <group>
-                        <field name="transformacion_id"/>
-                    </group>
-                      
-                    </page>
-                    
-                    
-            </xpath>
-
-        </field>
-     </record>
-
+    
 
     </data>
 </odoo>
