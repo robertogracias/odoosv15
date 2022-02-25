@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       
+    <record id="sequence_unispice_solicitud_seq" model="ir.sequence">
+            <field name="name">Unispice Solicitud Seq</field>
+            <field name="code">unispice.sol</field>
+            <field name="prefix">SOL</field>
+            <field eval="1" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="False" name="company_id"/>
+        </record>
+       
+
+        <record model="ir.ui.view" id="unispice_solicitud_form">
+            <field name="name">unispice_solicitud_form</field>
+            <field name="model">unispice.solicitud</field>
+            <field name="arch" type="xml">
+                <form string="Transformaciones de materia prima">
+                    <header>
+                        <button name="solicitar" type="object" states="draft" string="Solicitar" class="oe_highlight"/>
+                        <button name="cerrar" type="object" states="Solicitado" string="Cerrar" class="oe_highlight"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <h1>
+                           <field name="name" readonly="1"/>
+                        </h1>
+                        <group>
+                            <field name="fecha_solicitud" readonly="1"/>
+                            <field name="note"/>
+                        </group>
+                        <group attrs="{'invisible':[('state','!=','draft')]}">
+                            <group>
+                               <field name="pallet_id"/>
+                            </group>
+                            <group>
+                               <button name="addline" string="Adicionar" type="object"/>
+                            </group>
+                        </group>
+                        <label string="Solicitud de Materia Prima" for="pallet_ids"/>
+                        <field name="pallet_ids">
+                            <tree editable="button" >
+                                <field name="lot_id"  readonly="1"/>
+                                <field name="ubicado" widget="boolean_toggle"/>
+                                <field name="boleta_id"  readonly="1"/>
+                                <field name="canastas"  readonly="1"/>
+                                <field name="peso_bruto"  readonly="1"/>
+                                <field name="tara_canasta"  readonly="1"/>
+                                <field name="tara_pallet"  readonly="1"/>
+                                <field name="peso_neto"  readonly="1"/>
+                                <field name="state"  readonly="1"/>
+                                <button name="open_form" string="Abrir" type="object"/>
+                            </tree>
+                            
+                        </field>                        
+                    </sheet>
+                     <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+        <record model="ir.ui.view" id="unispice_solicitud_linea_form">
+            <field name="name">unispice_solicitud_linea_form</field>
+            <field name="model">unispice.solicitud.pallet</field>
+            <field name="arch" type="xml">
+                
+                            <form>
+                                <header>
+                                    <button name="entregar" string="Entregar" states="Solicitado" type="object"/>
+                                    <button name="cancelar" string="Cancelar" states="Solicitado" type="object"/>
+                                    <field name="state" widget="statusbar"/>
+                                </header>
+                                <sheet>
+                                <group>
+                                    <field name="boleta_id"  readonly="1"/>
+                                    <field name="product_id"  readonly="1"/>
+                                    <field name="lot_id"  readonly="1"/>
+                                    <field name="ubicado" widget="boolean_toggle" attrs="{'readonly':[('state','!=','Solicitado')]}"/>
+                                </group>
+                                <group>
+                                    <group string="Solicitado">
+                                        <field name="location_src_id"  readonly="1"/>
+                                        <field name="canastas"  readonly="1"/>
+                                        <field name="peso_bruto"  readonly="1"/>
+                                        <field name="tara_canasta"  readonly="1"/>
+                                        <field name="tara_pallet"  readonly="1"/>
+                                        <field name="peso_neto"  readonly="1"/>
+                                    </group>
+                                    <group string="Entregada">
+                                        <field name="location_dest_id" attrs="{'readonly':[('state','!=','Solicitado')]}"/>
+                                        <label for="bascula_id" attrs="{'invisible':[('state','!=','Solicitado')]}"></label>
+                                        <div>
+                                            <field name="bascula_id" nolabel="1" attrs="{'readonly':[('state','!=','Solicitado')]}"/>
+                                            <button name="get_from_bascula" string="Leer" state="Solicitado" type="object"/>
+                                        </div>
+                                        
+                                        <field name="peso_obtenido" attrs="{'readonly':[('state','!=','Solicitado')]}"/>
+                                        <field name="canastas_transferir" attrs="{'readonly':[('state','!=','Solicitado')]}"/>
+                                        <field name="tara_canasta"  readonly="1"/>
+                                        <field name="tara_pallet"  readonly="1"/>                                        
+                                        <field name="peso_neto_transferir"/>                                        
+                                    </group>
+
+                                </group>
+                                <group>
+                                    <field name="picking_id"/>
+                                    <field name="ajuste_id"/>
+                                </group>
+                                </sheet>
+                            </form>
+            </field>
+        </record>
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="unispice_solicitud_tree">
+            <field name="name">unispice_solicitud_tree</field>
+            <field name="model">unispice.solicitud</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name" />
+                    <field name="note" />
+                    <field name="fecha_solicitud" />
+                    <field name="state" />
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="unispice_solicitud_action">
+            <field name="name">Solicitud de Materia Prima</field>
+            <field name="res_model">unispice.solicitud</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Solicitud de Materia Prima</p>
+            </field>
+            
+        </record>
+
+        <!--menu del objetivo-->
+        
+        <menuitem id="solicitud_menu" parent="stock.menu_stock_warehouse_mgmt" name="Solicitud de Materia Prima" action="unispice_solicitud_action" sequence="60"/>
+
+      
+
+      
+      
+
+    </data>
+</odoo>
