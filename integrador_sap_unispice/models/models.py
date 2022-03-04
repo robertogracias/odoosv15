@@ -336,7 +336,7 @@ class integrador_purchase_order(models.Model):
     serie=fields.Char("Serie")
     documentnum=fields.Char("Numero de documento")
     sap_order=fields.Char("Orden en SAP")
-    taxDate=fields.Date('Fecha Impuestos')
+    taxdate=fields.Date('Fecha Impuestos')
     unispice_sociedad_id = fields.Many2one('res.partner', string='Sociedad En SAP')
 
     
@@ -353,9 +353,9 @@ class integrador_purchase_order(models.Model):
                 dic['baseCurrency']=r.currency_id.name
                 dic['series']=varserie.valor  
                 dic['documentNum']=r.partner_ref
-                dic['documentDate']=r.dateOrder.strftime("%Y-%m-%d")
+                dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
                 dic['documentDueDate']=r.validity_date.strftime("%Y-%m-%d")
-                dic['taxDate']=r.taxDate.strftime("%Y-%m-%d")
+                dic['taxDate']=r.taxdate.strftime("%Y-%m-%d")
                 dic['billTo']=r.unispice_sociedad_id.contact_address_complete
                 dic['shipTo']=r.picking_type_id.wharehouse_id.partner_id.contact_address_complete
                 dic['paymentTermsCode']=r.partner_id.paymenttermscode
