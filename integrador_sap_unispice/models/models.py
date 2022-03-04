@@ -118,8 +118,8 @@ class integrador_prodcut(models.Model):
                     dic['leadTime']=r.leadtime
                     dic['toleranceDays']=r.tolerancedays
                     dic['codigoOdoo']=r.default_code
-                    dic['subGrupoVenta2']=r.subgrupoventa2
-                    dic['subGrupoVenta3']=r.subgrupoventa3
+                    dic['subGrupoVenta2']=r.subgrupoventa2 if r.r.subgrupoventa2 else ''
+                    dic['subGrupoVenta3']=r.subgrupoventa3 if r.r.subgrupoventa3 else ''
                     dic['pesoReferencia']=r.pesoreferencia
                     dic['pesoReferenciaMinimo']=r.pesoreferenciaminimo
                     dic['pesoReferenciaMaximo']=r.pesoreferenciamaximo
