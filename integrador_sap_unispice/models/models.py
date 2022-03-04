@@ -375,7 +375,7 @@ class integrador_purchase_order(models.Model):
                 result = requests.post(var.valor+'/purchase-order',data = json_datos, headers=encabezado)
                 _logger.info('RESULTADO:'+result.text)
                 respuesta=json.loads(result.text)
-                if result.status_code==201:
+                if result.status_code==200:
                     _logger.info('RESULTADO:'+result.text)
                     if 'purchaseOrder' in respuesta:
                         r.sap_order=respuesta['purchaseOrder']
