@@ -108,7 +108,7 @@ class integrador_prodcut(models.Model):
                     dic['width']=r.width
                     dic['height']=r.height
                     dic['volume']=r.volume
-                    dic['uoMVolumen']=r.uomvolumen
+                    dic['uoMVolumen']=int(r.uomvolumen)
                     dic['weight']=r.weight
                     dic['planingMethod']=r.planingmethod
                     dic['procurementMethod']=r.procurementmethod
@@ -376,12 +376,13 @@ class integrador_purchase_order(models.Model):
                 result = requests.post(var.valor+'/purchase-order',data = json_datos, headers=encabezado)
                 _logger.info('RESULTADO:'+result.text)
                 respuesta=json.loads(result.text)
-                if 'order' in respuesta:
-                    r.sap_order=respuesta['order']
-                else:
-                    raise ValidationError('No se pudo crear la orden en SAP:'+respuesta['message'])
-
-
+                if result.status_code==201:
+                    _logger.info('RESULTADO:'+result.text)
+                    if 'order' in respuesta:
+                        r.sap_order=respuesta['order']
+                else:                        
+                    raise ValidationError('No se pudo crear la Orden en SAP: Enviado:'+json_datos+' Recibido: '+result.text)
+            
 class intregrador_sap_task(models.Model):
     _name='integrador_sap_unispice.task'
     _description='Tarea de integracion con sap'
