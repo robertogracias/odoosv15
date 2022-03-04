@@ -143,11 +143,11 @@ class integrador_prodcut(models.Model):
                     json_datos = json.dumps(dic)
                     json_datos=json_datos.replace(': false',': null')
                     result = requests.post(var.valor+'/items',data = json_datos, headers=encabezado)
-                    _logger.info('RESULTADO:'+result.text)
+                    
 
-                    respuesta=json.loads(result.text)
-
-                    if result.status_code!=201:                        
+                    if result.status_code==201:
+                        _logger.info('RESULTADO:'+result.text)
+                    else:                        
                         raise ValidationError('No se pudo crear el producto en SAP: Enviado:'+json_datos+' Recibido: '+result.text)
             
 
