@@ -9,7 +9,7 @@
 
         <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.url">
             <field name="name">sap_url</field>
-            <field name="valor">http://localhost:8069</field>
+            <field name="valor">http://192.168.50.7</field>
         </record>
         <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.user_field">
             <field name="name">sap_user_field</field>
@@ -289,7 +289,7 @@
                                 <field name="width"/>
                                 <field name="height"/>
                                 <field name="uomvolumen"/>
-                                <field name="volume" string="Volumen Cm3"/>
+                                <field name="volume" string="Volumen CC"/>
                                 <field name="weight"/>
                             </group>
                             <group string="Pesos">

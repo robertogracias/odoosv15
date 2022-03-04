@@ -147,7 +147,7 @@ class integrador_prodcut(models.Model):
                     if 'code' in respuesta:
                         r.codigosap=respuesta['code']
                     else:
-                        raise ValidationError('No se pudo crear el producto en SAP:'+result.text)
+                        raise ValidationError('No se pudo crear el producto en SAP: Enviado:'+json_datos+' Recibido: '+result.text)
             
 
 
