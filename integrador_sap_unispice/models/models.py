@@ -141,8 +141,10 @@ class integrador_prodcut(models.Model):
                    
                     encabezado = {"content-type": "application/json"}
                     json_datos = json.dumps(dic)
+                    json_datos=json_datos.replace(': false','null')
                     result = requests.post(var.valor+'/items',data = json_datos, headers=encabezado)
                     _logger.info('RESULTADO:'+result.text)
+
                     respuesta=json.loads(result.text)
                     if 'code' in respuesta:
                         r.codigosap=respuesta['code']
