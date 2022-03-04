@@ -354,7 +354,7 @@ class integrador_purchase_order(models.Model):
                 dic['series']=varserie.valor  
                 dic['documentNum']=r.partner_ref
                 dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
-                dic['documentDueDate']=r.validity_date.strftime("%Y-%m-%d")
+                dic['documentDueDate']=r.date_planned.strftime("%Y-%m-%d")
                 dic['taxDate']=r.taxdate.strftime("%Y-%m-%d")
                 dic['billTo']=r.unispice_sociedad_id.contact_address_complete
                 dic['shipTo']=r.picking_type_id.wharehouse_id.partner_id.contact_address_complete
