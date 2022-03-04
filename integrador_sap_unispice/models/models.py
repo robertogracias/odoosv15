@@ -349,7 +349,7 @@ class integrador_purchase_order(models.Model):
                 dic={}
                 dic['partnerCode']=r.partner_id.ref
                 dic['partnerName']=r.partner_id.name
-                dic['contactPersonCode']=r.user_id.code                
+                dic['contactPersonCode']=r.partner_id.contactperson
                 dic['baseCurrency']=r.currency_id.name
                 dic['series']=varserie.valor  
                 dic['documentNum']=r.partner_ref
