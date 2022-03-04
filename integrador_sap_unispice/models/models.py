@@ -146,9 +146,8 @@ class integrador_prodcut(models.Model):
                     _logger.info('RESULTADO:'+result.text)
 
                     respuesta=json.loads(result.text)
-                    if 'code' in respuesta:
-                        r.codigosap=respuesta['code']
-                    else:
+
+                    if result.status_code!=201:                        
                         raise ValidationError('No se pudo crear el producto en SAP: Enviado:'+json_datos+' Recibido: '+result.text)
             
 
