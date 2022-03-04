@@ -349,10 +349,10 @@ class integrador_purchase_order(models.Model):
                 dic={}
                 dic['partnerCode']=r.partner_id.ref
                 dic['partnerName']=r.partner_id.name
-                dic['contactPersonCode']=r.partner_id.contactperson
-                dic['baseCurrency']=r.currency_id.name
-                dic['series']=varserie.valor  
-                dic['documentNum']=r.partner_ref
+                if r.partner_id.contactperson:
+                    dic['contactPersonCode']=r.partner_id.contactperson
+#                dic['baseCurrency']=r.currency_id.name
+                dic['series']=int(varserie.valor)                  
                 dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
                 dic['documentDueDate']=r.date_planned.strftime("%Y-%m-%d")
                 dic['taxDate']=r.taxdate.strftime("%Y-%m-%d")
@@ -379,7 +379,7 @@ class integrador_purchase_order(models.Model):
                 if result.status_code==201:
                     _logger.info('RESULTADO:'+result.text)
                     if 'order' in respuesta:
-                        r.sap_order=respuesta['order']
+                        r.sap_order=respuesta['purchaseOrder']
                 else:                        
                     raise ValidationError('No se pudo crear la Orden en SAP: Enviado:'+json_datos+' Recibido: '+result.text)
             
