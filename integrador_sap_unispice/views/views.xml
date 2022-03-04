@@ -267,6 +267,7 @@
                         <group>
                             <group string="Datos Generales">
                                 <field name="foreignname" />
+                                <field name="codigosap" />
                                 <!--field name="itemsgroup"/-->
                                 <!--field name="uomgroup"/-->
                                 <field name="subgrupoventa1" String="Grupo Articulo"/>
