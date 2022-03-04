@@ -51,7 +51,7 @@ class integrador_prodcut(models.Model):
     length=fields.Float("Slength1")
     width=fields.Float("SWidth1")
     height=fields.Float("SHeight1")
-    volume=fields.Float("Volumen Cm3")
+    volume=fields.Float("Volumen CC")
     uomvolumen=fields.Char("Unidad de volumen")
     weight=fields.Float("SWeight1")
     planingmethod=fields.Char("planingMethod")
@@ -89,7 +89,7 @@ class integrador_prodcut(models.Model):
 
 
     def sync_producto(self):
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:            
             for r in self:
                 _logger.info('Integrador de Productos:'+r.default_code)
@@ -341,7 +341,7 @@ class integrador_purchase_order(models.Model):
     
     def sync_sap(self):
         _logger.info('Integrador de ordenes de compra')
-        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         varserie=self.env['integrador_sap.property'].search([('name','=','sap_compra_serie')],limit=1)
         if var:
             for r in self:

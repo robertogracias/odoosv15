@@ -266,10 +266,10 @@
                     <page string="Unispice" name="unispice">
                         <group>
                             <group string="Datos Generales">
-                                <field name="foreignname"/>
+                                <field name="foreignname" />
                                 <!--field name="itemsgroup"/-->
                                 <!--field name="uomgroup"/-->
-                                <field name="subgrupoventa1"/>
+                                <field name="subgrupoventa1" String="Grupo Articulo"/>
                                 <field name="subgrupoventa2"/>
                                 <field name="subgrupoventa3"/>
                             </group>
@@ -289,7 +289,7 @@
                                 <field name="width"/>
                                 <field name="height"/>
                                 <field name="uomvolumen"/>
-                                <field name="volume"/>
+                                <field name="volume" string="Volumen Cm3"/>
                                 <field name="weight"/>
                             </group>
                             <group string="Pesos">
@@ -340,7 +340,7 @@
                         <group>
                                 <field name="foreingname"/>
                                 <field name="bptype"/>
-                                <field name="groupcode"/>
+                                <field name="groupcode" />
                                 <field name="currency"/>
                                 <field name="contactperson"/>
                                 <field name="empresa"/>
@@ -354,6 +354,7 @@
                                 <field name="lastname"/>
                                 <field name="territory_id"/>
                                 <field name="taxcode"/>
+                                
                                 <field name="sap_state"/>
                         </group>  
                         <group string="Sociedad Unispice">
