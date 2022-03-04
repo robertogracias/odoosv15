@@ -343,7 +343,7 @@ class integrador_purchase_order(models.Model):
     def sync_sap(self):
         _logger.info('Integrador de ordenes de compra')
         var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
-        varserie=self.env['integrador_sap.property'].search([('name','=','sap_compra_serie')],limit=1)
+        varserie=self.env['integrador_sap_unispice.property'].search([('name','=','sap_compra_serie')],limit=1)
         if var:
             for r in self:
                 dic={}
