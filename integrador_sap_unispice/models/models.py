@@ -357,7 +357,7 @@ class integrador_purchase_order(models.Model):
                 dic['documentDueDate']=r.date_planned.strftime("%Y-%m-%d")
                 dic['taxDate']=r.taxdate.strftime("%Y-%m-%d")
                 dic['billTo']=r.unispice_sociedad_id.contact_address_complete
-                dic['shipTo']=r.picking_type_id.wharehouse_id.partner_id.contact_address_complete
+                dic['shipTo']=r.picking_type_id.warehouse_id.partner_id.contact_address_complete
                 dic['paymentTermsCode']=r.partner_id.paymenttermscode
                 lines=[]
                 for l in r.order_line:
