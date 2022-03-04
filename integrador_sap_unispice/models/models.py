@@ -22,6 +22,22 @@ class integrador_territory(models.Model):
     name=fields.Char("Name")
     code=fields.Char("Codigo")
 
+class integrador_taxcode(models.Model):
+    _name='integrador_sap_unispice.tax_code'
+    _description='Tax Codes'
+    name=fields.Char("Name")
+    code=fields.Char("Codigo")
+
+class integrador_warehouse(models.Model):
+    _name='integrador_sap_unispice.warehouse'
+    _description='Ware House'
+    name=fields.Char("Name")
+    code=fields.Char("Codigo")
+
+
+class integrador_location(models.Model):
+    _inherit='stock.location'
+    sap_warehouse_id = fields.Many2one('integrador_sap_unispice.warehouse', string='Almacen SAP')
 
 class integrador_prodcut(models.Model):
     _inherit='product.template'
@@ -72,12 +88,67 @@ class integrador_prodcut(models.Model):
     formatoliquidacion=fields.Char("Formato de liquidacion")
 
 
-
-
-
-   
-                            
-
+    def sync_producto(self):
+        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        if var:            
+            for r in self:
+                _logger.info('Integrador de Productos:'+r.default_code)
+                for r in self:
+                    dic={}
+                    dic['code']=r.codigosap
+                    dic['name']=r.name
+                    dic['foreignName']=r.foreignname
+                    dic['itemsGroup']=r.itemsgroup
+                    dic['uoMGroup']=r.uomgroup
+                    dic['subGrupoVenta1']=r.subgrupoventa1
+                    dic['itemsPerPurchaseUnit']=r.itemsperpurchaseunit
+                    dic['uoMEmbalaje']=r.uomembalaje
+                    dic['quantityPerPackage']=r.quantityperpackage
+                    dic['length']=r.length
+                    dic['width']=r.width
+                    dic['height']=r.height
+                    dic['volume']=r.volume
+                    dic['uoMVolumen']=r.uomvolumen
+                    dic['weight']=r.weight
+                    dic['planingMethod']=r.planingmethod
+                    dic['procurementMethod']=r.procurementmethod
+                    dic['orderInterval']=r.orderinterval
+                    dic['orderMultiple']=r.ordermultiple
+                    dic['minimumOrderQuantity']=r.minimumorderquantity
+                    dic['leadTime']=r.leadtime
+                    dic['toleranceDays']=r.tolerancedays
+                    dic['codigoOdoo']=r.default_code
+                    dic['subGrupoVenta2']=r.subgrupoventa2
+                    dic['subGrupoVenta3']=r.subgrupoventa3
+                    dic['pesoReferencia']=r.pesoreferencia
+                    dic['pesoReferenciaMinimo']=r.pesoreferenciaminimo
+                    dic['pesoReferenciaMaximo']=r.pesoreferenciamaximo
+                    dic['pesoNeto']=r.pesoneto
+                    dic['pesoBruto']=r.pesobruto
+                    dic['camaAereo']=r.camaaereo
+                    dic['filasAereo']=r.filasaereo
+                    dic['cajasPalletAereo']=r.cajaspalletaereo
+                    dic['camaMaritimo']=r.camamaritimo
+                    dic['filasMaritimo']=r.filasmaritimo
+                    dic['cajasPalletMaritimo']=r.cajaspalletmaritimo
+                    dic['grupoMP']=r.grupomp
+                    dic['grupoTipoMP']=r.grupotipomp
+                    dic['grupoMPPermitida']=r.grupomppermitida
+                    dic['grupoPT']=r.grupopt
+                    dic['grupoPresentacion']=r.grupopresentacion
+                    dic['grupoTipoEmpaque']=r.grupotipoempaque
+                    dic['cantidadporposicion']=r.cantidadporposicion
+                   
+                    encabezado = {"content-type": "application/json"}
+                    json_datos = json.dumps(dic)
+                    result = requests.post(var.valor+'/items',data = json_datos, headers=encabezado)
+                    _logger.info('RESULTADO:'+result.text)
+                    respuesta=json.loads(result.text)
+                    if 'code' in respuesta:
+                        r.codigosap=respuesta['code']
+                    else:
+                        raise ValidationError('No se pudo crear el producto en SAP:'+respuesta['message'])
+            
 
 
 class integrador_task(models.Model):
@@ -132,11 +203,15 @@ class integrador_partner(models.Model):
     bptype=fields.Char("bpType")
     currency=fields.Char("currency")
 
+    unispice_sociedad=fields.Boolean('Sociedad UNISPICE')
+
 class integrador_property(models.Model):
     _name='integrador_sap_unispice.property'
     _description='Atributo de una tarea de integracion'
     name=fields.Char('Atributo',select=True)
     valor=fields.Char('Valor')
+
+
     
 #class integrador_ruta(models.Model):
 #    _name='integrador_sap.ruta'
@@ -248,6 +323,10 @@ class integrador_order(models.Model):
 #                else:
 #                    raise ValidationError('No se pudo crear la orden en SAP:'+respuesta['message'])
 
+class integrador_purchase_order_line(models.Model):
+    _inherit='purchase.order.line'
+    sap_warehouse_id = fields.Many2one('integrador_sap_unispice.warehouse', string='Almacen SAP')
+
 
 class integrador_purchase_order(models.Model):
     _inherit='purchase.order'
@@ -255,54 +334,51 @@ class integrador_purchase_order(models.Model):
     customerreferenceno=fields.Char("Número de referencia de deudor")
     serie=fields.Char("Serie")
     documentnum=fields.Char("Numero de documento")
-#    shipto=fields.Char("Destino")
-#    billto=fields.Char("Destinatario de factura")
     sap_order=fields.Char("Orden en SAP")
+    taxDate=fields.Date('Fecha Impuestos')
+    unispice_sociedad_id = fields.Many2one('res.partner', string='Sociedad En SAP')
+
     
-#    def sync_sap(self):
-#        _logger.info('Integrador de ordenes')
-#        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
-#        if var:
-#            for r in self:
-#                dic={}
-#                dic['clientCode']=r.partner_id.ref
-#                dic['clientName']=r.partner_id.name
-#                dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
-#                dic['documentDueDate']=r.validity_date.strftime("%Y-%m-%d")
-#                dic['salesPersonCode']=r.user_id.code
-#                dic['comments']=r.note
-#                dic['nrc']=r.partner_id.nrc
-#                dic['nit']=r.partner_id.nit
-#                dic['giro']=r.partner_id.giro
-#                dic['fechaDocumento']=r.date_order.strftime("%Y-%m-%d")
-#                dic['razonSocial']=r.partner_id.razon_social
-#                dic['direccion']=r.partner_shipping_id.street
-#                dic['sucursal']=r.sucursal_id.codigo
-#                dic['ruta']=r.ruta_id.codigo
-#                dic['responsable']=r.ruta_id.codigo
-#                dic['gestion']=r.gestion.codigo
-#                lines=[]
-#                for l in r.order_line:
-#                    line={}
-#                    line['itemCode']=l.product_id.default_code
-#                    line['quantity']=l.product_uom_qty
-#                    for t in l.tax_id:
-#                        line['taxCode']=t.name
-#                    line['price']=l.price_unit
-#                    line['discountPercent']=l.discount
-#                    line['salesPersonCode']=r.user_id.code
-#                    line['text']=l.name
-#                    lines.append(line)
-#                dic['orderDetail']=lines
-#                encabezado = {"content-type": "application/json"}
-#                json_datos = json.dumps(dic)
-#                result = requests.post(var.valor+'/sales-order',data = json_datos, headers=encabezado)
-#                _logger.info('RESULTADO:'+result.text)
-#                respuesta=json.loads(result.text)
-#                if 'order' in respuesta:
-#                    r.sap_order=respuesta['order']
-#                else:
-#                    raise ValidationError('No se pudo crear la orden en SAP:'+respuesta['message'])
+    def sync_sap(self):
+        _logger.info('Integrador de ordenes de compra')
+        var=self.env['integrador_sap.property'].search([('name','=','sap_url')],limit=1)
+        varserie=self.env['integrador_sap.property'].search([('name','=','sap_compra_serie')],limit=1)
+        if var:
+            for r in self:
+                dic={}
+                dic['partnerCode']=r.partner_id.ref
+                dic['partnerName']=r.partner_id.name
+                dic['contactPersonCode']=r.user_id.code                
+                dic['baseCurrency']=r.currency_id.name
+                dic['series']=varserie.valor  
+                dic['documentNum']=r.partner_ref
+                dic['documentDate']=r.dateOrder.strftime("%Y-%m-%d")
+                dic['documentDueDate']=r.validity_date.strftime("%Y-%m-%d")
+                dic['taxDate']=r.taxDate.strftime("%Y-%m-%d")
+                dic['billTo']=r.unispice_sociedad_id.contact_address_complete
+                dic['shipTo']=r.picking_type_id.wharehouse_id.partner_id.contact_address_complete
+                dic['paymentTermsCode']=r.partner_id.paymenttermscode
+                lines=[]
+                for l in r.order_line:
+                    line={}
+                    line['itemCode']=l.product_id.codigosap
+                    line['warehouseCode']=l.sap_warehouse_id.code
+                    line['itemDescription']=l.name
+                    line['quantity']=l.product_uom_qty
+                    line['unitPrice']=l.price_unit
+                    line['discountPercentage']=0
+                    line['taxCode']=r.partner_id.taxcode
+                    lines.append(line)
+                dic['rows']=lines
+                encabezado = {"content-type": "application/json"}
+                json_datos = json.dumps(dic)
+                result = requests.post(var.valor+'/purchase-order',data = json_datos, headers=encabezado)
+                _logger.info('RESULTADO:'+result.text)
+                respuesta=json.loads(result.text)
+                if 'order' in respuesta:
+                    r.sap_order=respuesta['order']
+                else:
+                    raise ValidationError('No se pudo crear la orden en SAP:'+respuesta['message'])
 
 
 class intregrador_sap_task(models.Model):
@@ -678,7 +754,100 @@ class intregrador_sap_task(models.Model):
                             dic[odookey]=r[sapkey]
                     product=self.env['integrador_sap_unispice.territory'].create(dic)                  
 
+
+
+    def sync_taxcode(self):
+        _logger.info('Integrador de taxcodes')
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
+        if var:
+            url=var.valor+'/tax-codes'
+            mapa={'code':'code'
+                ,'name':'name'
+                }
+            response = requests.get(url)
+            resultado=json.loads(response.text)
+            for r in resultado['taxes']:
+                code=r['code']
+                product=self.env['integrador_sap_unispice.tax_code'].search([('code','=',code)])
+                if product:
+                    dic={}
+                    editado=False
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            if product.__getitem__(odookey)!=r[sapkey]:
+                                editado=True
+                                dic[odookey]=r[sapkey]
+                    if editado:
+                        product.write(dic)                    
+                else:
+                    dic={}
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            dic[odookey]=r[sapkey]
+                    product=self.env['integrador_sap_unispice.tax_code'].create(dic)
     
+   
+
+    def sync_warehouselocal(self):
+        _logger.info('Integrador de warehouse')
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
+        if var:            
+            url=var.valor+'/warehouse/local'
+            mapa={'code':'warehouseCode'
+                ,'name':'warehouseName'
+                }
+            response = requests.get(url)
+            resultado=json.loads(response.text)
+            for r in resultado['warehouses']:
+                code=r['warehouseCode']
+                product=self.env['integrador_sap_unispice.warehouse'].search([('code','=',code)])
+                if product:
+                    dic={}
+                    editado=False
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            if product.__getitem__(odookey)!=r[sapkey]:
+                                editado=True
+                                dic[odookey]=r[sapkey]
+                    if editado:
+                        product.write(dic)                    
+                else:
+                    dic={}
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            dic[odookey]=r[sapkey]
+                    product=self.env['integrador_sap_unispice.warehouse'].create(dic)
+
+
+    def sync_warehouseimport(self):
+        _logger.info('Integrador de warehouse')
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
+        if var:            
+            url=var.valor+'/warehouse/import'
+            mapa={'code':'warehouseCode'
+                ,'name':'warehouseName'
+                }
+            response = requests.get(url)
+            resultado=json.loads(response.text)
+            for r in resultado['warehouses']:
+                code=r['warehouseCode']
+                product=self.env['integrador_sap_unispice.warehouse'].search([('code','=',code)])
+                if product:
+                    dic={}
+                    editado=False
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            if product.__getitem__(odookey)!=r[sapkey]:
+                                editado=True
+                                dic[odookey]=r[sapkey]
+                    if editado:
+                        product.write(dic)                    
+                else:
+                    dic={}
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            dic[odookey]=r[sapkey]
+                    product=self.env['integrador_sap_unispice.warehouse'].create(dic)
 
 
 

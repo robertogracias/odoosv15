@@ -23,6 +23,10 @@
             <field name="name">sap_location_parent</field>
             <field name="valor">7</field>
         </record>
+        <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.sap_compra_serie">
+            <field name="name">sap_compra_serie</field>
+            <field name="valor">7</field>
+        </record>
 
         <!--record model="ir.cron" id="integrador_sap.cron_partner">
             <field name="name">Integracion de clientes</field>
@@ -147,9 +151,111 @@
         <!--menu del pei-->
         <menuitem id="sap_territory_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" groups="" name="Territorios" action="sap_territory_action" sequence="12" />
 
+<!-- -->
+
+<record model="ir.ui.view" id="sap_taxcode_form">
+    <field name="name">sap_taxcode_form</field>
+    <field name="model">integrador_sap_unispice.tax_code</field>
+    <field name="arch" type="xml">
+        <form string="Tax Codes">
+            <header></header>
+            <sheet>
+
+                <group>
+                    <field name="name"  />
+                    <field name="code" />
+                </group>
+
+            </sheet>
+
+        </form>
+    </field>
+</record>
+
+
+<!--tree del pei-->
+<record model="ir.ui.view" id="sap_taxcode_tree">
+    <field name="name">sap_taxcode_tree</field>
+    <field name="model">integrador_sap_unispice.tax_code</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="name"  />
+            <field name="code" />
+        </tree>
+    </field>
+</record>
+
+
+<!--action del pei-->
+<record model="ir.actions.act_window" id="sap_taxcode_action">
+    <field name="name">Tax Code</field>
+    <field name="res_model">integrador_sap_unispice.tax_code</field>
+    <field name="view_mode">tree,form</field>
+    <field name="help" type="html">
+        <p class="oe_view_nocontent_create">Tax Codes
+        </p>
+    </field>
+</record>
+
+<!--menu del pei-->
+<menuitem id="sap_taxcode_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" groups="" name="Tax Codes" action="sap_taxcode_action" sequence="13" />
 
 
 
+<!-- -->
+
+<!-- -->
+
+<record model="ir.ui.view" id="sap_warehouse_form">
+    <field name="name">sap_warehouse_form</field>
+    <field name="model">integrador_sap_unispice.warehouse</field>
+    <field name="arch" type="xml">
+        <form string="Warehouse">
+            <header></header>
+            <sheet>
+
+                <group>
+                    <field name="name"  />
+                    <field name="code" />
+                </group>
+
+            </sheet>
+
+        </form>
+    </field>
+</record>
+
+
+<!--tree del pei-->
+<record model="ir.ui.view" id="sap_warehouse_tree">
+    <field name="name">sap_warehouse_tree</field>
+    <field name="model">integrador_sap_unispice.warehouse</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="name"  />
+            <field name="code" />
+        </tree>
+    </field>
+</record>
+
+
+<!--action del pei-->
+<record model="ir.actions.act_window" id="sap_warehouse_action">
+    <field name="name">Ware House</field>
+    <field name="res_model">integrador_sap_unispice.warehouse</field>
+    <field name="view_mode">tree,form</field>
+    <field name="help" type="html">
+        <p class="oe_view_nocontent_create">Ware Houses
+        </p>
+    </field>
+</record>
+
+<!--menu del pei-->
+<menuitem id="sap_warehouse_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" groups="" name="Warehouse" action="sap_warehouse_action" sequence="14" />
+
+
+
+<!-- -->
 
         <record id="unispice_product_form" model="ir.ui.view">
             <field name="name">unispice_product_form</field>
@@ -249,11 +355,35 @@
                                 <field name="territory_id"/>
                                 <field name="taxcode"/>
                                 <field name="sap_state"/>
-                        </group>    
+                        </group>  
+                        <group string="Sociedad Unispice">
+                            <field name="unispice_sociedad"/>
+                        </group>  
                     </page>
                 </xpath>
             </field>
         </record>
+
+
+
+        <record id="sap_purchase_order_form" model="ir.ui.view">
+            <field name="name">sap_purchase_order_form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                 
+                
+                <xpath expr="//field[@name='currency_id']" position="after">
+                    <field name="unispice_sociedad_id" domain="[('unispice_sociedad','=',True)]" />
+                    <field name="sap_order" />
+                </xpath>
+
+                <xpath expr="//tree//field[@name='product_uom']" position="after">
+                    <field name="sap_warehouse_id" />
+                </xpath>
+            </field>
+        </record>
+
 
     </data>
 </odoo>

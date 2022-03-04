@@ -48,6 +48,30 @@ model.sync_territory()
             </field>
         </record>
 
+
+        <record model="ir.cron" id="integrador_sap_unispice.taxcodes">
+            <field name="name">Integreador de Tax Codes</field>
+            <field name="model_id" ref="integrador_sap_unispice.model_integrador_sap_unispice_task"></field>
+            <field name="user_id" ref="base.user_root"></field>
+            <field name="active">True</field>
+            <field name="sap_task">True</field>
+            <field name="code">
+model.sync_taxcode()
+            </field>
+        </record>
+
+        <record model="ir.cron" id="integrador_sap_unispice.warehouse">
+            <field name="name">Integreador de WareHouse</field>
+            <field name="model_id" ref="integrador_sap_unispice.model_integrador_sap_unispice_task"></field>
+            <field name="user_id" ref="base.user_root"></field>
+            <field name="active">True</field>
+            <field name="sap_task">True</field>
+            <field name="code">
+model.sync_warehouselocal()
+model.sync_warehouseimport()
+            </field>
+        </record>
+
     </data>
    
 </odoo>

@@ -138,6 +138,94 @@ class test_unispice(http.Controller):
 
         """
 
+    @http.route('/tax-codes', auth='public')
+    def get_tax(self, **kw):
+        return """
+{
+  "taxes": [
+    {
+      "code": "IVA_0",
+      "name": "IVA tasa cero"
+    },
+    {
+      "code": "IVACCF",
+      "name": "IVA contribuyentes"
+    },
+    {
+      "code": "IVACOM",
+      "name": "IVA Compras"
+    },
+    {
+      "code": "IVAEXE",
+      "name": "Exento de IVA"
+    },
+    {
+      "code": "IVAEXP",
+      "name": "IVA exportación"
+    },
+    {
+      "code": "IVAFCF",
+      "name": "IVA consumidor final"
+    },
+    {
+      "code": "IVAIMP",
+      "name": "IVA importación 13%"
+    },
+    {
+      "code": "IVAIMP0",
+      "name": "IVA importación tasa cero"
+    },
+    {
+      "code": "IVAINT",
+      "name": "IVA internación"
+    },
+    {
+      "code": "IVAPER",
+      "name": "IVA Percepción 1%"
+    },
+    {
+      "code": "IVARET",
+      "name": "IVA Retencion 1%"
+    },
+    {
+      "code": "IVASUE",
+      "name": "IVA sujeto excluído"
+    },
+    {
+      "code": "IVATIC",
+      "name": "IVA ticket"
+    }
+  ]
+}
+
+        """
+
+
+    @http.route('/warehouse/local', auth='public')
+    def get_warehouselocal(self, **kw):
+        return """
+{
+  "warehouses": [
+    {
+      "warehouseCode": "BGRAL",
+      "warehouseName": "Bodega general"
+    }
+  ]
+}
+        """
+    @http.route('/warehouse/import', auth='public')
+    def get_warehouseimport(self, **kw):
+        return """
+{
+  "warehouses": [
+    {
+      "warehouseCode": "BODAVANT",
+      "warehouseName": "Avante"
+    }
+  ]
+}
+        """
+
 
     @http.route('/sales-order', auth='public')
     def get_salesorder(self, **kw):
