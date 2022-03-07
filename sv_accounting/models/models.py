@@ -1038,3 +1038,25 @@ class odoosv_sale_order(models.Model):
                 subtype_id=self.env.ref('mail.mt_note').id
             )
         return moves
+
+
+class odoosv_pago_register(models.TransientModel):
+    """
+    Modelo transitorio para registrar el pago
+    """
+    _inherit='account.payment.register'
+    payment_reference = fields.Char("Referencia de pago")
+    
+    def _create_payment_vals_from_wizard(self):
+        payment_vals = super(odoosv_pago_register,self)._create_payment_vals_from_wizard()
+        payment_vals['payment_reference']=self.payment_reference
+        return payment_vals
+    
+    @api.model
+    def _get_batch_communication(self, batch_result):
+        ''' Helper to compute the communication based on the batch.
+        :param batch_result:    A batch returned by '_get_batches'.
+        :return:                A string representing a communication to be set on payment.
+        '''
+        labels = set((line.move_id.tipo_documento_id.name+':'+line.move_id.doc_numero if line.move_id.tipo_documento_id else line.name) or line.move_id.ref or line.move_id.name for line in batch_result['lines'])
+        return ' '.join(sorted(labels))
