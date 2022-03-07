@@ -248,6 +248,11 @@ class integrador_order(models.Model):
 #                else:
 #                    raise ValidationError('No se pudo crear la orden en SAP:'+respuesta['message'])
 
+class integrador_purchase_order_line(models.Model):
+    _inherit='purchase.order.line'
+    territory_id=fields.Many2one(comodel_name='integrador_sap_unispice.territory', string="Territorio")
+    territory_id=fields.Many2one(comodel_name='integrador_sap_unispice.territory', string="Territorio")
+
 
 class integrador_purchase_order(models.Model):
     _inherit='purchase.order'
@@ -255,8 +260,6 @@ class integrador_purchase_order(models.Model):
     customerreferenceno=fields.Char("Número de referencia de deudor")
     serie=fields.Char("Serie")
     documentnum=fields.Char("Numero de documento")
-#    shipto=fields.Char("Destino")
-#    billto=fields.Char("Destinatario de factura")
     sap_order=fields.Char("Orden en SAP")
     
 #    def sync_sap(self):

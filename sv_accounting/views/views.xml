@@ -147,32 +147,8 @@
 
 
 
-        <record id="odoosv_stock_inventory" model="ir.ui.view">
-            <field name="name">odoosv_stock_inventory</field>
-            <field name="model">stock.inventory</field>
-            <field name="inherit_id" ref="stock.view_inventory_form"/>
-            <field name="arch" type="xml">
-                 <xpath expr="//button[@name='action_validate'][1]" position="attributes">
-                    <attribute name="groups">sv_accounting.odoosv_ajuste_inventario</attribute>
-                </xpath>
-                <xpath expr="//button[@name='action_validate'][2]" position="attributes">
-                    <attribute name="groups">sv_accounting.odoosv_ajuste_inventario</attribute>
-                </xpath>
-            </field>
-        </record>
-
-
-        <record id="odoosv_stock_inventory_line" model="ir.ui.view">
-            <field name="name">odoosv_stock_inventory_line</field>
-            <field name="model">stock.inventory.line</field>
-            <field name="inherit_id" ref="stock.stock_inventory_line_tree"/>
-            <field name="arch" type="xml">
-                 <xpath expr="//field[@name='difference_qty']" position="after">
-                    <field name="razon_id" attrs="{'required':[('difference_qty','!=','0')]}"></field>
-                </xpath>
-            </field>
-        </record>
         
+
 
 
         <record id="odoosv_journal_form" model="ir.ui.view">

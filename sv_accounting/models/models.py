@@ -892,10 +892,6 @@ class odoosv_ajuste_razon(models.Model):
     _description='Razon de ajuste de inventario'
     name=fields.Char('Razon de ajuste de inventario')
 
-class odoosv_ajuste_inventario_line(models.Model):
-    _inherit='stock.inventory.line'
-    razon_id=fields.Many2one('odoosv.razon_inventario',string="Razon")
-
 
 class odoosv_sale_order(models.Model):
     _inherit='sale.order'
