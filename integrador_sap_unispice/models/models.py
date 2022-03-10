@@ -108,7 +108,8 @@ class integrador_prodcut(models.Model):
                     dic['width']=r.width
                     dic['height']=r.height
                     dic['volume']=r.volume
-                    dic['uoMVolumen']=int(r.uomvolumen)
+                    if r.uomvolumen:
+                        dic['uoMVolumen']=int(r.uomvolumen)
                     dic['weight']=r.weight
                     dic['planingMethod']=r.planingmethod
                     dic['procurementMethod']=r.procurementmethod
@@ -142,20 +143,20 @@ class integrador_prodcut(models.Model):
                     encabezado = {"content-type": "application/json"}
                     json_datos = json.dumps(dic)
                     json_datos=json_datos.replace(': false',': null')
-                    if action=='create':
+                    if accion=='create':
                         result = requests.post(var.valor+'/items',data = json_datos, headers=encabezado)                    
-                    if action=='update':
+                    if accion=='update':
                         result = requests.put(var.valor+'/items',data = json_datos, headers=encabezado)
-                    if action=='deactivate':
+                    if accion=='deactivate':
                         result = requests.put(var.valor+'/items/deactivate/'+r.codigosap,data = json_datos, headers=encabezado)
-                    if action=='activate':
+                    if accion=='activate':
                         result = requests.put(var.valor+'/items/activate/'+r.codigosap,data = json_datos, headers=encabezado)
-                    if action=='delete':
+                    if accion=='delete':
                         result = requests.delete(var.valor+'/items/'+r.codigosap,data = json_datos, headers=encabezado)
                     
 
                     if result.status_code==200:
-                        _logger.info('RESULTADO:'+result.text)
+                        _logger.info('RESULTADO:'+result.text)''
                     else:
                         raise ValidationError('SE HA PRODUCIDO UN ERROR'+result.text)
                         #raise ValidationError('No se pudo crear el producto en SAP: Enviado:'+json_datos+' Recibido: '+result.text)
