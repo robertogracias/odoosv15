@@ -385,6 +385,7 @@ class integrador_purchase_order(models.Model):
                 dic['rows']=lines
                 encabezado = {"content-type": "application/json"}
                 json_datos = json.dumps(dic)
+                 json_datos=json_datos.replace(': false',': null')
                 result = requests.post(var.valor+'/purchase-order',data = json_datos, headers=encabezado)
                 _logger.info('RESULTADO:'+result.text)
                 
