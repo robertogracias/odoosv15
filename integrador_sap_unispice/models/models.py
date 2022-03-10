@@ -360,12 +360,14 @@ class integrador_purchase_order(models.Model):
                 dic={}
                 dic['partnerCode']=r.partner_id.ref
                 dic['partnerName']=r.partner_id.name
+                dic['baseCurrency']=r.currency_id.name
                 if r.partner_id.contactperson:
                     dic['contactPersonCode']=r.partner_id.contactperson
                 dic['series']=int(varserie.valor)                  
                 dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
                 dic['documentDueDate']=r.date_planned.strftime("%Y-%m-%d")
                 dic['taxDate']=r.taxdate.strftime("%Y-%m-%d")
+                dic['comments']=r.notes
                 dic['billTo']=r.unispice_sociedad_id.contact_address_complete
                 dic['shipTo']=r.picking_type_id.warehouse_id.partner_id.contact_address_complete
                 dic['paymentTermsCode']=r.partner_id.paymenttermscode
