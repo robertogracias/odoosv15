@@ -88,7 +88,7 @@ class integrador_prodcut(models.Model):
     formatoliquidacion=fields.Char("Formato de liquidacion")
 
 
-    def sync_producto(self):
+    def sync_producto(self,accion='update'):
         var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
         if var:            
             for r in self:
@@ -142,13 +142,23 @@ class integrador_prodcut(models.Model):
                     encabezado = {"content-type": "application/json"}
                     json_datos = json.dumps(dic)
                     json_datos=json_datos.replace(': false',': null')
-                    result = requests.post(var.valor+'/items',data = json_datos, headers=encabezado)
+                    if action=='create':
+                        result = requests.post(var.valor+'/items',data = json_datos, headers=encabezado)                    
+                    if action=='update':
+                        result = requests.put(var.valor+'/items',data = json_datos, headers=encabezado)
+                    if action=='deactivate':
+                        result = requests.put(var.valor+'/items/deactivate/'+r.codigosap,data = json_datos, headers=encabezado)
+                    if action=='activate':
+                        result = requests.put(var.valor+'/items/activate/'+r.codigosap,data = json_datos, headers=encabezado)
+                    if action=='delete':
+                        result = requests.delete(var.valor+'/items/'+r.codigosap,data = json_datos, headers=encabezado)
                     
 
-                    if result.status_code==201:
+                    if result.status_code==200:
                         _logger.info('RESULTADO:'+result.text)
-                    else:                        
-                        raise ValidationError('No se pudo crear el producto en SAP: Enviado:'+json_datos+' Recibido: '+result.text)
+                    else:
+                        raise ValidationError('SE HA PRODUCIDO UN ERROR'+result.text)
+                        #raise ValidationError('No se pudo crear el producto en SAP: Enviado:'+json_datos+' Recibido: '+result.text)
             
 
 
