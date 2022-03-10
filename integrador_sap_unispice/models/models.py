@@ -99,7 +99,7 @@ class integrador_prodcut(models.Model):
                     dic['name']=r.name
                     dic['foreignName']=r.foreignname
                     dic['itemsGroup']=r.itemsgroup
-                    dic['uoMGroup']=r.uomgroup
+                    dic['uoMGroup']=-1
                     dic['subGrupoVenta1']=r.subgrupoventa1
                     dic['itemsPerPurchaseUnit']=r.itemsperpurchaseunit
                     dic['uoMEmbalaje']=r.uomembalaje
@@ -376,8 +376,8 @@ class integrador_purchase_order(models.Model):
                     line['warehouseCode']=l.sap_warehouse_id.code
                     line['itemDescription']=l.name
                     line['quantity']=l.product_uom_qty
-                    line['unitPrice']=l.price_unit
-                    line['discountPercentage']=0
+                    #line['unitPrice']=l.price_unit
+                    #line['discountPercentage']=0
                     line['taxCode']=r.partner_id.taxcode
                     lines.append(line)
                 dic['rows']=lines
@@ -385,11 +385,19 @@ class integrador_purchase_order(models.Model):
                 json_datos = json.dumps(dic)
                 result = requests.post(var.valor+'/purchase-order',data = json_datos, headers=encabezado)
                 _logger.info('RESULTADO:'+result.text)
-                respuesta=json.loads(result.text)
+                
                 if result.status_code==200:
+                    respuesta=json.loads(result.text)
                     _logger.info('RESULTADO:'+result.text)
-                    if 'purchaseOrder' in respuesta:
-                        r.sap_order=respuesta['purchaseOrder']
+                    if 'documentNum' in respuesta:
+                        r.sap_order=respuesta['documentNum']
+                        for l in rows:
+                            for linea in r.order_line:
+                                if linea.product_id.codigosap==ll['itemCode']:
+                                    l.price_unit=l['unitPrice']
+                                    l.discountPercentage=l['discountPercentage']
+                    else:
+                        raise ValidationError('No se pudo crear la Orden en SAP: Enviado:'+json_datos+' Recibido: '+result.text)    
                 else:                        
                     raise ValidationError('No se pudo crear la Orden en SAP: Enviado:'+json_datos+' Recibido: '+result.text)
             
