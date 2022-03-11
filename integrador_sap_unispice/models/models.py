@@ -397,8 +397,8 @@ class integrador_purchase_order(models.Model):
                         for l in respuesta['rows']:
                             for linea in r.order_line:
                                 if linea.product_id.codigosap==l['itemCode']:
-                                    l.price_unit=l['unitPrice']
-                                    l.discountPercentage=l['discountPercentage']
+                                    linea.price_unit=l['unitPrice']
+                                    linea.discountPercentage=l['discountPercentage']
                     else:
                         raise ValidationError('No se pudo crear la Orden en SAP: Enviado:'+json_datos+' Recibido: '+result.text)    
                 else:                        
