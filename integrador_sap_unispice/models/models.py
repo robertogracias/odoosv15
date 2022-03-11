@@ -349,6 +349,8 @@ class integrador_purchase_order(models.Model):
     sap_order=fields.Char("Orden en SAP")
     taxdate=fields.Date('Fecha Impuestos')
     unispice_sociedad_id = fields.Many2one('res.partner', string='Sociedad En SAP')
+    sap_warehouse_id = fields.Many2one('integrador_sap_unispice.warehouse', string='Almacen SAP')
+    taxcode_id = fields.Many2one('integrador_sap_unispice.tax_code', string='Taxcode')
 
     
     def sync_sap(self):
@@ -375,12 +377,12 @@ class integrador_purchase_order(models.Model):
                 for l in r.order_line:
                     line={}
                     line['itemCode']=l.product_id.codigosap
-                    line['warehouseCode']=l.sap_warehouse_id.code
+                    line['warehouseCode']=r.sap_warehouse_id.code
                     line['itemDescription']=l.name
                     line['quantity']=l.product_uom_qty
                     #line['unitPrice']=l.price_unit
                     #line['discountPercentage']=0
-                    line['taxCode']=r.partner_id.taxcode
+                    line['taxCode']=r.taxcode_id.code
                     lines.append(line)
                 dic['rows']=lines
                 encabezado = {"content-type": "application/json"}

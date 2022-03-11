@@ -377,11 +377,13 @@
                 
                 <xpath expr="//field[@name='currency_id']" position="after">
                     <field name="unispice_sociedad_id" domain="[('unispice_sociedad','=',True)]" />
+                    <field name="sap_warehouse_id" />
+                    <field name="taxcode_id" />
                     <field name="sap_order" />
                 </xpath>
 
                 <xpath expr="//tree//field[@name='product_uom']" position="after">
-                    <field name="sap_warehouse_id" />
+                    <!--field name="sap_warehouse_id" /-->
                 </xpath>
             </field>
         </record>
