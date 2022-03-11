@@ -396,7 +396,7 @@ class integrador_purchase_order(models.Model):
                         r.sap_order=respuesta['documentNum']
                         for l in respuesta['rows']:
                             for linea in r.order_line:
-                                if linea.product_id.codigosap==ll['itemCode']:
+                                if linea.product_id.codigosap==l['itemCode']:
                                     l.price_unit=l['unitPrice']
                                     l.discountPercentage=l['discountPercentage']
                     else:
