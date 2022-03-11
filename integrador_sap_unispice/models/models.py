@@ -394,7 +394,7 @@ class integrador_purchase_order(models.Model):
                     _logger.info('RESULTADO:'+result.text)
                     if 'documentNum' in respuesta:
                         r.sap_order=respuesta['documentNum']
-                        for l in rows:
+                        for l in respuesta['rows']:
                             for linea in r.order_line:
                                 if linea.product_id.codigosap==ll['itemCode']:
                                     l.price_unit=l['unitPrice']
