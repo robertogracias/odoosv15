@@ -299,7 +299,7 @@ class integrador_order(models.Model):
                 dic['clientName']=r.partner_id.name
                 dic['customerReferenceNo']=r.partner_id.ref
                 dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
-                dic['documentDueDate']=r.date_planned.strftime("%Y-%m-%d")
+                dic['documentDueDate']=r.date_order.strftime("%Y-%m-%d")
                 dic['series']=int(varserie.valor)
                 dic['taxDate']=r.taxdate.strftime("%Y-%m-%d")
                 dic['comments']=r.notes
