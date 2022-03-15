@@ -302,7 +302,6 @@ class integrador_order(models.Model):
                 dic['documentDueDate']=r.date_order.strftime("%Y-%m-%d")
                 dic['series']=int(varserie.valor)
                 dic['comments']=r.note
-                dic['documentDate']=0.0
                 dic['billTo']=r.unispice_sociedad_id.contact_address_complete
                 dic['shipTo']=r.unispice_sociedad_id.contact_address_complete
                 lines=[]
