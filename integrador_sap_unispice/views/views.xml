@@ -25,7 +25,12 @@
         </record>
         <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.sap_compra_serie">
             <field name="name">sap_compra_serie</field>
-            <field name="valor">7</field>
+            <field name="valor">15</field>
+        </record>
+
+         <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.sap_compra_serie">
+            <field name="name">sap_venta_serie</field>
+            <field name="valor">15</field>
         </record>
 
         <!--record model="ir.cron" id="integrador_sap.cron_partner">
@@ -382,9 +387,26 @@
                     <field name="sap_order" />
                 </xpath>
 
-                <xpath expr="//tree//field[@name='product_uom']" position="after">
-                    <!--field name="sap_warehouse_id" /-->
+                
+            </field>
+        </record>
+
+
+         <record id="sap_sale_order_form" model="ir.ui.view">
+            <field name="name">sap_sale_order_form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                 
+                
+                <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                    <field name="unispice_sociedad_id" domain="[('unispice_sociedad','=',True)]" />
+                    <field name="sap_warehouse_id" />
+                    <field name="taxcode_id" />
+                    <field name="sap_order" />
                 </xpath>
+
+               
             </field>
         </record>
 

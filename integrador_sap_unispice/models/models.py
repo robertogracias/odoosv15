@@ -282,13 +282,61 @@ class integrador_orderline(models.Model):
 
 class integrador_order(models.Model):
     _inherit='sale.order'
-    code=fields.Integer("Codigo")
-    customerreferenceno=fields.Char("Número de referencia de deudor")
-    serie=fields.Char("Serie")
-    documentnum=fields.Char("Numero de documento")
-    shipto=fields.Char("Destino")
-    billto=fields.Char("Destinatario de factura")
     sap_order=fields.Char("Orden en SAP")
+    unispice_sociedad_id = fields.Many2one('res.partner', string='Sociedad En SAP')
+    sap_warehouse_id = fields.Many2one('integrador_sap_unispice.warehouse', string='Almacen SAP')
+    taxcode_id = fields.Many2one('integrador_sap_unispice.tax_code', string='Taxcode')
+
+
+    def sync_sap(self):
+        _logger.info('Integrador de ordenes de venta')
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
+        varserie=self.env['integrador_sap_unispice.property'].search([('name','=','sap_venta_serie')],limit=1)
+        if var:
+            for r in self:
+                dic={}
+                dic['clientCode']=r.partner_id.ref
+                dic['clientName']=r.partner_id.name
+                dic['customerReferenceNo']=r.partner_id.ref
+                dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
+                dic['documentDueDate']=r.date_planned.strftime("%Y-%m-%d")
+                dic['series']=int(varserie.valor)
+                dic['taxDate']=r.taxdate.strftime("%Y-%m-%d")
+                dic['comments']=r.notes
+                dic['documentDate']=0.0
+                dic['billTo']=r.unispice_sociedad_id.contact_address_complete
+                dic['shipTo']=r.picking_type_id.warehouse_id.partner_id.contact_address_complete
+                lines=[]
+                for l in r.order_line:
+                    line={}
+                    line['itemCode']=l.product_id.codigosap
+                    line['quantity']=l.product_uom_qty
+                    line['price']=0
+                    line['discountPercentage']=0
+                    line['taxCode']=r.taxcode_id.code
+                    line['grossPrice']=0
+                    line['warehouseCode']=r.sap_warehouse_id.code
+                    lines.append(line)
+                dic['rows']=lines
+                encabezado = {"content-type": "application/json"}
+                json_datos = json.dumps(dic)
+                json_datos=json_datos.replace(': false',': null')
+                result = requests.post(var.valor+'/sales-order',data = json_datos, headers=encabezado)
+                _logger.info('RESULTADO:'+result.text)
+                
+                if result.status_code==200:
+                    respuesta=json.loads(result.text)
+                    _logger.info('RESULTADO:'+result.text)
+                    if 'documentNum' in respuesta:
+                        r.sap_order=respuesta['documentNum']
+                        for l in respuesta['rows']:
+                            for linea in r.order_line:
+                                if linea.product_id.codigosap==l['itemCode']:
+                                    linea.price_unit=l['unitPrice']
+                    else:
+                        raise ValidationError('No se pudo crear la Orden en SAP: Enviado:'+json_datos+' Recibido: '+result.text)    
+                else:                        
+                    raise ValidationError('No se pudo crear la Orden en SAP: Enviado:'+json_datos+' Recibido: '+result.text)
     
 #    def sync_sap(self):
 #        _logger.info('Integrador de ordenes')
@@ -1348,3 +1396,4 @@ class intregrador_sap_task(models.Model):
                             dic['product_qty']=r['onHand']
                             self.env['stock.inventory.line'].create(dic)
             inventory.action_validate()
+
