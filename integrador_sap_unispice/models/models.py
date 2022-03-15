@@ -304,7 +304,7 @@ class integrador_order(models.Model):
                 dic['comments']=r.note
                 dic['documentDate']=0.0
                 dic['billTo']=r.unispice_sociedad_id.contact_address_complete
-                dic['shipTo']=r.picking_type_id.warehouse_id.partner_id.contact_address_complete
+                dic['shipTo']=r.unispice_sociedad_id.contact_address_complete
                 lines=[]
                 for l in r.order_line:
                     line={}
