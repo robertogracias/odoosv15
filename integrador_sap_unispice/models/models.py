@@ -311,10 +311,10 @@ class integrador_order(models.Model):
                     line={}
                     line['itemCode']=l.product_id.codigosap
                     line['quantity']=l.product_uom_qty
-                    line['price']=0
+                    line['price']=l.price_unit
                     line['discountPercentage']=0
                     line['taxCode']=r.taxcode_id.code
-                    line['grossPrice']=0
+                    line['grossPrice']=l.price_unit
                     line['warehouseCode']=r.sap_warehouse_id.code
                     lines.append(line)
                 dic['rows']=lines
@@ -329,10 +329,10 @@ class integrador_order(models.Model):
                     _logger.info('RESULTADO:'+result.text)
                     if 'documentNum' in respuesta:
                         r.sap_order=respuesta['documentNum']
-                        for l in respuesta['rows']:
-                            for linea in r.order_line:
-                                if linea.product_id.codigosap==l['itemCode']:
-                                    linea.price_unit=l['unitPrice']
+                        #for l in respuesta['rows']:
+                        #    for linea in r.order_line:
+                        #        if linea.product_id.codigosap==l['itemCode']:
+                        #            linea.price_unit=l['unitPrice']
                     else:
                         raise ValidationError('No se pudo crear la Orden en SAP: Enviado:'+json_datos+' Recibido: '+result.text)    
                 else:                        
