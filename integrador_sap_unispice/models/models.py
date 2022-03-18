@@ -43,16 +43,13 @@ class integrador_prodcut(models.Model):
     _inherit='product.template'
     foreignname=fields.Char("Descripción en ingles")
     itemsgroup=fields.Integer("itemsGroup")
-    uomgroup=fields.Integer("uoMGroup")
     subgrupoventa1=fields.Char("Sub Grupo de Venta")
     itemsperpurchaseunit=fields.Float("Items por unidad de compra")
-    uomembalaje=fields.Char("Unidad de Embalaje")
     quantityperpackage=fields.Float("Items por paquete")
     length=fields.Float("Slength1")
     width=fields.Float("SWidth1")
     height=fields.Float("SHeight1")
     volume=fields.Float("Volumen CC")
-    uomvolumen=fields.Char("Unidad de volumen")
     weight=fields.Float("SWeight1")
     planingmethod=fields.Char("planingMethod")
     procurementmethod=fields.Char("procurementmethod")
@@ -75,12 +72,7 @@ class integrador_prodcut(models.Model):
     camamaritimo=fields.Integer("Cama maritimo")
     filasmaritimo=fields.Integer("Filas Maritimo")
     cajaspalletmaritimo=fields.Integer("Cajas pallet maritimo")
-    grupomp=fields.Char("grupoMP")
-    grupotipomp=fields.Char("grupoTipoMP")
-    grupomppermitida=fields.Char("grupoMPPermitida")
-    grupopt=fields.Char("grupoPT")
-    grupopresentacion=fields.Char("grupoPresentacion")
-    grupotipoempaque=fields.Char("grupoTipoEmpaque")
+   
     cantidadporposicion=fields.Float("Cantidad por posición")
     subgrupo1=fields.Char("Sub grupo 1")
     subgrupo2=fields.Char("Sub grupo 2")
@@ -99,17 +91,16 @@ class integrador_prodcut(models.Model):
                     dic['name']=r.name
                     dic['foreignName']=r.foreignname
                     dic['itemsGroup']=r.itemsgroup
-                    dic['uoMGroup']=-1
+                    dic['uoMGroup']=r.x_grupo_unidad_medida
                     dic['subGrupoVenta1']=r.subgrupoventa1
                     dic['itemsPerPurchaseUnit']=r.itemsperpurchaseunit
-                    dic['uoMEmbalaje']=r.uomembalaje
+                    dic['uoMEmbalaje']=r.x_unidad_embalaje
                     dic['quantityPerPackage']=r.quantityperpackage
                     dic['length']=r.length
                     dic['width']=r.width
                     dic['height']=r.height
                     dic['volume']=r.volume
-                    if r.uomvolumen:
-                        dic['uoMVolumen']=int(r.uomvolumen)
+                    dic['uoMVolumen']=2       
                     dic['weight']=r.weight
                     dic['planingMethod']=r.planingmethod
                     dic['procurementMethod']=r.procurementmethod
@@ -132,12 +123,12 @@ class integrador_prodcut(models.Model):
                     dic['camaMaritimo']=r.camamaritimo
                     dic['filasMaritimo']=r.filasmaritimo
                     dic['cajasPalletMaritimo']=r.cajaspalletmaritimo
-                    dic['grupoMP']=r.grupomp
-                    dic['grupoTipoMP']=r.grupotipomp
-                    dic['grupoMPPermitida']=r.grupomppermitida
-                    dic['grupoPT']=r.grupopt
-                    dic['grupoPresentacion']=r.grupopresentacion
-                    dic['grupoTipoEmpaque']=r.grupotipoempaque
+                    dic['grupoMP']=r.x_grupo_mp
+                    dic['grupoTipoMP']=r.x_grupo_tipo_mp
+                    dic['grupoMPPermitida']=r.x_grupo_mp_permitida
+                    dic['grupoPT']=r.x_grupo_pt
+                    dic['grupoPresentacion']=r.x_grupo_presentacion
+                    dic['grupoTipoEmpaque']=r.x_grupo_tipo_empaque
                     dic['cantidadporposicion']=r.cantidadporposicion
                    
                     encabezado = {"content-type": "application/json"}
@@ -413,8 +404,8 @@ class integrador_purchase_order(models.Model):
                     dic['contactPersonCode']=r.partner_id.contactperson
                 dic['series']=int(varserie.valor)                  
                 dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
-                dic['documentDueDate']=r.date_planned.strftime("%Y-%m-%d")
-                dic['taxDate']=r.taxdate.strftime("%Y-%m-%d")
+                dic['documentDueDate']=r.x_date_required.strftime("%Y-%m-%d")
+                dic['taxDate']=r.date_order.strftime("%Y-%m-%d")
                 dic['comments']=r.notes
                 dic['billTo']=r.unispice_sociedad_id.contact_address_complete
                 dic['shipTo']=r.picking_type_id.warehouse_id.partner_id.contact_address_complete

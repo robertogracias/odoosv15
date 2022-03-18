@@ -275,7 +275,7 @@
                                 <field name="codigosap" />
                                 <field name="itemsgroup" string="Grupo de Articulos"/>
                                 <!--field name="uomgroup"/-->
-                                <field name="subgrupoventa1" String="Grupo Articulo"/>
+                                <field name="x_grupo_unidad_medida" />
                                 <field name="subgrupoventa2"/>
                                 <field name="subgrupoventa3"/>
                             </group>
@@ -294,7 +294,6 @@
                                 <field name="length"/>
                                 <field name="width"/>
                                 <field name="height"/>
-                                <field name="uomvolumen"/>
                                 <field name="volume" string="Volumen CC"/>
                                 <field name="weight"/>
                             </group>
@@ -312,16 +311,16 @@
                                 <field name="camamaritimo"/>
                                 <field name="filasmaritimo"/>
                                 <field name="cajaspalletmaritimo"/>
-                                <field name="uomembalaje"/>
+                                <field name="x_unidad_embalaje"/>
                                 <field name="quantityperpackage"/>
                             </group>
                             <group string="Otros">
-                                <field name="grupomp"/>
-                                <field name="grupotipomp"/>
-                                <field name="grupomppermitida"/>
-                                <field name="grupopt"/>
-                                <field name="grupopresentacion"/>
-                                <field name="grupotipoempaque"/>
+                                <field name="x_grupo_mp"/>
+                                <field name="x_grupo_tipo_mp"/>
+                                <field name="x_grupo_mp_permitida"/>
+                                <field name="x_grupo_pt"/>
+                                <field name="x_grupo_presentacion"/>
+                                <field name="x_grupo_tipo_empaque"/>
                                 <field name="cantidadporposicion"/>
                             </group>
                         </group>
