@@ -45,8 +45,17 @@
 
             <xpath expr="//field[@name='type']" position="after">
                     <field name="tipo_produccion"/>
+                    <field name="tipo_producto_id"/>
                     
-                    
+            </xpath>
+            <xpath expr="//page[@name='inventory']" position="after">
+                <page string="Calidad">
+                    <field name="quality_ids">
+                        <tree editable="top">
+                            <field name="name"/>
+                        </tree>
+                    </field>
+                </page>
             </xpath>
 
             <xpath expr="//group[@name='group_lots_and_weight']" position="after">
@@ -61,6 +70,28 @@
      </record>
 
 
+
+     <record model="ir.ui.view" id="unispice_quelity_check_form">
+        <field name="name">unispice_quelity_check_form</field>
+        <field name="model">quality.check</field>
+        <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
+        <field name="arch" type="xml">
+
+            
+            <xpath expr="//page[@name='notes']" position="after">
+                <page string="Check List">
+                    <field name="quality_ids">
+                        <tree editable="top" create="0">
+                            <field name="name"/>
+                            <field name="aprobado" widget="boolean_toggle"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
+            
+        </field>
+     </record>
      
     
 

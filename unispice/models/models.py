@@ -161,13 +161,6 @@ class unispice_lot_log(models.Model):
     unispice_location_id=fields.Many2one(comodel_name='unispice.location', string='Ubicacion')
 
 
-class unispice_product(models.Model):
-    _inherit='product.template'
-    is_canasta=fields.Boolean('Es Canasta')
-    is_pallet=fields.Boolean('Es Pallet')
-    tara=fields.Float('Tara')
-
-    tipo_produccion=fields.Selection(selection=[('Materia Prima','Materia Prima'),('Producto Terminado','Producto Terminado'),('Sub Producto','Sub Producto'),('Otro','Otro')],string="Tipo(Produccion)",default='Materia Prima')
 
 
 class unispice_lote(models.Model):
@@ -848,3 +841,69 @@ class unispice_tralsado_line(models.Model):
     def get_peso_neto(self):
         for r in self:
             r.peso_neto=r.peso_bruto-(r.canastas*r.tara_canasta)-r.tara_pallet    
+
+
+
+
+##########################################################################################################################################################
+##Configuracion
+class unispice_tipoproducto(models.Model):
+    _name='unispice.tipo_producto'
+    _description='Tipo de Producto'
+    name=fields.Char('Tipo de Producto')
+    
+
+
+class unispice_configuration(models.Model):
+    _name='unispice.configuration'
+    _description='Configuracion de almacenes'
+    name=fields.Char('Nombre')
+    partner_id=fields.Many2one(comodel_name='res.partner', string='Sociedad',domain='[("unispice_sociedad","=",True)]')
+    almacen_id=fields.Many2one(comodel_name='integrador_sap_unispice.warehouse', string='Almacen')
+    taxcode_id=fields.Many2one(comodel_name='integrador_sap_unispice.tax_code', string='Tax Code')
+    tipo_producto_id=fields.Many2one(comodel_name='unispice.tipo_producto', string='Tipo de producto')
+
+
+
+class unispice_qualitycheck(models.Model):
+    _name='unispice.quatily_item'
+    _description='Item del control de calidad'
+    name=fields.Char('Punto a revisar')
+    product_id=fields.Many2one(comodel_name='product.template', string='Producto')
+
+
+class unispice_product(models.Model):
+    _inherit='product.template'
+    is_canasta=fields.Boolean('Es Canasta')
+    is_pallet=fields.Boolean('Es Pallet')
+    tara=fields.Float('Tara')
+
+    tipo_produccion=fields.Selection(selection=[('Materia Prima','Materia Prima'),('Producto Terminado','Producto Terminado'),('Sub Producto','Sub Producto'),('Otro','Otro')],string="Tipo(Produccion)",default='Materia Prima')
+    tipo_producto_id=fields.Many2one(comodel_name='unispice.tipo_producto', string='Tipo de producto(UNISPICE)')
+    quality_ids=fields.One2many(comodel_name='unispice.quatily_item',inverse_name='product_id',string='Items de Calidad')
+
+
+class unispice_check_item(models.Model):
+    _name='unispice.quatily_check_item'
+    _description='Item del control de calidad'
+    name=fields.Char('Punto a revisar')
+    aprobado=fields.Boolean("Aprobado")
+    check_id=fields.Many2one(comodel_name='quality.check', string='Control')
+
+
+
+class unispice_product(models.Model):
+    _inherit='quality.check'
+    quality_ids=fields.One2many(comodel_name='unispice.quatily_check_item',inverse_name='check_id',string='Items de Calidad')
+
+
+    @api.onchange('product_id')
+    def change_product(self):
+        for r in self:
+            r.quality_ids.unlink()
+            for p in r.product_id.quality_ids:
+                dic={}
+                dic['name']=p.name
+                dic['aprobado']=False
+                dic['check_id']=r.id
+                self.env['unispice.quatily_check_item'].create(dic)

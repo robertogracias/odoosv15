@@ -19,7 +19,7 @@
     'version': '14.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','stock','etiquetas','basculas'],
+    'depends': ['base','stock','etiquetas','basculas','integrador_sap_unispice','quality'],
 
     # always loaded
     'data': [
@@ -28,6 +28,8 @@
         'views/ingreso.xml',
         'views/solicitud.xml',
         'views/transformacion.xml',
+        'views/tipoproducto.xml',
+        'views/configuration.xml',
         'security/ir.model.access.csv',
     ],
     # only loaded in demonstration mode
