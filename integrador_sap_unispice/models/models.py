@@ -313,7 +313,7 @@ class integrador_order(models.Model):
                     line['discountPercentage']=0
                     line['taxCode']=r.taxcode_id.code
                     line['grossPrice']=l.price_unit
-                    line['warehouseCode']=r.sap_warehouse_id.code
+                    line['warehouseCode']=r.sap_warehouse_id.code.strip()
                     lines.append(line)
                 dic['rows']=lines
                 encabezado = {"content-type": "application/json"}
