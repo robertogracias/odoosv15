@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="unispice_configuracion_tree">
+            <field name="name">unispice_configuracion_tree</field>
+            <field name="model">unispice.configuration</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="partner_id"/>
+                    <field name="tipo_producto_id"/>
+                    <field name="almacen_id"/>
+                    <field name="taxcode_id"/>
+                    
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="unispice_configuracion_action">
+            <field name="name">Configuracion almacenes/impuestos</field>
+            <field name="res_model">unispice.configuration</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Configuracion de Almacenes</p>
+            </field>
+        </record>
+
+        <!--menu del objetivo-->
+        <menuitem id="unispice_configuracion_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" name="Configuracion Almacen" action="unispice_configuracion_action" sequence="29"/>
+
+
+    </data>
+</odoo>

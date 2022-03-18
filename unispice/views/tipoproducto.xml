@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        <record model="ir.ui.view" id="unispice_tipo_producto_form">
+            <field name="name">unispice_tipo_producto_form</field>
+            <field name="model">unispice.tipo_producto</field>
+            <field name="arch" type="xml">
+                <form string="Tipos de Productos">
+                    <sheet>
+                        <group>
+                            <field name="name" placeholder="Tipo de Producto"/>
+                        </group>
+                    </sheet>
+
+                </form>
+            </field>
+        </record>
+
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="unispice_tipo_producto_tree">
+            <field name="name">unispice_tipo_producto_tree</field>
+            <field name="model">unispice.tipo_producto</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="unispice_tipo_producto_action">
+            <field name="name">Tipos de Productos</field>
+            <field name="res_model">unispice.tipo_producto</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Tipos de Productos</p>
+            </field>
+        </record>
+
+        <!--menu del objetivo-->
+        <menuitem id="unispice_tipo_producto_mnu" parent="integrador_sap_unispice.integrador_sap_mnu" name="Tipos de Productos" action="unispice_tipo_producto_action" sequence="19"/>
+
+
+    </data>
+</odoo>
