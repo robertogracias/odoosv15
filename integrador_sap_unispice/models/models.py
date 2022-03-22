@@ -291,7 +291,7 @@ class integrador_order(models.Model):
                 dic['customerReferenceNo']=r.partner_id.ref
                 dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
                 dic['documentDueDate']=r.date_order.strftime("%Y-%m-%d")
-                dic['series']=int(varserie.valor)
+                dic['serie']=int(varserie.valor)
                 dic['comments']=r.note
                 dic['billTo']=r.unispice_sociedad_id.contact_address_complete
                 dic['shipTo']=r.unispice_sociedad_id.contact_address_complete
@@ -304,7 +304,7 @@ class integrador_order(models.Model):
                     line['discountPercentage']=0
                     line['taxCode']=r.taxcode_id.code
                     line['grossPrice']=l.price_unit
-                    line['warehouseCode']=r.sap_warehouse_id.code.strip()
+                    line['warehouse']=r.sap_warehouse_id.code.strip()
                     lines.append(line)
                 dic['rows']=lines
                 encabezado = {"content-type": "application/json"}

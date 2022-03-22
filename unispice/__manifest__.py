@@ -30,6 +30,7 @@
         'views/transformacion.xml',
         'views/tipoproducto.xml',
         'views/configuration.xml',
+        'views/quality_item.xml',
         'security/ir.model.access.csv',
     ],
     # only loaded in demonstration mode

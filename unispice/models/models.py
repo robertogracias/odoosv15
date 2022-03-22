@@ -869,7 +869,7 @@ class unispice_qualitycheck(models.Model):
     _name='unispice.quatily_item'
     _description='Item del control de calidad'
     name=fields.Char('Punto a revisar')
-    product_id=fields.Many2one(comodel_name='product.template', string='Producto')
+   
 
 
 class unispice_product(models.Model):
@@ -880,7 +880,7 @@ class unispice_product(models.Model):
 
     tipo_produccion=fields.Selection(selection=[('Materia Prima','Materia Prima'),('Producto Terminado','Producto Terminado'),('Sub Producto','Sub Producto'),('Otro','Otro')],string="Tipo(Produccion)",default='Materia Prima')
     tipo_producto_id=fields.Many2one(comodel_name='unispice.tipo_producto', string='Tipo de producto(UNISPICE)')
-    quality_ids=fields.One2many(comodel_name='unispice.quatily_item',inverse_name='product_id',string='Items de Calidad')
+    quality_ids=fields.Many2many(comodel_name='unispice.quatily_item',string='Items de Calidad')
 
 
 class unispice_check_item(models.Model):
@@ -895,6 +895,7 @@ class unispice_check_item(models.Model):
 class unispice_product(models.Model):
     _inherit='quality.check'
     quality_ids=fields.One2many(comodel_name='unispice.quatily_check_item',inverse_name='check_id',string='Items de Calidad')
+    muestra=fields.Float("Peso en lbs. de la muestra")
 
 
     @api.onchange('product_id')
