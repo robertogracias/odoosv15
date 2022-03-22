@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+
+        
+        <!--tree del objetivo-->
+        <record model="ir.ui.view" id="unispice_quality_tree">
+            <field name="name">unispice_quality_tree</field>
+            <field name="model">unispice.quatily_item</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                 
+                    
+                </tree>
+            </field>
+        </record>
+
+
+        <!--action del objetivo-->
+        <record model="ir.actions.act_window" id="unispice_quality_action">
+            <field name="name">Items de control de calidad</field>
+            <field name="res_model">unispice.quatily_item</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Items de controld de calidad</p>
+            </field>
+        </record>
+
+        <!--menu del objetivo-->
+        <menuitem id="unispice_quality_mnu" parent="quality_control.menu_quality_configuration" name="Items de verificacion" action="unispice_quality_action" sequence="29"/>
+
+
+    </data>
+</odoo>
