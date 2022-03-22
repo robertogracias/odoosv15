@@ -80,9 +80,13 @@
             
             <xpath expr="//page[@name='notes']" position="after">
                 <page string="Check List">
+                    <group>
+                        <field name="muestra"/>
+                    </group>
                     <field name="quality_ids">
                         <tree editable="top" create="0">
                             <field name="name"/>
+                            <field name="muestra_afectada"/>
                             <field name="aprobado" widget="boolean_toggle"/>
                         </tree>
                     </field>

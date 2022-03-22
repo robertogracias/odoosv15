@@ -889,6 +889,7 @@ class unispice_check_item(models.Model):
     name=fields.Char('Punto a revisar')
     aprobado=fields.Boolean("Aprobado")
     check_id=fields.Many2one(comodel_name='quality.check', string='Control')
+    muestra_afectada=fields.Float("Muestra afectada")
 
 
 
