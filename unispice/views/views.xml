@@ -45,7 +45,6 @@
 
             <xpath expr="//field[@name='type']" position="after">
                     <field name="tipo_produccion"/>
-                    <field name="tipo_producto_id"/>
                     
             </xpath>
             <xpath expr="//page[@name='inventory']" position="after">

@@ -11,7 +11,7 @@
             <field name="arch" type="xml">
                 <tree editable="top">
                     <field name="partner_id"/>
-                    <field name="tipo_producto_id"/>
+                    <field name="x_tipo_producto"/>
                     <field name="almacen_id"/>
                     <field name="taxcode_id"/>
                     

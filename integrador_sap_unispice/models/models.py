@@ -291,6 +291,7 @@ class integrador_order(models.Model):
                 dic['customerReferenceNo']=r.partner_id.ref
                 dic['documentDate']=r.date_order.strftime("%Y-%m-%d")
                 dic['documentDueDate']=r.date_order.strftime("%Y-%m-%d")
+                dic['documentTotal']=r.amount_total
                 dic['serie']=int(varserie.valor)
                 dic['comments']=r.note
                 dic['billTo']=r.unispice_sociedad_id.contact_address_complete
