@@ -28,9 +28,9 @@
             <field name="valor">15</field>
         </record>
 
-         <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.sap_compra_serie">
+         <record model="integrador_sap_unispice.property" id="integrador_sap_unispice.sap_venta_serie">
             <field name="name">sap_venta_serie</field>
-            <field name="valor">15</field>
+            <field name="valor">12</field>
         </record>
 
         <!--record model="ir.cron" id="integrador_sap.cron_partner">

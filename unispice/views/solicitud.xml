@@ -42,6 +42,8 @@
                         <field name="pallet_ids">
                             <tree editable="button" >
                                 <field name="lot_id"  readonly="1"/>
+                                <field name="location_src_id"  readonly="1"/>
+                                <field name="location_dest_id"  readonly="0"/>
                                 <field name="ubicado" widget="boolean_toggle"/>
                                 <field name="boleta_id"  readonly="1"/>
                                 <field name="canastas"  readonly="1"/>

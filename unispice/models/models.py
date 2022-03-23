@@ -171,6 +171,7 @@ class unispice_lote(models.Model):
     pallet_id=fields.Many2one(comodel_name='product.product', string='Tipo Pallet')
     tara_pallet=fields.Float('Tara pallet',related='pallet_id.tara',store=True)
     boleta_id=fields.Many2one(comodel_name='unispice.recepcion', string='Boleta')
+    liquidado=fields.Boolean("Liquidado")
 
 
 
@@ -359,7 +360,7 @@ class unispice_solicitud(models.Model):
     state=fields.Selection(selection=[('draft','Borrador'),('Solicitado','Entrada'),('Cerrado','Cerrado')],string="Estado",default='draft',tracking=True)
     pallet_ids=fields.One2many(comodel_name='unispice.solicitud.pallet', string='Pallets',inverse_name='solicitud_id')
     fecha_solicitud=fields.Date("Fecha de Entrada",tracking=True)
-    pallet_id=fields.Char("Pallet Id")
+    pallet_id=fields.Many2one(comodel_name='stock.production.lot', string='Pallet a Agregar',domain='[("liquidado","=",False)]')
 
 
     #cambia el estado a solicitado
@@ -382,9 +383,14 @@ class unispice_solicitud(models.Model):
     def addline(self):
         for r in self:
             if r.pallet_id:
-                lote=self.env['stock.production.lot'].search([('name', '=', r.pallet_id)],limit=1)
+                lote=self.env['stock.production.lot'].search([('name', '=', r.pallet_id.name)],limit=1)
                 quant=None
-                if lote:            
+                if lote:
+                    #validando pallet
+                    anterior=self.env['unispice.solicitud.pallet'].search([('lot_id','=',lote.id),('state','!=','Cancelado')],limit=1)
+                    if anterior:
+                        raise UserError('El pallet ya esta en otra solicitud')
+                    #validando cantidades            
                     quants=self.env['stock.quant'].search([('lot_id', '=', lote.id),('available_quantity','>',0)])
                     if quants:
                         x=0
@@ -861,7 +867,6 @@ class unispice_configuration(models.Model):
     partner_id=fields.Many2one(comodel_name='res.partner', string='Sociedad',domain='[("unispice_sociedad","=",True)]')
     almacen_id=fields.Many2one(comodel_name='integrador_sap_unispice.warehouse', string='Almacen')
     taxcode_id=fields.Many2one(comodel_name='integrador_sap_unispice.tax_code', string='Tax Code')
-    tipo_producto_id=fields.Many2one(comodel_name='unispice.tipo_producto', string='Tipo de producto')
 
 
 
@@ -879,7 +884,6 @@ class unispice_product(models.Model):
     tara=fields.Float('Tara')
 
     tipo_produccion=fields.Selection(selection=[('Materia Prima','Materia Prima'),('Producto Terminado','Producto Terminado'),('Sub Producto','Sub Producto'),('Otro','Otro')],string="Tipo(Produccion)",default='Materia Prima')
-    tipo_producto_id=fields.Many2one(comodel_name='unispice.tipo_producto', string='Tipo de producto(UNISPICE)')
     quality_ids=fields.Many2many(comodel_name='unispice.quatily_item',string='Items de Calidad')
 
 
