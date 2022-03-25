@@ -907,7 +907,7 @@ class unispice_product(models.Model):
     def change_product(self):
         for r in self:
             r.quality_ids.unlink()
-            if r.x_grupo_mp:
+            if r.product_id.x_grupo_mp:
                 lst=self.env['unispice.quatily_item'].search([('x_grupo_mp','=',r.x_grupo_mp)])
                 for p in lst:
                     dic={}
