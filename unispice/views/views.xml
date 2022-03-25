@@ -47,7 +47,7 @@
                     <field name="tipo_produccion"/>
                     
             </xpath>
-            <xpath expr="//page[@name='inventory']" position="after">
+            <!--xpath expr="//page[@name='inventory']" position="after">
                 <page string="Calidad">
                     <field name="quality_ids">
                         <tree editable="top">
@@ -55,7 +55,7 @@
                         </tree>
                     </field>
                 </page>
-            </xpath>
+            </xpath-->
 
             <xpath expr="//group[@name='group_lots_and_weight']" position="after">
                 <group string="Canas / Pallet">

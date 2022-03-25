@@ -874,6 +874,7 @@ class unispice_qualitycheck(models.Model):
     _name='unispice.quatily_item'
     _description='Item del control de calidad'
     name=fields.Char('Punto a revisar')
+
    
 
 
@@ -884,7 +885,6 @@ class unispice_product(models.Model):
     tara=fields.Float('Tara')
 
     tipo_produccion=fields.Selection(selection=[('Materia Prima','Materia Prima'),('Producto Terminado','Producto Terminado'),('Sub Producto','Sub Producto'),('Otro','Otro')],string="Tipo(Produccion)",default='Materia Prima')
-    quality_ids=fields.Many2many(comodel_name='unispice.quatily_item',string='Items de Calidad')
 
 
 class unispice_check_item(models.Model):
@@ -907,9 +907,11 @@ class unispice_product(models.Model):
     def change_product(self):
         for r in self:
             r.quality_ids.unlink()
-            for p in r.product_id.quality_ids:
-                dic={}
-                dic['name']=p.name
-                dic['aprobado']=False
-                dic['check_id']=r.id
-                self.env['unispice.quatily_check_item'].create(dic)
+            if r.x_grupo_mp:
+                lst=self.env['unispice.quatily_item'].search([('x_grupo_mp','=',r.x_grupo_mp)])
+                for p in lst:
+                    dic={}
+                    dic['name']=p.name
+                    dic['aprobado']=False
+                    dic['check_id']=r.id
+                    self.env['unispice.quatily_check_item'].create(dic)
