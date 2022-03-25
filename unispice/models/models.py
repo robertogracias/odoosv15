@@ -210,7 +210,7 @@ class unispice_recepcion(models.Model):
                 texto=r.serie
                 separador='-'
             if r.numero:
-                texto=texto+separador+r.numero
+                texto=texto+separador+str(r.numero)
             r.name=texto
         
 
