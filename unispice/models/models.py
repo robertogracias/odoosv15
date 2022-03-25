@@ -185,7 +185,9 @@ class unispice_recepcion(models.Model):
     _sql_constraints = [
         ('Boleta_Unico', 'unique (name)', 'El Numero de boleta debe ser unico')
     ]
-    name=fields.Char('Boleta',copy=False)
+    name=fields.Char('Boleta',copy=False,compute='get_name')
+    serie=fields.Char('Serie')
+    numero=fields.Integer('Entero')
     fecha_ingreso=fields.Datetime("Fecha y hora de ingreso")
     proveedor_id=fields.Many2one(comodel_name='res.partner', string='Proveedor')
     producto_id=fields.Many2one(comodel_name='product.product', string='Producto')
@@ -198,6 +200,19 @@ class unispice_recepcion(models.Model):
     tara_canasta=fields.Float('Tara canasta',related='canasta_id.tara',store=True)
     tara_pallet=fields.Float('Tara pallet',related='pallet_id.tara',store=True)
     notas=fields.Text("Notas")
+
+    @api.depends('serie','numero')
+    def get_name(self):
+        for r in self:
+            texto=''
+            separador=''
+            if r.serie:
+                texto=r.serie
+                separador='-'
+            if r.numero:
+                texto=texto+separador+r.numero
+            r.name=texto
+        
 
     bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
     detalle_ids=fields.One2many(comodel_name='unispice.recepcion.line',inverse_name='ingreso_id',string='Pallets')

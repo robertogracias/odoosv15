@@ -21,6 +21,8 @@
                         <group>
                             <group>
                                 <field name="name" readonly="0"/>
+                                <field name="serie"/>
+                                <field name="numero"/>
                                 <field name="proveedor_id"/>
                                 <field name="producto_id"/>
                                 <field name="etapa"/>
