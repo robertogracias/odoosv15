@@ -44,9 +44,9 @@ class unispice_solicitud(models.Model):
     def cerrar(self):
         for r in self:
             r.state='Cerrado'
-            for l in r.pallets_id:
-                if l.state=='Entregado':
-                    r.state='Cancelado'
+            for l in r.pallet_ids:
+                if l.state!='Entregado':
+                    l.state='Cancelado'
 
     def addline(self):
         for r in self:
@@ -128,7 +128,7 @@ class unispice_solicitud_detail(models.Model):
 
     def cancelar(self):
         for r in self:
-            r.state='Cancelados'
+            r.state='Cancelado'
 
 
     def get_from_bascula(self):

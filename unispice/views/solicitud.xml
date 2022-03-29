@@ -40,7 +40,7 @@
                         </group>
                         <label string="Solicitud de Materia Prima" for="pallet_ids"/>
                         <field name="pallet_ids">
-                            <tree editable="button" >
+                            <tree editable="button" create="false" >
                                 <field name="lot_id"  readonly="1"/>
                                 <field name="location_src_id"  readonly="1"/>
                                 <field name="location_dest_id"  readonly="0"/>
