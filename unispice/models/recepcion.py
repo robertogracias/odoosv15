@@ -41,6 +41,34 @@ class unispice_recepcion(models.Model):
     tara_pallet=fields.Float('Tara pallet',related='pallet_id.tara',store=True)
     notas=fields.Text("Notas")
 
+
+    #DATOS A CALCULAR SUMANDO LOS LOTES Y PALLETS PARA LA LIQUIDACION
+    porcentaje_defectos=fields.Float("% Defectos Calidad")
+    porcentaje_rechazo=fields.Float("% Rechazo Maquila")
+    peso_empacado=fields.Float("Peso empacado exportacion")
+    peso_empacado_green_bean_autorizado=fields.Float("Peso empacado green bean autorizado")
+    peso_empacado_local_autorizado=fields.Float("Peso empacado local autorizado")
+    peso_empacado_green_bean=fields.Float("Peso empacado green bean")
+    peso_empacado_local=fields.Float("Peso empacado local")
+    peso_empacado_para_liquidar=fields.Float("Peso empacado para liquidar")
+    libras_rechazo_real=fields.Float("Libras Rechazao real")
+    porcentaje_rechazo_real=fields.Float("% Rechazo Real")
+    porcentaje_rechazo_tolerado=fields.Float("% Rechazo Tolerado")
+    libras_a_liquidar_sin_rechazo=fields.Float("Libras a liquidar sin rechazo")
+    porcentaje_ajuste=fields.Float("% ajuste")
+    libras_a_pagar_ajustadas=fields.Float("Libras a pagar ajustadas")
+    libras_de_rechazo_a_aplicar=fields.Float("Libras de rechazo a aplicar")
+    porcentaje_rechazo_liquidado=fields.Float("% Rechazo Liquidado")
+    precio_compra=fields.Float("Precio de Compra")
+    total_a_pagar=fields.Float("Total a pagar")
+    liquidacion_id=fields.Many2one(comodel_name='unispice.liquidacion', string='Liquidacion')
+    liquidacion_batch_id=fields.Many2one(comodel_name='unispice.liquidacion.batch', string='Liquidacion batch')
+    
+    
+    
+    
+
+
     @api.depends('serie','numero')
     def get_name(self):
         for r in self:
