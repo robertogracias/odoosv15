@@ -294,8 +294,8 @@ class integrador_order(models.Model):
                 dic['documentTotal']=r.amount_total
                 dic['serie']=int(varserie.valor)
                 dic['comments']=r.note
-                dic['billTo']=r.unispice_sociedad_id.contact_address_complete
-                dic['shipTo']=r.unispice_sociedad_id.contact_address_complete
+                dic['billTo']=r.partner_id.street
+                dic['shipTo']=r.partner_id.street
                 lines=[]
                 for l in r.order_line:
                     line={}
