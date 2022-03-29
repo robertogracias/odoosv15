@@ -37,7 +37,17 @@ class unispice_lote(models.Model):
     tara_pallet=fields.Float('Tara pallet',related='pallet_id.tara',store=True)
     boleta_id=fields.Many2one(comodel_name='unispice.recepcion', string='Boleta')
     liquidado=fields.Boolean("Liquidado")
+    proveedor_id=fields.Many2one(comodel_name='res.partner',related='boleta_id.partner_id', string='Boleta')
+    tipo_productor=fields.Char(related='boleta_id.x_tipo_productor', string='Tipo Productor')
+    fecha_cosecha=fields.Date(related='boleta_id.fecha_cosecha', string='Fecha de cosecha')
+    grupo_mp=fields.Char(string='Grupo MP',compute='get_grupo')
 
+    def get_grupo(sefl):
+        for r in self:
+            if r.product_id.x_grupo_mp:
+                r.grupo_mp=r.product_id.x_grupo_mp
+            else:
+                r.grupo_mp=''
 
 
 
