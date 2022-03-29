@@ -56,8 +56,8 @@ class unispice_check_item(models.Model):
     porcentaje=fields.Float(string="Porcentaje aplicado",compute='compute_percentaje')
     proyectado=fields.Float(string="Cantidad proyectada",compute='compute_percentaje')
     rango=fields.Char(string='Rango valido',compute='compute_percentaje')
-    
-    @api.depens('check_id','muestra_afectada')
+
+    @api.depends('check_id','muestra_afectada')
     def compute_percentaje(self):
         for r in self:
             r.rango=str(r.item_id.porcentaje_min)+'% - '+str(r.item_id.porcentaje_max)+'%'
