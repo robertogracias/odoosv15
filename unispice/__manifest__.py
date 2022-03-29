@@ -28,7 +28,6 @@
         'views/ingreso.xml',
         'views/solicitud.xml',
         'views/transformacion.xml',
-        'views/tipoproducto.xml',
         'views/configuration.xml',
         'views/quality_item.xml',
         'security/ir.model.access.csv',

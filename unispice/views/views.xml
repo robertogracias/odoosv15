@@ -86,6 +86,9 @@
                         <tree editable="top" create="0">
                             <field name="name"/>
                             <field name="muestra_afectada"/>
+                            <field name="porcentaje"/>
+                            <field name="rango"/>
+                            <field name="proyectado"/>                            
                             <field name="aprobado" widget="boolean_toggle"/>
                         </tree>
                     </field>

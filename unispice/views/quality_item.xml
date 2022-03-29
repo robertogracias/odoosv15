@@ -9,10 +9,11 @@
             <field name="name">unispice_quality_tree</field>
             <field name="model">unispice.quatily_item</field>
             <field name="arch" type="xml">
-                <tree editable="top">
+                <tree editable="bottom">
                     <field name="name"/>
                     <field name="x_grupo_mp"/>
-                    
+                    <field name="porcentaje_min"/>
+                    <field name="porcentaje_max"/>
                 </tree>
             </field>
         </record>
