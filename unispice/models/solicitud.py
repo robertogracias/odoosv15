@@ -30,13 +30,18 @@ class unispice_solicitud(models.Model):
     fecha_solicitud=fields.Date("Fecha de Entrada",tracking=True)
     pallet_id=fields.Many2one(comodel_name='stock.production.lot', string='Pallet a Agregar',domain='[("liquidado","=",False)]')
 
+    @api.model
+    def create(self, vals):
+        vals['name']=self.env['ir.sequence'].next_by_code('unispice.sol')
+        res = super(unispice_solicitud, self).create(vals)
+        return res
 
     #cambia el estado a solicitado
     def solicitar(self):
         for r in self:
             r.state='Solicitado'
             r.fecha_solicitud=datetime.now()
-            r.name=self.env['ir.sequence'].next_by_code('unispice.sol')
+            
             for l in r.pallet_ids:
                 l.state='Solicitado'
 
