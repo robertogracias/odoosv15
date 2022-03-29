@@ -63,7 +63,10 @@ class unispice_check_item(models.Model):
             r.rango=str(r.item_id.porcentaje_min)+'% - '+str(r.item_id.porcentaje_max)+'%'
             if r.check_id.muestra>0:
                 r.porcentaje=(r.muestra_afectada/r.check_id.muestra)*100.00
-                r.proyectado=r.check_id.muestra*(r.muestra_afectada/r.check_id.muestra)
+                if r.check_id.lot_id:
+                    r.proyectado=r.check_id.lot_id.product_qty*(r.muestra_afectada/r.check_id.muestra)
+                else:
+                    r.proyectado=0.0
                 if r.porcentaje>=r.item_id.porcentaje_min and r.porcentaje<=r.item_id.porcentaje_max:
                     r.aprobado=True
                 else:
