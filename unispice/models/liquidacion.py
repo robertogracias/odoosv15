@@ -39,7 +39,8 @@ class unispice_recepcion(models.Model):
     state=fields.Selection(selection=[('draft','Borrador'),('Cerrado','Cerrado'),('SAP','Expportada a SAP'),('Cancelada','Cancelada')],string="Estado",default='draft',tracking=True)
     boleta_ids=fields.One2many(comodel_name='unispice.recepcion', string='Boletas',inverse_name='liquidacion_id')
     liquidacion_batch_id=fields.Many2one(comodel_name='unispice.liquidacion.batch', string='Liquidacion batch')
-    
+    descuento_ids=fields.One2many(comodel_name='unispice.liquidacion.descuento', string='Descuentos',inverse_name='liquidacion_id')
+
 
 
 class unispice_reception_line(models.Model):
@@ -48,3 +49,4 @@ class unispice_reception_line(models.Model):
     name=fields.Char('Costo')
     product_id=fields.Many2one(comodel_name='product.Product', string='Concepto')
     descuento=fields.Float("descuento")
+    liquidacion_id=fields.Many2one(comodel_name='unispice.liquidacion', string='Liquidacion')
