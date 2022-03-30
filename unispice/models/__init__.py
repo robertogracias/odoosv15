@@ -7,3 +7,4 @@ from . import recepcion
 from . import solicitud
 from . import transformacion
 from . import traslado_planta
+from . import liquidacion
