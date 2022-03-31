@@ -581,6 +581,9 @@ class intregrador_sap_task(models.Model):
                             dicdireccion['country_id']=country.id
                         dicdireccion['parent_id']=partner.id           
                         direccion=self.env['res.partner'].create(dicdireccion)
+                    if direccion:
+                        if direccion.street:
+                            partner.write({'street':direccion.street})
 
     def sync_vendors(self):
         _logger.info('Integrador de Proveedores')
@@ -713,6 +716,10 @@ class intregrador_sap_task(models.Model):
                             dicdireccion['country_id']=country.id
                         dicdireccion['parent_id']=partner.id           
                         direccion=self.env['res.partner'].create(dicdireccion)
+                    if direccion:
+                        if direccion.street:
+                            partner.write({'street':direccion.street})
+
 
 
     def sync_product(self):
