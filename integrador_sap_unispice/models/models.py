@@ -886,6 +886,36 @@ class intregrador_sap_task(models.Model):
                         if r[sapkey]!='null':
                             dic[odookey]=r[sapkey]
                     product=self.env['integrador_sap_unispice.warehouse'].create(dic)
+    
+    def sync_warehouseliquidation(self):
+        _logger.info('Integrador de warehouse')
+        var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
+        if var:            
+            url=var.valor+'/warehouse/liquidation'
+            mapa={'code':'warehouseCode'
+                ,'name':'warehouseName'
+                }
+            response = requests.get(url)
+            resultado=json.loads(response.text)
+            for r in resultado['warehouses']:
+                code=r['warehouseCode']
+                product=self.env['integrador_sap_unispice.warehouse'].search([('code','=',code)])
+                if product:
+                    dic={}
+                    editado=False
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            if product.__getitem__(odookey)!=r[sapkey]:
+                                editado=True
+                                dic[odookey]=r[sapkey]
+                    if editado:
+                        product.write(dic)                    
+                else:
+                    dic={}
+                    for odookey,sapkey in mapa.items():
+                        if r[sapkey]!='null':
+                            dic[odookey]=r[sapkey]
+                    product=self.env['integrador_sap_unispice.warehouse'].create(dic)
 
 
     def sync_warehouseimport(self):

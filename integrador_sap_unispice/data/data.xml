@@ -69,6 +69,7 @@ model.sync_taxcode()
             <field name="code">
 model.sync_warehouselocal()
 model.sync_warehouseimport()
+model.sync_warehouseliquidation()
             </field>
         </record>
 
