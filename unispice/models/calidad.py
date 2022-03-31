@@ -41,6 +41,11 @@ class unispice_qualitycheck(models.Model):
     name=fields.Char('Punto a revisar')
     porcentaje_min=fields.Float("Porcentaje minimo")
     porcentaje_max=fields.Float("Porcentaje maximo")
+    tipo=fields.Selection(selection=[('Materia Prima','Materia Prima'),('Producto','Producto'),('Proceso','Proceso')],string='Tipo')
+    categoria_id=fields.Many2one(comodel_name='product.category', string='Categoria de productos')
+    proceso_id=fields.Many2one(comodel_name='mrp.workcenter', string='Proceso')
+
+
 
    
 
@@ -85,12 +90,12 @@ class unispice_product(models.Model):
     muestra=fields.Float("Peso en lbs. de la muestra")
 
 
-    @api.onchange('product_id')
+    @api.onchange('product_id','workcenter_id')
     def change_product(self):
         for r in self:
             r.quality_ids.unlink()
-            if r.product_id.x_grupo_mp:
-                lst=self.env['unispice.quatily_item'].search([('x_grupo_mp','=',r.product_id.x_grupo_mp)])
+            if r.workorder_id:
+                lst=self.env['unispice.quatily_item'].search([('proceso_id','=',r.workcenter_id.id),('tipo','=','Proceso')])
                 for p in lst:
                     dic={}
                     dic['name']=p.name
@@ -98,3 +103,26 @@ class unispice_product(models.Model):
                     dic['check_id']=r.id
                     dic['item_id']=p.id
                     self.env['unispice.quatily_check_item'].create(dic)
+            else:
+                if not r.product_id.tipo_produccion:
+                    continue
+                if r.product_id.tipo_produccion=='Materia Prima':
+                    if r.product_id.x_grupo_mp:
+                        lst=self.env['unispice.quatily_item'].search([('x_grupo_mp','=',r.product_id.x_grupo_mp),('tipo','=','Materia Prima')])
+                        for p in lst:
+                            dic={}
+                            dic['name']=p.name
+                            dic['aprobado']=False
+                            dic['check_id']=r.id
+                            dic['item_id']=p.id
+                            self.env['unispice.quatily_check_item'].create(dic)
+                if r.product_id.tipo_produccion=='Producto':
+                    if r.product_id.x_grupo_mp:
+                        lst=self.env['unispice.quatily_item'].search([('categoria_id','=',r.product_id.categ_id.id),('tipo','=','Producto')])
+                        for p in lst:
+                            dic={}
+                            dic['name']=p.name
+                            dic['aprobado']=False
+                            dic['check_id']=r.id
+                            dic['item_id']=p.id
+                            self.env['unispice.quatily_check_item'].create(dic)
