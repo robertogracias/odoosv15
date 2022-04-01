@@ -47,7 +47,7 @@
                             </group>
                         </group>
                         <field name="detalle_ids">
-                            <tree editable="top">
+                            <tree editable="top" create="false">
                                 <field name="name"/>
                                 <field name="temperatura"/>
                                 <field name="canastas" sum="Total"/>
