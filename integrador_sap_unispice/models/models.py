@@ -887,6 +887,7 @@ class intregrador_sap_task(models.Model):
                             dic[odookey]=r[sapkey]
                     product=self.env['integrador_sap_unispice.warehouse'].create(dic)
     
+
     def sync_warehouseliquidation(self):
         _logger.info('Integrador de warehouse')
         var=self.env['integrador_sap_unispice.property'].search([('name','=','sap_url')],limit=1)
@@ -897,7 +898,7 @@ class intregrador_sap_task(models.Model):
                 }
             response = requests.get(url)
             resultado=json.loads(response.text)
-            for r in resultado['warehouses']:
+            for r in resultado:
                 code=r['warehouseCode']
                 product=self.env['integrador_sap_unispice.warehouse'].search([('code','=',code)])
                 if product:
