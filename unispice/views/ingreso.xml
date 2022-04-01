@@ -20,7 +20,7 @@
                         </h1>
                         <group>
                             <group>
-                                <field name="name" readonly="0"/>
+                                <field name="name" readonly="1"/>
                                 <field name="serie"/>
                                 <field name="numero"/>
                                 <field name="proveedor_id" domain="[('parent_id','=',False)]"/>

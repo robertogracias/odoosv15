@@ -25,7 +25,7 @@ class unispice_recepcion(models.Model):
     _sql_constraints = [
         ('Boleta_Unico', 'unique (name)', 'El Numero de boleta debe ser unico')
     ]
-    name=fields.Char('Boleta',copy=False,compute='get_name')
+    name=fields.Char('Boleta',copy=False,compute='get_name',store=True)
     serie=fields.Char('Serie')
     numero=fields.Integer('Entero')
     fecha_ingreso=fields.Datetime("Fecha y hora de ingreso")
