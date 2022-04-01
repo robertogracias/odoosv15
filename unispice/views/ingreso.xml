@@ -31,7 +31,7 @@
                                 <field name="label_id"/>
                             </group>
                             <group>
-                                <field name="fecha_ingreso"/>
+                                <field name="create_date"/>
                                 <field name="fecha_cosecha"/>
                                 <field name="peso_campo"/>
                                 <field name="canasta_id"/>
