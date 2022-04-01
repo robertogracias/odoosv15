@@ -408,8 +408,8 @@ class integrador_purchase_order(models.Model):
                 dic['documentDueDate']=r.x_date_required.strftime("%Y-%m-%d")
                 dic['taxDate']=r.date_order.strftime("%Y-%m-%d")
                 dic['comments']=r.notes
-                dic['billTo']=r.partner_id.street
-                dic['shipTo']=r.partner_id.street
+                dic['billTo']=r.partner_id.street + (r.partner_id.city if r.partner_id.city else '')+(r.partner_id.country_id.name if r.partner_id.country_id else '')
+                dic['shipTo']=r.unispice_sociedad_id.name+' '+(r.unispice_sociedad_id.vat if r.unispice_sociedad_id.vat else '')+' '+(r.unispice_sociedad_id.street if r.unispice_sociedad_id.street else '')
                 dic['paymentTermsCode']=r.partner_id.paymenttermscode
                 lines=[]
                 for l in r.order_line:
