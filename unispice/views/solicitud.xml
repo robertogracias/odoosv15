@@ -110,8 +110,8 @@
 
                                 </group>
                                 <group>
-                                    <field name="picking_id"/>
-                                    <field name="ajuste_id"/>
+                                    <field name="picking_id" readonly="1"/>
+                                    <field name="ajuste_id"  readonly="1"/>
                                 </group>
                                 </sheet>
                             </form>
