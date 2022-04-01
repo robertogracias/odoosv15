@@ -62,7 +62,7 @@ class unispice_solicitud(models.Model):
                     #validando pallet
                     anterior=self.env['unispice.solicitud.pallet'].search([('lot_id','=',lote.id),('state','!=','Cancelado')],limit=1)
                     if anterior:
-                        raise UserError('El pallet ya esta en otra solicitud')
+                        raise UserError('El pallet ya esta en otra solicitud:'+anterior.solicitud_id.name)
                     #validando cantidades            
                     quants=self.env['stock.quant'].search([('lot_id', '=', lote.id),('available_quantity','>',0)])
                     if quants:
