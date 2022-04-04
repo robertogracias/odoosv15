@@ -161,7 +161,7 @@ class odoosv_paysliprun(models.Model):
     quincena=fields.Selection(selection=[('1', 'Quincena 1')
                                     ,('2', 'Quincena 2')
                                     ,('3', 'Otra')]
-                                    , string='Quincena',default='Traslado')
+                                    , string='Quincena',default='1')
     reporte_planilla=fields.Char("Reporte Planilla",compute='compute_reportes')
     reporte_planilla_patronal=fields.Char("Reporte Planilla Patronal",compute='compute_reportes')
     reporte_recibos=fields.Char("Reporte Recibos",compute='compute_reportes')

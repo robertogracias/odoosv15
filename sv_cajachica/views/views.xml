@@ -36,7 +36,7 @@
             <field name="name">odoosv_account_journal_payment_form</field>
             <field name="model">account.payment</field>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='payment_method_id']" position="after">
+                <xpath expr="//field[@name='payment_method_line_id']" position="after">
                     <field name="sv_caja_chica" invisible="1"/>
                     <field name="sv_cajachica_id" domain="[('journal_id', '=', journal_id),('state', '=', 'open')]" attrs="{'invisible':[('sv_caja_chica', '!=', True)]}"/>
                     <field name="utiliza_vales" invisible="1"/>
@@ -50,7 +50,7 @@
             <field name="name">odoosv_account_journal_payment_reg_form</field>
             <field name="model">account.payment.register</field>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='payment_method_id']" position="after">
+                <xpath expr="//field[@name='payment_method_line_id']" position="after">
                     <field name="sv_caja_chica" invisible="1"/>
                     <field name="sv_cajachica_id" domain="[('journal_id', '=', journal_id),('state', '=', 'open')]" attrs="{'invisible':[('sv_caja_chica', '!=', True)]}"/>
                     <field name="utiliza_vales" invisible="1"/>
