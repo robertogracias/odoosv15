@@ -76,7 +76,10 @@
         <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
         <field name="arch" type="xml">
 
-            
+            <xpath expr="//field[@name='alert_ids']" position="after">
+                <field name="porcentaje"/>
+                <field name="total_afectado"/>
+            </xpath>
             <xpath expr="//page[@name='notes']" position="after">
                 <page string="Check List">
                     <group>
@@ -90,10 +93,10 @@
                     <field name="quality_ids">
                         <tree editable="top" create="0">
                             <field name="name"/>
-                            <field name="muestra_afectada"/>
+                            <field name="muestra_afectada" sum="Total"/>
                             <field name="porcentaje"/>
                             <field name="rango"/>
-                            <field name="proyectado"/>                            
+                            <field name="proyectado"  sum="Total"/>                            
                             <field name="aprobado" widget="boolean_toggle"/>
                             <field name="imagen" widget="image" />
                         </tree>
