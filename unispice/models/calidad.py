@@ -97,13 +97,15 @@ class unispice_product(models.Model):
     @api.depends('quality_ids')
     def calcular_totales(self):
         for r in self:
+            porcentaje=0.0
             total=0.0
             for l in r.quality_ids:
                 total=total+l.proyectado
             r.total_afectado=total
             if r.lot_id:
                 if r.lot_id.product_qty>0:
-                    r.porcentaje=total/r.lot_id.product_qty
+                    porcentaje=total/r.lot_id.product_qty
+            r.porcentaje=porcentaje
             
 
 

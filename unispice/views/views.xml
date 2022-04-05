@@ -101,6 +101,18 @@
                             <field name="aprobado" widget="boolean_toggle"/>
                             <field name="imagen" widget="image" />
                         </tree>
+                        <form>
+                            <sheet>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="muestra_afectada" />
+                                    <field name="porcentaje"/>
+                                    <field name="rango"/>
+                                    <field name="proyectado"  />                            
+                                    <field name="aprobado" widget="boolean_toggle"/>
+                                </group>
+                            </sheet>
+                        </form>
                     </field>
                 </page>
             </xpath>

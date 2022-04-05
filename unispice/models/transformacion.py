@@ -17,6 +17,8 @@ _logger = logging.getLogger(__name__)
 
 
 
+
+#######################################################################################################################################################
 #######################################################################################################################################################
 #######################################################################################################################################################
 ###Transformmacion 
@@ -25,7 +27,7 @@ class unispice_production_order(models.Model):
     _description='Ingreso a las ordenes de produccion'
     _inherit='mail.thread'
     #Nombre se genera a partir de una secuencia
-    name=fields.Char('Orden de transformacion')
+    name=fields.Char(string='Orden de transformacion')
     #Estado de la transformacion
     state=fields.Selection(selection=[('draft','Borrador'),('Iniciado','Iniciado'),('Finalizado','Finalizaro')],string="Estado",default='draft')
     #Proceso en el que se desarrollara la transformacion
@@ -47,10 +49,28 @@ class unispice_production_order(models.Model):
     production_id=fields.Many2one(comodel_name='mrp.production', string='Proceso de produccion')
     bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
 
+    #wharehouse
+    almancen_id=fields.Many2One(comodel_name='stock.warehouse',string='Almacen Id')
+
     
 
     def iniciar(self):
         for r in self:
+            #creando la orden de produccion
+            dp={}
+            dp['product_id']=r.product_id.id
+            dp['company_id']=r.location_id.company_id.id
+            dp['consumption']='flexible'
+            dp['date_planned_start']=datetime.now()
+            dp['location_dest_id']=r.almacen_id.lot_stock_id.id
+            dp['location_src_id']=r.almacen_id.lot_stock_id.id
+            dp['picking_type_id']=r.location_id.company_id.transform_transfer_id.id
+            dp['product_qty']=0
+            dp['product_uom_qty']=0
+            dp['transformacion_id']=r.id
+            dp['product_uom_id']=r.product_id.uom_id.id
+            production=self.env['mrp.production'].create(dp)
+
             r.name=r.location_id.company_id.tranformacion_seq_id.next_by_id()
             for l in r.ingresos_mp_ids:
                 quant=None
@@ -63,19 +83,7 @@ class unispice_production_order(models.Model):
                             quant=q
                 if x>1:
                     raise UserError('El Lote ha sido divido')
-                dp={}
-                dp['product_id']=r.product_id.id
-                dp['company_id']=r.location_id.company_id.id
-                dp['consumption']='flexible'
-                dp['date_planned_start']=datetime.now()
-                dp['location_dest_id']=r.location_id.id
-                dp['location_src_id']=quant.location_id.id
-                dp['picking_type_id']=r.location_id.company_id.transform_transfer_id.id
-                dp['product_qty']=quant.available_quantity
-                dp['product_uom_qty']=quant.product_uom_id.id
-                dp['transformacion_id']=r.id
-                dp['product_uom_id']=quant.product_uom_id.id
-                production=self.env['mrp.production'].create(dp)
+                
                 #movimiento del producto
                 dic1={}
                 dic1['product_id']=quant.product_id.id
@@ -89,55 +97,30 @@ class unispice_production_order(models.Model):
                 dic1['name']=r.name+' - '+l.lot_id.name
                 dic1['raw_material_production_id']=production.id
                 self.env['stock.move'].create(dic1)
-                production.action_toggle_is_locked()
-                for m in production.move_raw_ids:
-                    dl={}
-                    dl['location_id']=quant.location_id.id
-                    dl['product_id']=quant.product_id.id
-                    dl['product_uom_id']=quant.product_uom_id.id
-                    dl['location_dest_id']=r.location_id.id
-                    dl['lot_id']=quant.lot_id.id
-                    dl['product_uom_qty']=quant.available_quantity
-                    dl['qty_done']=quant.available_quantity
-                    dl['move_id']=m.id
-                    self.env['stock.move.line'].create(dl)
-                production.action_assign()
-                #for m in production.move_raw_ids:
-                #    if m.reserved_availability==0:
-                #        raise UserError('El Material no esta disponible')
-                production.action_confirm()
-                #production.button_mark_done()
+                #creando el picking de canastas
 
-                ####Creacion del pickin de las canastas
-                dic={}
-                dic['picking_type_id']=r.location_id.company_id.transform_transfer_id.id
-                dic['move_type']='one'
-                dic['origin']=r.name
-                dic['location_dest_id']=r.location_id.id
-                dic['location_id']=quant.location_id.id
-                dic['transformacion_id']=r.id
-                pick=self.env['stock.picking'].create(dic)                
-                #creando la linea de las canastas
-                dicl={}
-                dicl['company_id']=r.location_id.company_id.id
-                dicl['date']=datetime.today()
-                dicl['location_dest_id']=r.location_id.id
-                dicl['location_id']=r.location_id.company_id.inbound_transfer_id.default_location_src_id.id
-                dicl['name']='Canastas'+l.lot_id.name
-                dicl['origin']=r.name
-                dicl['product_id']=l.lot_id.canasta_id.id                
-                dicl['product_uom']=1
-                dicl['product_uom_qty']=l.canastas
-                dicl['picking_id']=pick.id
-                
-                pick.action_confirm()
-                #pick.action_assign()
-                for x in pick.move_line_ids_without_package:
-                    if x.product_id.tracking=='lot':
-                        x.write({'qty_done':x.product_uom_qty,'lot_id':lote.id,'origin':r.name})
-                    else:
-                        x.write({'qty_done':x.product_uom_qty,'origin':r.name})
-                #pick.button_validate()
+
+
+
+            production.action_toggle_is_locked()
+            for m in production.move_raw_ids:
+                dl={}
+                dl['location_id']=quant.location_id.id
+                dl['product_id']=quant.product_id.id
+                dl['product_uom_id']=quant.product_uom_id.id
+                dl['location_dest_id']=r.location_id.id
+                dl['lot_id']=quant.lot_id.id
+                dl['product_uom_qty']=quant.available_quantity
+                dl['qty_done']=quant.available_quantity
+                dl['move_id']=m.id
+                self.env['stock.move.line'].create(dl)
+            production.action_assign()
+            #for m in production.move_raw_ids:
+            #    if m.reserved_availability==0:
+            #        raise UserError('El Material no esta disponible')
+            production.action_confirm()
+            #production.button_mark_done()
+            
 
 
 
