@@ -61,6 +61,7 @@ class unispice_check_item(models.Model):
     porcentaje=fields.Float(string="Porcentaje aplicado",compute='compute_percentaje')
     proyectado=fields.Float(string="Cantidad proyectada",compute='compute_percentaje')
     rango=fields.Char(string='Rango valido',compute='compute_percentaje')
+    imagen=fields.Binary(string='imagen',attachment=True)
 
     @api.depends('check_id','muestra_afectada')
     def compute_percentaje(self):
@@ -88,6 +89,7 @@ class unispice_product(models.Model):
     _inherit='quality.check'
     quality_ids=fields.One2many(comodel_name='unispice.quatily_check_item',inverse_name='check_id',string='Items de Calidad')
     muestra=fields.Float("Peso en lbs. de la muestra")
+    uom_id=fields.Many2one(comodel_name='uom.uom',string='Unidad de medida',related='product_id.uom_id')
 
 
     @api.onchange('product_id','workcenter_id')

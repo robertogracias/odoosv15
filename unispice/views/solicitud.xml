@@ -17,6 +17,11 @@
             <field name="model">unispice.solicitud</field>
             <field name="arch" type="xml">
                 <form string="Transformaciones de materia prima">
+                    <style>
+                        .modal-lg, .modal-xl {
+                          max-width: 1080px !important;
+                        }
+                  </style>
                     <header>
                         <button name="solicitar" type="object" states="draft" string="Solicitar" class="oe_highlight"/>
                         <button name="cerrar" type="object" states="Solicitado" string="Cerrar" class="oe_highlight"/>
