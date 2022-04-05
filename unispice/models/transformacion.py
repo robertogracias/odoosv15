@@ -45,12 +45,13 @@ class unispice_production_order(models.Model):
     ingresos_mp_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Materia Prima',inverse_name='transformacion_id')
     salidas_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_mp', string='Salidas Materia Prima',inverse_name='transformacion_id')
     rechazo_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_rechazo', string='Rechazos Materia Prima',inverse_name='transformacion_id')
+    
     #Orden de produccion asociada al proceso
     production_id=fields.Many2one(comodel_name='mrp.production', string='Proceso de produccion')
     bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
 
     #wharehouse
-    almancen_id=fields.Many2One(comodel_name='stock.warehouse',string='Almacen Id')
+    almancen_id=fields.Many2one(comodel_name='stock.warehouse',string='Almacen Id')
 
     
 
