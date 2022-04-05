@@ -81,9 +81,9 @@
                 <page string="Check List">
                     <group>
                         <div>
-                            <span string="cantidad de "></span>
+                            <span>Cantidad de  </span>
                             <field name="uom_id" readonly="1"/>
-                            <span string=" por muestra "></span>
+                            <span>  por muestra</span>
                         </div>
                         <field name="muestra" nolabel="1"/>
                     </group>
