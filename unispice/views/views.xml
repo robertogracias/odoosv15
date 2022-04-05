@@ -77,6 +77,7 @@
         <field name="arch" type="xml">
 
             <xpath expr="//field[@name='alert_ids']" position="after">
+                <field name="lote_total"/>
                 <field name="porcentaje"/>
                 <field name="total_afectado"/>
             </xpath>

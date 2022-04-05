@@ -90,6 +90,7 @@ class unispice_product(models.Model):
     quality_ids=fields.One2many(comodel_name='unispice.quatily_check_item',inverse_name='check_id',string='Items de Calidad')
     muestra=fields.Float("Peso en lbs. de la muestra")
     uom_id=fields.Many2one(comodel_name='uom.uom',string='Unidad de medida',related='product_id.uom_id')
+    lote_total=fields.Float(string='Total del lote',related='lot_id.product_qty')
     porcentaje=fields.Float("Porcentaje total afectada",compute="calcular_totales")
     total_afectado=fields.Float("Total afectado",compute="calcular_totales")
 
