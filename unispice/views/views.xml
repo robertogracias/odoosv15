@@ -82,7 +82,7 @@
                     <group>
                         <div>
                             <span string="cantidad de "></span>
-                            <field name="uom_id.name"/>
+                            <field name="uom_id" readonly="1"/>
                             <span string=" por muestra "></span>
                         </div>
                         <field name="muestra" nolabel="1"/>
