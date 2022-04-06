@@ -27,7 +27,7 @@ class unispice_production_order(models.Model):
     _description='Ingreso a las ordenes de produccion'
     _inherit='mail.thread'
     #Nombre se genera a partir de una secuencia
-    name=fields.Char(string='Orden de transformacion')
+    name=fields.Char('Orden de transformacion')
     #Estado de la transformacion
     state=fields.Selection(selection=[('draft','Borrador'),('Iniciado','Iniciado'),('Finalizado','Finalizaro')],string="Estado",default='draft')
     #Proceso en el que se desarrollara la transformacion
@@ -45,13 +45,12 @@ class unispice_production_order(models.Model):
     ingresos_mp_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Materia Prima',inverse_name='transformacion_id')
     salidas_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_mp', string='Salidas Materia Prima',inverse_name='transformacion_id')
     rechazo_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_rechazo', string='Rechazos Materia Prima',inverse_name='transformacion_id')
-    
     #Orden de produccion asociada al proceso
     production_id=fields.Many2one(comodel_name='mrp.production', string='Proceso de produccion')
     bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
 
     #wharehouse
-    almancen_id=fields.Many2one(comodel_name='stock.warehouse',string='Almacen Id')
+    almancen_id=fields.Many2One(comodel_name='stock.warehouse',string='Almacen Id')
 
     
 
@@ -101,7 +100,7 @@ class unispice_production_order(models.Model):
                 #creando el picking de canastas
 
 
-
+                
 
             production.action_toggle_is_locked()
             for m in production.move_raw_ids:
@@ -121,7 +120,36 @@ class unispice_production_order(models.Model):
             #        raise UserError('El Material no esta disponible')
             production.action_confirm()
             #production.button_mark_done()
-            
+            ####Creacion del pickin de las canastas
+            dic={}
+            dic['picking_type_id']=r.location_id.company_id.transform_transfer_id.id
+            dic['move_type']='one'
+            dic['origin']=r.name
+            dic['location_dest_id']=r.location_id.id
+            dic['location_id']=quant.location_id.id
+            dic['transformacion_id']=r.id
+            pick=self.env['stock.picking'].create(dic)                
+            #creando la linea de las canastas
+            dicl={}
+            dicl['company_id']=r.location_id.company_id.id
+            dicl['date']=datetime.today()
+            dicl['location_dest_id']=r.location_id.id
+            dicl['location_id']=r.location_id.company_id.inbound_transfer_id.default_location_src_id.id
+            dicl['name']='Canastas'+l.lot_id.name
+            dicl['origin']=r.name
+            dicl['product_id']=l.lot_id.canasta_id.id                
+                dicl['product_uom']=1
+                dicl['product_uom_qty']=l.canastas
+                dicl['picking_id']=pick.id
+                
+                pick.action_confirm()
+                #pick.action_assign()
+                for x in pick.move_line_ids_without_package:
+                    if x.product_id.tracking=='lot':
+                        x.write({'qty_done':x.product_uom_qty,'lot_id':lote.id,'origin':r.name})
+                    else:
+                        x.write({'qty_done':x.product_uom_qty,'origin':r.name})
+                #pick.button_validate()
 
 
 

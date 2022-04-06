@@ -125,9 +125,7 @@ class unispice_product(models.Model):
                     dic['item_id']=p.id
                     self.env['unispice.quatily_check_item'].create(dic)
             else:
-                if not r.product_id.tipo_produccion:
-                    continue
-                if r.product_id.tipo_produccion=='Materia Prima':
+                if 'Materia Prima' in r.product_id.categ_id.display_name:
                     if r.product_id.x_grupo_mp:
                         lst=self.env['unispice.quatily_item'].search([('x_grupo_mp','=',r.product_id.x_grupo_mp),('tipo','=','Materia Prima')])
                         for p in lst:
@@ -137,13 +135,12 @@ class unispice_product(models.Model):
                             dic['check_id']=r.id
                             dic['item_id']=p.id
                             self.env['unispice.quatily_check_item'].create(dic)
-                if r.product_id.tipo_produccion=='Producto':
-                    if r.product_id.x_grupo_mp:
-                        lst=self.env['unispice.quatily_item'].search([('categoria_id','=',r.product_id.categ_id.id),('tipo','=','Producto')])
-                        for p in lst:
-                            dic={}
-                            dic['name']=p.name
-                            dic['aprobado']=False
-                            dic['check_id']=r.id
-                            dic['item_id']=p.id
-                            self.env['unispice.quatily_check_item'].create(dic)
+                else:
+                    lst=self.env['unispice.quatily_item'].search([('categoria_id','=',r.product_id.categ_id.id),('tipo','=','Producto')])
+                    for p in lst:
+                        dic={}
+                        dic['name']=p.name
+                        dic['aprobado']=False
+                        dic['check_id']=r.id
+                        dic['item_id']=p.id
+                        self.env['unispice.quatily_check_item'].create(dic)
