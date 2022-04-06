@@ -138,18 +138,18 @@ class unispice_production_order(models.Model):
             dicl['name']='Canastas'+l.lot_id.name
             dicl['origin']=r.name
             dicl['product_id']=l.lot_id.canasta_id.id                
-                dicl['product_uom']=1
-                dicl['product_uom_qty']=l.canastas
-                dicl['picking_id']=pick.id
+            dicl['product_uom']=1
+            dicl['product_uom_qty']=l.canastas
+            dicl['picking_id']=pick.id
                 
-                pick.action_confirm()
-                #pick.action_assign()
-                for x in pick.move_line_ids_without_package:
-                    if x.product_id.tracking=='lot':
-                        x.write({'qty_done':x.product_uom_qty,'lot_id':lote.id,'origin':r.name})
-                    else:
-                        x.write({'qty_done':x.product_uom_qty,'origin':r.name})
-                #pick.button_validate()
+            pick.action_confirm()
+            #pick.action_assign()
+            for x in pick.move_line_ids_without_package:
+                if x.product_id.tracking=='lot':
+                    x.write({'qty_done':x.product_uom_qty,'lot_id':lote.id,'origin':r.name})
+                else:
+                    x.write({'qty_done':x.product_uom_qty,'origin':r.name})
+            #pick.button_validate()
 
 
 
