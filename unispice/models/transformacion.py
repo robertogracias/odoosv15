@@ -50,7 +50,7 @@ class unispice_production_order(models.Model):
     bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
 
     #wharehouse
-    almancen_id=fields.Many2One(comodel_name='stock.warehouse',string='Almacen Id')
+    almancen_id=fields.Many2one(comodel_name='stock.warehouse',string='Almacen Id')
 
     
 
