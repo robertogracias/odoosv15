@@ -61,6 +61,7 @@ class unispice_linea_turno(models.Model):
     linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion',required=True)
     transformacion_ids=fields.One2many(comodel_name='unispice.transformacion',inverse_name='turno_id',string='Transformacion')
     version=fields.Integer(string='Version')
+    duracion=fields.Float(string='Duracion',compute='calcular_carga')
 
     carga=fields.Float(string='Carga estimada',compute='calcular_carga')
     #productividad=fields.Flaot(string='Productividad',compute='calcular_carga')
@@ -83,6 +84,7 @@ class unispice_linea_turno(models.Model):
                 else:
                     horas_orden=0
                 horas_programadas=horas_programadas+horas_orden
+            r.duracion=horas
             if horas_hombre>0:
                 r.carga=(horas_programadas/horas_hombre)*100
             else:
