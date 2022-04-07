@@ -19,14 +19,13 @@
     'version': '15.0',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','account','sale','stock_landed_costs'],
+    'depends': ['base','account','sale'],
 
     # always loaded
     'data': [
         'views/views.xml',
         'views/documento.xml',
         'views/razon.xml',
-        'views/razon_ajuste.xml',
         'security/ir.model.access.csv',
         'data/data.xml',
         'views/templates.xml',
