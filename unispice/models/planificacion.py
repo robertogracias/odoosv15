@@ -22,6 +22,7 @@ class unispice_sale_order(models.Model):
     _inherit='sale.order.line'
     cantidad_programada=fields.Float('Cantidad programada',compute='calcular_cantidades',store=True)
     cantidad_realizada=fields.Float('Cantidad realizada',compute='calcular_cantidades',store=True)
+    cantidad_restante=fields.Float('Cantidad restante',compute='calcular_cantidades',store=True)
     transformacion_ids=fields.One2many(comodel_name='unispice.transformacion',inverse_name='order_line_id',string='Transformacion')
     version=fields.Integer('version')
 
@@ -38,6 +39,7 @@ class unispice_sale_order(models.Model):
                     programada=programada+t.cantidad_a_producir
             r.cantidad_programada=programada
             r.cantidad_realizada=realizada
+            r.cantidad_restante=r.product_uom_qty-r.cantidad_programada
 
 class unispice_producto_panning(models.Model):
     _inherit='product.template'
