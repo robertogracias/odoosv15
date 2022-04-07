@@ -29,7 +29,7 @@ class unispice_production_order(models.Model):
     #Nombre se genera a partir de una secuencia
     name=fields.Char('Orden de transformacion')
     #Estado de la transformacion
-    state=fields.Selection(selection=[('draft','Borrador'),('Iniciado','Iniciado'),('Finalizado','Finalizaro')],string="Estado",default='draft')
+    state=fields.Selection(selection=[('draft','Borrador'),('Iniciado','Iniciado'),('Finalizado','Finalizado')],string="Estado",default='draft')
     #Proceso en el que se desarrollara la transformacion
     proceso_id=fields.Many2one(comodel_name='mrp.workcenter', string='Proceso')
     #Producto terminado a producir
@@ -51,6 +51,16 @@ class unispice_production_order(models.Model):
 
     #wharehouse
     almancen_id=fields.Many2one(comodel_name='stock.warehouse',string='Almacen Id')
+
+    #enlaces con planificacion
+    cantidad_a_producir=fields.Float(string='Cantidad a producir')
+    cantidad_prodducida=fields.Float(string='Cantidad producida')
+    order_line_id=fields.Many2one(comodel_name='sale.order.line',string='Orden line Id')
+    turno_id=fields.Many2one(comodel_name='unispice.linea.turno',string='Turno en el que esta asignado')
+    order_id=fields.Many2one(comodel_name='sale.order',string='Orden Id',related='order_line_id.order_id')
+    linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion',related='turno_id.linea_id')
+
+
 
     
 

@@ -58,11 +58,7 @@ class unispice_lote(models.Model):
 #######################################################################################################################################################
 ###
 
-#Lienea de produccion
-class unispice_linea(models.Model):
-    _name='unispice.linea'
-    _description='Linea de produccion'
-    name=fields.Char("Linea de produccion")
+
 
 #Centro de produccion se asociad se asocia a una linea de produccion  
 #Tiene una ubicacion de entrada y salida
