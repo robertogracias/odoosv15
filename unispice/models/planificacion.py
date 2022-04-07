@@ -55,15 +55,22 @@ class unispice_linea_turno(models.Model):
     _name='unispice.linea.turno'
     _description='Turno de linea de produccion'
     name=fields.Char(string='name',compute='get_name')
-    inicio=fields.Datetime(string='Inicio')
-    fin=fields.Datetime(string='Fin')
-    empleados=fields.Integer(string='Cantidad de empleados')
-    linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion')
+    inicio=fields.Datetime(string='Inicio',required=True)
+    fin=fields.Datetime(string='Fin',required=True)
+    empleados=fields.Integer(string='Cantidad de empleados',required=True)
+    linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion',required=True)
     transformacion_ids=fields.One2many(comodel_name='unispice.transformacion',inverse_name='turno_id',string='Transformacion')
+    version=fields.Integer(string='Version')
 
     carga=fields.Float(string='Carga estimada',compute='calcular_carga')
     #productividad=fields.Flaot(string='Productividad',compute='calcular_carga')
 
+    @api.depends('linea_id','inicio','fin')
+    def get_name(self):
+        for r in self:
+            r.name=r.linea_id.name+':'+str(r.inicio)+'-'+str(r.fin)
+
+    @api.depends('transformacion_ids')
     def calcular_carga(self):
         for r in self:
             datediff=r.fin-r.inicio
