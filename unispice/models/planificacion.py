@@ -64,6 +64,7 @@ class unispice_linea_turno(models.Model):
     transformacion_ids=fields.One2many(comodel_name='unispice.transformacion',inverse_name='turno_id',string='Transformacion')
     version=fields.Integer(string='Version')
     duracion=fields.Float(string='Duracion',compute='calcular_carga')
+    state=fields.Selection(selection=[('abierto','Abierto'),('Cerrado','Cerrado')],string="Estado",default='abierto')
 
     carga=fields.Float(string='Carga estimada',compute='calcular_carga')
     #productividad=fields.Flaot(string='Productividad',compute='calcular_carga')
