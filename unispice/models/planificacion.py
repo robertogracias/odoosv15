@@ -75,7 +75,7 @@ class unispice_linea_turno(models.Model):
         for r in self:
             datediff=r.fin-r.inicio
             horas=datediff.total_seconds()/3600
-            horas_hombre=r.empleado*horas
+            horas_hombre=r.empleados*horas
             horas_programadas=0
             for t in r.transformacion_ids:
                 if t.product_id.cantidad_hora:
