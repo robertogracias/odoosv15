@@ -58,8 +58,8 @@ class unispice_linea_turno(models.Model):
     inicio=fields.Datetime(string='Inicio')
     fin=fields.Datetime(string='Fin')
     empleados=fields.Integer(string='Cantidad de empleados')
-    linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion',related='turno_id.linea_id')
-    transformacion_ids=fields.One2many(comodel_name='unispice.transformacion',inverse_name='order_line_id',string='Transformacion')
+    linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion')
+    transformacion_ids=fields.One2many(comodel_name='unispice.transformacion',inverse_name='turno_id',string='Transformacion')
 
     carga=fields.Float(string='Carga estimada',compute='calcular_carga')
     #productividad=fields.Flaot(string='Productividad',compute='calcular_carga')
