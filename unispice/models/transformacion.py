@@ -60,6 +60,7 @@ class unispice_production_order(models.Model):
     order_id=fields.Many2one(comodel_name='sale.order',string='Orden Id',related='order_line_id.order_id')
     linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion',related='turno_id.linea_id')
     turno_state=fields.Selection(selection=[('abierto','Abierto'),('cerrado','Cerrado')],string="Estado",related='turno_id.state',store=True,default='abierto')
+    partner_id=fields.Many2one(comodel_name='res.partner',string='Cliente',related='order_line_id.order_partner_id')
 
 
     @api.model
