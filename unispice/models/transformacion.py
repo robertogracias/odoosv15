@@ -50,6 +50,10 @@ class unispice_production_order(models.Model):
     salidas_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_mp', string='Salidas Materia Prima',inverse_name='transformacion_id')
     salidas_pt_ids=fields.One2many(comodel_name='unispice.transformacion.salida_pt', string='Salidas Materia Prima',inverse_name='transformacion_id')
 
+
+    track_ids=fields.One2many(comodel_name='unispice.transformacion.time_track', string='Tomas de tiempo',inverse_name='transformacion_id')
+
+
     rechazo_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_rechazo', string='Rechazos Materia Prima',inverse_name='transformacion_id')
     #Orden de produccion asociada al proceso
     production_id=fields.Many2one(comodel_name='mrp.production', string='Proceso de produccion')
@@ -57,6 +61,11 @@ class unispice_production_order(models.Model):
 
     #wharehouse
     almancen_id=fields.Many2one(comodel_name='stock.warehouse',string='Almacen Id')
+
+    razon_pausa_id=fields.Many2one(comodel_name='unispice.transformacion.time_of',string='Razon de Pausa')
+    track_id=fields.Many2one(comodel_name='unispice.transformacion.time_track',string='Traza actual')
+
+    
 
     #enlaces con planificacion
     cantidad_a_producir=fields.Float(string='Cantidad a producir')
@@ -69,6 +78,37 @@ class unispice_production_order(models.Model):
     partner_id=fields.Many2one(comodel_name='res.partner',string='Cliente',related='order_line_id.order_partner_id')
 
 
+
+    def  iniciar(self):
+        for r in self:
+            if not r.track_id:
+                dic={}
+                dic['inicio']=datetime.now()
+                dic['transformacion_id']=r.id
+                track=self.env['unispice.transformacion.time_track'].create(dic)
+                r.track_id=track.id
+    
+    def detener(self):
+        for r in self:
+            if r.track_id:
+                r.track_id.write({'fin':datetime.now()})
+            if not r.razon_pausa_id:
+                raise UserError('Debe esepcificarse una razon')
+            dic={}
+            dic['inicio']=datetime.now()
+            dic['transformacion_id']=r.id
+            dic['time_of_id']=r.razon_pausa_id.id
+            track=self.env['unispice.transformacion.time_track'].create(dic)
+            r.track_id=track.id
+    
+    def finalizar(self):
+        for r in self:
+            if r.track_id:
+                r.track_id.write({'fin':datetime.now()})
+                
+
+
+
     @api.model
     def create(self, vals):
         vals['name']=self.env['ir.sequence'].next_by_code('unispice.transformacion')
@@ -76,103 +116,7 @@ class unispice_production_order(models.Model):
         return res
     
 
-    def iniciar(self):
-        for r in self:
-            #creando la orden de produccion
-            dp={}
-            dp['product_id']=r.product_id.id
-            dp['company_id']=r.location_id.company_id.id
-            dp['consumption']='flexible'
-            dp['date_planned_start']=datetime.now()
-            dp['location_dest_id']=r.almacen_id.lot_stock_id.id
-            dp['location_src_id']=r.almacen_id.lot_stock_id.id
-            dp['picking_type_id']=r.location_id.company_id.transform_transfer_id.id
-            dp['product_qty']=0
-            dp['product_uom_qty']=0
-            dp['transformacion_id']=r.id
-            dp['product_uom_id']=r.product_id.uom_id.id
-            production=self.env['mrp.production'].create(dp)
-
-            r.name=r.location_id.company_id.tranformacion_seq_id.next_by_id()
-            for l in r.ingresos_mp_ids:
-                quant=None
-                quants=self.env['stock.quant'].search([('lot_id', '=', l.lot_id.id),('available_quantity','>',0)])
-                if quants:
-                    x=0
-                    for q in quants:
-                        if q.location_id.usage=='internal':
-                            x=x+1
-                            quant=q
-                if x>1:
-                    raise UserError('El Lote ha sido divido')
-                
-                #movimiento del producto
-                dic1={}
-                dic1['product_id']=quant.product_id.id
-                dic1['location_id']=quant.location_id.id
-                dic1['location_dest_id']=r.location_id.id
-                dic1['company_id']=r.location_id.company_id.id
-                dic1['date']=datetime.now()
-                dic1['product_uom']=quant.product_uom_id.id
-                dic1['product_uom_qty']=quant.available_quantity
-                dic1['state']='confirmed'
-                dic1['name']=r.name+' - '+l.lot_id.name
-                dic1['raw_material_production_id']=production.id
-                self.env['stock.move'].create(dic1)
-                #creando el picking de canastas
-
-
-                
-
-            production.action_toggle_is_locked()
-            for m in production.move_raw_ids:
-                dl={}
-                dl['location_id']=quant.location_id.id
-                dl['product_id']=quant.product_id.id
-                dl['product_uom_id']=quant.product_uom_id.id
-                dl['location_dest_id']=r.location_id.id
-                dl['lot_id']=quant.lot_id.id
-                dl['product_uom_qty']=quant.available_quantity
-                dl['qty_done']=quant.available_quantity
-                dl['move_id']=m.id
-                self.env['stock.move.line'].create(dl)
-            production.action_assign()
-            #for m in production.move_raw_ids:
-            #    if m.reserved_availability==0:
-            #        raise UserError('El Material no esta disponible')
-            production.action_confirm()
-            #production.button_mark_done()
-            ####Creacion del pickin de las canastas
-            dic={}
-            dic['picking_type_id']=r.location_id.company_id.transform_transfer_id.id
-            dic['move_type']='one'
-            dic['origin']=r.name
-            dic['location_dest_id']=r.location_id.id
-            dic['location_id']=quant.location_id.id
-            dic['transformacion_id']=r.id
-            pick=self.env['stock.picking'].create(dic)                
-            #creando la linea de las canastas
-            dicl={}
-            dicl['company_id']=r.location_id.company_id.id
-            dicl['date']=datetime.today()
-            dicl['location_dest_id']=r.location_id.id
-            dicl['location_id']=r.location_id.company_id.inbound_transfer_id.default_location_src_id.id
-            dicl['name']='Canastas'+l.lot_id.name
-            dicl['origin']=r.name
-            dicl['product_id']=l.lot_id.canasta_id.id                
-            dicl['product_uom']=1
-            dicl['product_uom_qty']=l.canastas
-            dicl['picking_id']=pick.id
-                
-            pick.action_confirm()
-            #pick.action_assign()
-            for x in pick.move_line_ids_without_package:
-                if x.product_id.tracking=='lot':
-                    x.write({'qty_done':x.product_uom_qty,'lot_id':lote.id,'origin':r.name})
-                else:
-                    x.write({'qty_done':x.product_uom_qty,'origin':r.name})
-            #pick.button_validate()
-
+   
 
 
 #################################################################################################################################################
@@ -368,9 +312,21 @@ class unispice_production_time_off(models.Model):
 
 class unispice_production_time_track(models.Model):
     _name='unispice.transformacion.time_track'
-    _description='Razones de tiempo muerto'
-    name=fields.Char(string='Nombre',compute='get_name')
+    _description='Toma de tiempo'
+    name=fields.Char(string='Nombre')
     inicio=fields.Datetime(string='Inicio')
     fin=fields.Datetime(string='Fin')
     duracion=fields.Float(string='Duracion',compute='get_duracion')
     time_of_id=fields.Many2one(comodel_name='unispice.transformacion.time_of', string='Tiempo fuera')
+    transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
+    turno_id=fields.Many2one(comodel_name='unispice.linea.turno',string='Turno en el que esta asignado',related='transformacion_id.turno_id')
+    linea_id=linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion',related='transformacion_id.linea_id')
+
+    @api.depends('inicio','fin')
+    def get_duracion(self):
+        for r in self:
+            if r.inicio and r.fin:
+                datediff=r.fin-r.inicio
+                r.duracion=datediff.total_seconds()/3600
+            else:
+                r.duracion=0.0

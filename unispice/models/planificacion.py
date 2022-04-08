@@ -38,6 +38,7 @@ class unispice_sale_order(models.Model):
                 if r.cantidad_restante>0:
                     dic={}
                     dic['product_id']=r.product_id.id
+                    dic['tipo']='pt'
                     dic['cantidad_a_producir']=r.cantidad_restante
                     dic['order_line_id']=r.id
                     dic['turno_id']=r.linea_turno_id.id
