@@ -8,6 +8,7 @@ import requests
 import logging
 import time
 from datetime import datetime
+from datetime import timedelta
 from collections import OrderedDict
 from odoo import api, fields, models,_
 from odoo.tools.safe_eval import safe_eval
@@ -68,6 +69,8 @@ class unispice_turno(models.Model):
 
     def abrir(self):
         for r in self:
+            if linea_turno_ids:
+                continue;
             lineas=self.env['unispice.linea'].search([('active','=',True)])
             for l in lineas:
                 dic={}
