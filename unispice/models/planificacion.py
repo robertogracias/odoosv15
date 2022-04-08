@@ -88,11 +88,12 @@ class unispice_turno(models.Model):
                     dic['empleados']=0
                 self.env['unispice.linea.turno'].create(dic)
 
-                
+
     def cerrar(self):
         for r in self:
             for l in r.linea_turno_ids:
                 l.state='cerrado'
+            r.state='cerrado'
 
 
 class unispice_linea_turno(models.Model):
