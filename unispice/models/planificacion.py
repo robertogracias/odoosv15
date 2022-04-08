@@ -61,7 +61,7 @@ class unispice_turno(models.Model):
     inicio=fields.Datetime(string='Inicio',required=True)
     fin=fields.Datetime(string='Fin',required=True)
     linea_turno_ids=fields.One2many(comodel_name='unispice.linea.turno',inverse_name='turno_id',string='Programaciones')
-    state=fields.Selection(selection=[('abierto','Abierto'),('Cerrado','Cerrado')],string="Estado",default='abierto')
+    state=fields.Selection(selection=[('abierto','Abierto'),('cerrado','Cerrado')],string="Estado",default='abierto')
 
     @api.depends('inicio','fin')
     def get_name(self):
@@ -84,7 +84,15 @@ class unispice_turno(models.Model):
                 anterior=self.env['unispice.linea.turno'].search([('linea_id','=',l.id),('inicio','=',inicio_anterior)],limit=1)
                 if anterior:
                     dic['empleados']=anterior.empleados
+                else:
+                    dic['empleados']=0
                 self.env['unispice.linea.turno'].create(dic)
+
+                
+    def cerrar(self):
+        for r in self:
+            for l in r.linea_turno_ids:
+                l.state='cerrado'
 
 
 class unispice_linea_turno(models.Model):
@@ -99,7 +107,7 @@ class unispice_linea_turno(models.Model):
     transformacion_ids=fields.One2many(comodel_name='unispice.transformacion',inverse_name='turno_id',string='Transformacion')
     version=fields.Integer(string='Version')
     duracion=fields.Float(string='Duracion',compute='calcular_carga')
-    state=fields.Selection(selection=[('abierto','Abierto'),('Cerrado','Cerrado')],string="Estado",default='abierto')
+    state=fields.Selection(selection=[('abierto','Abierto'),('cerrado','Cerrado')],string="Estado",default='abierto')
 
     carga=fields.Float(string='Carga estimada',compute='calcular_carga')
     #productividad=fields.Flaot(string='Productividad',compute='calcular_carga')
