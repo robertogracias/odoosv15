@@ -30,6 +30,7 @@ class unispice_production_order(models.Model):
     name=fields.Char('Orden de transformacion')
     #Estado de la transformacion
     state=fields.Selection(selection=[('draft','Borrador'),('Iniciado','Iniciado'),('Finalizado','Finalizado')],string="Estado",default='draft')
+    tipo=fields.Selection(selection=[('mp','Materia Prima'),('pt','Producto Terminado')],string="Tipo",default='mp')
     #Proceso en el que se desarrollara la transformacion
     proceso_id=fields.Many2one(comodel_name='mrp.workcenter', string='Proceso')
     #Producto terminado a producir
@@ -43,7 +44,12 @@ class unispice_production_order(models.Model):
     
     #Lotes de ingreso
     ingresos_mp_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Materia Prima',inverse_name='transformacion_id')
+    ingresos_me_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Material de Empaque',inverse_name='transformacion_id')
+    ingresos_pt_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Producto Terminado',inverse_name='transformacion_id')
+
     salidas_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_mp', string='Salidas Materia Prima',inverse_name='transformacion_id')
+    salidas_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_pt', string='Salidas Materia Prima',inverse_name='transformacion_id')
+    
     rechazo_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_rechazo', string='Rechazos Materia Prima',inverse_name='transformacion_id')
     #Orden de produccion asociada al proceso
     production_id=fields.Many2one(comodel_name='mrp.production', string='Proceso de produccion')
