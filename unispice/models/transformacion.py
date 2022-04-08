@@ -44,12 +44,12 @@ class unispice_production_order(models.Model):
     
     #Lotes de ingreso
     ingresos_mp_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Materia Prima',inverse_name='transformacion_id')
-    ingresos_me_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Material de Empaque',inverse_name='transformacion_id')
-    ingresos_pt_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Producto Terminado',inverse_name='transformacion_id')
+    ingresos_me_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_me', string='Ingresos Material de Empaque',inverse_name='transformacion_id')
+    ingresos_pt_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_pt', string='Ingresos Producto Terminado',inverse_name='transformacion_id')
 
     salidas_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_mp', string='Salidas Materia Prima',inverse_name='transformacion_id')
-    salidas_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_pt', string='Salidas Materia Prima',inverse_name='transformacion_id')
-    
+    salidas_pt_ids=fields.One2many(comodel_name='unispice.transformacion.salida_pt', string='Salidas Materia Prima',inverse_name='transformacion_id')
+
     rechazo_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_rechazo', string='Rechazos Materia Prima',inverse_name='transformacion_id')
     #Orden de produccion asociada al proceso
     production_id=fields.Many2one(comodel_name='mrp.production', string='Proceso de produccion')
@@ -185,6 +185,7 @@ class unispice_production_line_ingreso_me(models.Model):
     product_id=fields.Many2one(comodel_name='product.product', string='Producto',related='lot_id.product_id',store=True)
     ##Datos de ingreso
     cantidad=fields.Float(string='Cantidad ')
+    cantidad_out=fields.Float(string='Saldo ')
     
 
     transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
@@ -296,7 +297,7 @@ class unispice_production_line_salida_mp(models.Model):
     bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
     canastas_out=fields.Integer('Canastas de salida')
     peso_bruto_out=fields.Float('Peso de retorno')
-    peso_neto_in=fields.Float('Peso neto',compute='get_pesos_salida')
+    peso_neto_out=fields.Float('Peso neto',compute='get_pesos_salida')
     
 
     transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
