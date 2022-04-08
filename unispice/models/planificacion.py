@@ -51,6 +51,34 @@ class unispice_linea(models.Model):
     _name='unispice.linea'
     _description='Linea de produccion'
     name=fields.Char("Linea de produccion")
+    active=fields.Boolean("Activa")
+
+class unispice_turno(models.Model):
+    _name='unispice.turno'
+    _description='Turno de produccion'
+    name=fields.Char(string='name',compute='get_name')
+    inicio=fields.Datetime(string='Inicio',required=True)
+    fin=fields.Datetime(string='Fin',required=True)
+
+    @api.depends('inicio','fin')
+    def get_name(self):
+        for r in self:
+            r.name=str(r.inicio)+'-'+str(r.fin)
+
+    def abrir(self):
+        for r in self:
+            lineas=self.env['unispice.linea'].search([('active','=',True)])
+            for l in lineas:
+                dic={}
+                dic['linea_id']=l.id
+                dic['inicio']=r.inicio
+                dic['fin']=r.fin
+                dic['version']=1
+                inicio_anterior=r.inicio+datetime.timedelta(days=-1)
+                anterior=self.env['unispice.linea.turno'].search([('linea_id','=',l.id),('inicio','=',inicio_anterior)],limit=1)
+                if anterior:
+                    dic['empleados']=anterior.empleados
+                self.env['unispice.linea.turno'].create(dic)
 
 
 class unispice_linea_turno(models.Model):

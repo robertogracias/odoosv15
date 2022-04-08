@@ -61,7 +61,11 @@ class unispice_production_order(models.Model):
     linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion',related='turno_id.linea_id')
 
 
-
+    @api.model
+    def create(self, vals):
+        vals['name']=self.env['ir.sequence'].next_by_code('unispice.transformacion')
+        res = super(unispice_production_order, self).create(vals)
+        return res
     
 
     def iniciar(self):
@@ -164,11 +168,34 @@ class unispice_production_order(models.Model):
 
 
 #################################################################################################################################################
-#Linea de ingreso de materia prima
-class unispice_production_line_ingreso(models.Model):
-    _name='unispice.transformacion.ingreso_mp'
-    _description='Ingreso a las ordenes de produccion'
+#Linea de ingreso de material de empaque
+class unispice_production_line_ingreso_me(models.Model):
+    _name='unispice.transformacion.ingreso_me'
+    _description='Ingreso a las ordenes de produccion'    
     lot_id=fields.Many2one(comodel_name='stock.production.lot', string='Lote')
+    name=fields.Char(string='Ingreso MP',related='lot_id.name')
+    product_id=fields.Many2one(comodel_name='product.product', string='Producto',related='lot_id.product_id',store=True)
+    ##Datos de ingreso
+    cantidad=fields.Float(string='Cantidad ')
+    
+
+    transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
+    move_id=fields.Many2one(comodel_name='stoc.move', string='movimiento')
+
+    def get_name(self):
+        for r in self:
+            r.name=r.lot_id.name+' - '+r.lot_id.product_id.name
+
+
+
+  
+
+#Linea de ingreso de materia prima
+class unispice_production_line_ingreso_mp(models.Model):
+    _name='unispice.transformacion.ingreso_mp'
+    _description='Ingreso a las ordenes de produccion'    
+    lot_id=fields.Many2one(comodel_name='stock.production.lot', string='Lote')
+    name=fields.Char(string='Ingreso MP',compute='get_name')
     product_id=fields.Many2one(comodel_name='product.product', string='Producto',related='lot_id.product_id',store=True)
     tara_canasta=fields.Float('Tara canasta',related='lot_id.tara_canasta',store=True)
     tara_pallet=fields.Float('Tara Palet',related='lot_id.tara_pallet',store=True)
@@ -176,6 +203,7 @@ class unispice_production_line_ingreso(models.Model):
     canastas_in=fields.Integer('Canastas',compute='get_pesos',store=True)
     peso_bruto_in=fields.Float('Peso Bruto',compute='get_pesos')
     peso_neto_in=fields.Float('Peso neto',compute='get_pesos')
+    
     ##Datos de salida
     bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
     canastas_out=fields.Integer('Canastas de salida')
@@ -184,10 +212,56 @@ class unispice_production_line_ingreso(models.Model):
     
 
     transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
+    move_id=fields.Many2one(comodel_name='stoc.move', string='movimiento')
 
     #picking de las canastas
     picking_canasta_in_id=fields.Many2one(comodel_name='stock.picking', string='Entrada de las canastas')
     picking_canasta_out_id=fields.Many2one(comodel_name='stock.picking', string='Retorno de las canastas')
+
+    def get_name(self):
+        for r in self:
+            r.name=r.lot_id.name+' - '+r.lot_id.product_id.name
+
+
+    @api.onchange('lot_id')
+    def get_pesos(self):
+        for r in self:
+            r.canastas_in=r.lot_id.canastas
+            r.peso_neto_in=r.lot_id.product_qty
+            r.peso_bruto_in=r.lot_id.product_qty+(r.lot_id.canastas*r.tara_canasta)+r.tara_pallet
+
+
+    #Linea de ingreso de materia prima
+class unispice_production_line_ingreso(models.Model):
+    _name='unispice.transformacion.ingreso_pt'
+    _description='Ingreso a las ordenes de produccion'    
+    lot_id=fields.Many2one(comodel_name='stock.production.lot', string='Lote')
+    name=fields.Char(string='Ingreso MP',compute='get_name')
+    product_id=fields.Many2one(comodel_name='product.product', string='Producto',related='lot_id.product_id',store=True)
+    tara_canasta=fields.Float('Tara canasta',related='lot_id.tara_canasta',store=True)
+    tara_pallet=fields.Float('Tara Palet',related='lot_id.tara_pallet',store=True)
+    ##Datos de ingreso
+    canastas_in=fields.Integer('Canastas',compute='get_pesos',store=True)
+    peso_bruto_in=fields.Float('Peso Bruto',compute='get_pesos')
+    peso_neto_in=fields.Float('Peso neto',compute='get_pesos')
+    
+    ##Datos de salida
+    bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
+    canastas_out=fields.Integer('Canastas de salida')
+    peso_bruto_out=fields.Float('Peso de retorno')
+    peso_neto_out=fields.Float('Peso neto',compute='get_pesos_salida')
+    
+
+    transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
+    move_id=fields.Many2one(comodel_name='stoc.move', string='movimiento')
+
+    #picking de las canastas
+    picking_canasta_in_id=fields.Many2one(comodel_name='stock.picking', string='Entrada de las canastas')
+    picking_canasta_out_id=fields.Many2one(comodel_name='stock.picking', string='Retorno de las canastas')
+
+    def get_name(self):
+        for r in self:
+            r.name=r.lot_id.name+' - '+r.lot_id.product_id.name
 
     @api.onchange('lot_id')
     def get_pesos(self):
@@ -199,7 +273,7 @@ class unispice_production_line_ingreso(models.Model):
 
 #################################################################################################################################################
 #Linea de salida de materia prima
-class unispice_production_line_ingreso(models.Model):
+class unispice_production_line_salida_mp(models.Model):
     _name='unispice.transformacion.salida_mp'
     _description='salida a las ordenes de produccion'
     #El lote se generara
@@ -224,9 +298,36 @@ class unispice_production_line_ingreso(models.Model):
     picking_canasta_id=fields.Many2one(comodel_name='stock.picking', string='Retorno de las canastas')
 
 
+
+
+class unispice_production_line_salida_pt(models.Model):
+    _name='unispice.transformacion.salida_pt'
+    _description='salida a las ordenes de produccion'
+    #El lote se generara
+    lot_id=fields.Many2one(comodel_name='stock.production.lot', string='Lote')
+    product_id=fields.Many2one(comodel_name='product.product', string='Producto',store=True)
+    canasta_id=fields.Many2one(comodel_name='product.product', string='Tipo Canasta',domain='[("is_canasta","=",True)]')
+    pallet_id=fields.Many2one(comodel_name='product.product', string='Tipo Pallet',domain='[("is_pallet","=",True)]')
+    tara_canasta=fields.Float('Tara canasta',related='canasta_id.tara',store=True)
+    tara_pallet=fields.Float('Tara Palet',related='pallet_id.tara',store=True)
+    
+    ##Datos de salida
+    bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
+    canastas_out=fields.Integer('Canastas de salida')
+    peso_bruto_out=fields.Float('Peso de retorno')
+    peso_neto_in=fields.Float('Peso neto',compute='get_pesos_salida')
+    
+
+    transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
+
+    #picking de las canastas
+    picking_id=fields.Many2one(comodel_name='stock.picking', string='Entrada de las canastas')
+    picking_canasta_id=fields.Many2one(comodel_name='stock.picking', string='Retorno de las canastas')
+
+
 #################################################################################################################################################
 #Linea de salida de materia prima
-class unispice_production_line_ingreso(models.Model):
+class unispice_production_line_rechazo(models.Model):
     _name='unispice.transformacion.salida_rechazo'
     _description='salida a las ordenes de produccion'
     #El lote se generara
@@ -249,3 +350,18 @@ class unispice_production_line_ingreso(models.Model):
     picking_id=fields.Many2one(comodel_name='stock.picking', string='Entrada de las canastas')
     picking_canasta_id=fields.Many2one(comodel_name='stock.picking', string='Retorno de las canastas')
 
+
+class unispice_production_time_off(models.Model):
+    _name='unispice.transformacion.time_of'
+    _description='Razones de tiempo muerto'
+    name="razon de tiempo muerto"
+
+
+class unispice_production_time_track(models.Model):
+    _name='unispice.transformacion.time_track'
+    _description='Razones de tiempo muerto'
+    name=fields.Char(string='Nombre',compute='get_name')
+    inicio=fields.Datetime(string='Inicio')
+    fin=fields.Datetime(string='Fin')
+    duracion=fields.Float(string='Duracion',compute='get_duracion')
+    time_of_id=fields.Many2one(comodel_name='unispice.transformacion.time_of', string='Tiempo fuera')
