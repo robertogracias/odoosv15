@@ -26,6 +26,19 @@ class unispice_sale_order(models.Model):
     cantidad_restante=fields.Float('Cantidad restante',compute='calcular_cantidades',store=True)
     transformacion_ids=fields.One2many(comodel_name='unispice.transformacion',inverse_name='order_line_id',string='Transformacion')
     version=fields.Integer('version')
+    linea_turno_id=fields.Many2one(comodel_name='unispice.linea.turno',string='Linea a asignar')
+
+    def asignar(self):
+        for r in self:
+            if r.linea_turno_id:
+                r.calcular_cantidades()
+                if r.cantidad_restante>0:
+                    dic={}
+                    dic['product_id']=r.product_id.id
+                    dic['cantidad_a_producir']=r.cantidad_restante
+                    dic['order_line_id']=r.id
+                    dic['turno_id']=r.linea_turno_id.id
+                    self.env['unispice.transformacion'].create(dic)
 
     @api.depends('transformacion_ids','version')
     def calcular_cantidades(self):
@@ -111,12 +124,14 @@ class unispice_linea_turno(models.Model):
     state=fields.Selection(selection=[('abierto','Abierto'),('cerrado','Cerrado')],string="Estado",default='abierto')
 
     carga=fields.Float(string='Carga estimada',compute='calcular_carga')
+    horas_hombre=fields.Float(string='Horas hombre',compute='calcular_carga')
+    horas_programadas=fields.Float(string='Horas programadas',compute='calcular_carga')
     #productividad=fields.Flaot(string='Productividad',compute='calcular_carga')
 
     @api.depends('linea_id','inicio','fin')
     def get_name(self):
         for r in self:
-            r.name=r.linea_id.name+':'+str(r.inicio)+'-'+str(r.fin)
+            r.name=r.linea_id.name+':'+str(r.inicio)+'-'+str(r.fin)+ '   CARGA:'+str(round(r.carga,2))
 
     @api.depends('transformacion_ids')
     def calcular_carga(self):
@@ -132,6 +147,8 @@ class unispice_linea_turno(models.Model):
                     horas_orden=0
                 horas_programadas=horas_programadas+horas_orden
             r.duracion=horas
+            r.horas_hombre=horas_hombre
+            r.horas_programadas=horas_programadas
             if horas_hombre>0:
                 r.carga=(horas_programadas/horas_hombre)*100
             else:
