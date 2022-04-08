@@ -75,6 +75,7 @@ class unispice_turno(models.Model):
                 dic['inicio']=r.inicio
                 dic['fin']=r.fin
                 dic['version']=1
+                dic['turno_id']=r.id
                 inicio_anterior=r.inicio+datetime.timedelta(days=-1)
                 anterior=self.env['unispice.linea.turno'].search([('linea_id','=',l.id),('inicio','=',inicio_anterior)],limit=1)
                 if anterior:
