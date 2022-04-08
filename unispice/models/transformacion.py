@@ -307,7 +307,7 @@ class unispice_production_line_rechazo(models.Model):
 class unispice_production_time_off(models.Model):
     _name='unispice.transformacion.time_of'
     _description='Razones de tiempo muerto'
-    name="razon de tiempo muerto"
+    name=fields.Char("razon de tiempo muerto")
 
 
 class unispice_production_time_track(models.Model):
