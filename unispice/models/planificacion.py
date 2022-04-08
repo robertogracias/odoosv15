@@ -61,6 +61,7 @@ class unispice_turno(models.Model):
     inicio=fields.Datetime(string='Inicio',required=True)
     fin=fields.Datetime(string='Fin',required=True)
     linea_turno_ids=fields.One2many(comodel_name='unispice.linea.turno',inverse_name='turno_id',string='Programaciones')
+    state=fields.Selection(selection=[('abierto','Abierto'),('Cerrado','Cerrado')],string="Estado",default='abierto')
 
     @api.depends('inicio','fin')
     def get_name(self):
@@ -69,7 +70,7 @@ class unispice_turno(models.Model):
 
     def abrir(self):
         for r in self:
-            if linea_turno_ids:
+            if r.linea_turno_ids:
                 continue;
             lineas=self.env['unispice.linea'].search([('active','=',True)])
             for l in lineas:
