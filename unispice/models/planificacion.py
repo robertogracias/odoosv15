@@ -30,8 +30,11 @@ class unispice_sale_order(models.Model):
 
     def asignar(self):
         for r in self:
+            if not r.product_id.cantidad_hora:
+                raise UserError('El producto no tiene especificada una cantidad por hora')
             if r.linea_turno_id:
                 r.calcular_cantidades()
+                r.version=r.version+1
                 if r.cantidad_restante>0:
                     dic={}
                     dic['product_id']=r.product_id.id
