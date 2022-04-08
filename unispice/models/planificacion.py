@@ -59,6 +59,7 @@ class unispice_turno(models.Model):
     name=fields.Char(string='name',compute='get_name')
     inicio=fields.Datetime(string='Inicio',required=True)
     fin=fields.Datetime(string='Fin',required=True)
+    linea_turno_ids=fields.One2many(comodel_name='unispice.linea.turno',inverse_name='turno_id',string='Programaciones')
 
     @api.depends('inicio','fin')
     def get_name(self):
@@ -89,6 +90,7 @@ class unispice_linea_turno(models.Model):
     fin=fields.Datetime(string='Fin',required=True)
     empleados=fields.Integer(string='Cantidad de empleados',required=True)
     linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion',required=True)
+    turno_id=fields.Many2one(comodel_name='unispice.turno',string='Turno de Produccion',required=True)
     transformacion_ids=fields.One2many(comodel_name='unispice.transformacion',inverse_name='turno_id',string='Transformacion')
     version=fields.Integer(string='Version')
     duracion=fields.Float(string='Duracion',compute='calcular_carga')
