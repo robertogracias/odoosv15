@@ -86,7 +86,7 @@ class unispice_turno(models.Model):
     @api.depends('inicio','horario')
     def get_name(self):
         for r in self:
-            r.name=datetime.strptime(date_string, '%Y-%m-%d')+'-'+horario
+            r.name=datetime.strptime(r.inicio, '%Y-%m-%d')+'-'+r.horario
 
     def abrir(self):
         for r in self:
@@ -139,7 +139,7 @@ class unispice_linea_turno(models.Model):
     @api.depends('linea_id','inicio','duracion','horario')
     def get_name(self):
         for r in self:
-            r.name=r.linea_id.name+':'+datetime.strptime(date_string, '%Y-%m-%d')+'-'+horario+ '   CARGA:'+str(round(r.carga,2))
+            r.name=r.linea_id.name+':'+datetime.strptime(r.inicio, '%Y-%m-%d')+'-'+r.horario+ '   CARGA:'+str(round(r.carga,2))
 
     @api.depends('transformacion_ids')
     def calcular_carga(self):
