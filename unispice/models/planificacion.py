@@ -78,7 +78,7 @@ class unispice_turno(models.Model):
     inicio=fields.Datetime(string='Inicio',required=True)
     horario=fields.Selection(selection=[('Matutino','Matutino'),('Vespertino','Vespertino')],string="Estado",default='Matutino')
     duracion=fields.Float(string='Duracion')
-    linea_ids=fields.Many2many(comodel_name='Lineas a incluir en el turno')
+    linea_ids=fields.Many2many(comodel_name="unispice.linea",string='Lineas a incluir en el turno')
     #fin=fields.Datetime(string='Fin',required=True)
     linea_turno_ids=fields.One2many(comodel_name='unispice.linea.turno',inverse_name='turno_id',string='Programaciones')
     state=fields.Selection(selection=[('abierto','Abierto'),('cerrado','Cerrado')],string="Estado",default='abierto')
