@@ -86,7 +86,10 @@ class unispice_turno(models.Model):
     @api.depends('inicio','horario')
     def get_name(self):
         for r in self:
-            r.name=datetime.strptime(r.inicio, '%Y-%m-%d')+'-'+r.horario
+            if r.inicio:
+                r.name=r.inicio.strftime('%Y-%m-%d')+'-'+r.horario
+            else:
+                r.name=r.horario
 
     def abrir(self):
         for r in self:
@@ -121,8 +124,8 @@ class unispice_linea_turno(models.Model):
     _description='Turno de linea de produccion'
     name=fields.Char(string='name',compute='get_name')
     inicio=fields.Datetime(string='Inicio',required=True)
-    horario=fields.Selection(selection=[('Matutino','Matutino'),('Vespertino','Vespertino')],string="Estado",default='Matutino')
-    duracion=fields.Float(string='Duracion')
+    horario=fields.Selection(selection=[('Matutino','Matutino'),('Vespertino','Vespertino')],string="Estado",default='Matutino',required=True)
+    duracion=fields.Float(string='Duracion',required=True)
     empleados=fields.Integer(string='Cantidad de empleados',required=True)
     linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion',required=True)
     turno_id=fields.Many2one(comodel_name='unispice.turno',string='Turno de Produccion',required=True)
@@ -139,7 +142,7 @@ class unispice_linea_turno(models.Model):
     @api.depends('linea_id','inicio','duracion','horario')
     def get_name(self):
         for r in self:
-            r.name=r.linea_id.name+':'+datetime.strptime(r.inicio, '%Y-%m-%d')+'-'+r.horario+ '   CARGA:'+str(round(r.carga,2))
+            r.name=r.linea_id.name+':'+r.inicio.strftime('%Y-%m-%d')+'-'+r.horario+ '   CARGA:'+str(round(r.carga,2))
 
     @api.depends('transformacion_ids')
     def calcular_carga(self):
