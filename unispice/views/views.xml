@@ -110,6 +110,7 @@
                                     <field name="rango"/>
                                     <field name="proyectado"  />                            
                                     <field name="aprobado" widget="boolean_toggle"/>
+                                    <field name="image_1920" widget="image" options="{'preview_image': 'image_512'}" />
                                 </group>
                             </sheet>
                         </form>
