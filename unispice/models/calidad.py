@@ -97,7 +97,7 @@ class unispice_product(models.Model):
     total_afectado=fields.Float("Total afectado",compute="calcular_totales")
     boleta_id=fields.Many2one(comodel_name='unispice.recepcion',string='Boleta')
 
-    @api.depends('quality_ids','product_id','lot_id','boleta_id'})
+    @api.depends('quality_ids','product_id','lot_id','boleta_id')
     def calcular_totales(self):
         for r in self:
             total_producto=0
