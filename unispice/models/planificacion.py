@@ -98,7 +98,6 @@ class unispice_turno(models.Model):
                 dic={}
                 dic['linea_id']=l.id
                 dic['inicio']=r.inicio
-                dic['duracion']=r.duracion
                 dic['horario']=r.horario
                 dic['version']=1
                 dic['turno_id']=r.id
