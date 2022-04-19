@@ -53,7 +53,9 @@ class unispice_qualitycheck(models.Model):
 class unispice_check_item(models.Model):
     _name='unispice.quatily_check_item'
     _description='Item del control de calidad'
+    _inherit=['image.mixin']
     name=fields.Char('Punto a revisar')
+    
     aprobado=fields.Boolean("Aprobado")
     item_id=fields.Many2one(comodel_name='unispice.quatily_item', string='item de calidad')
     check_id=fields.Many2one(comodel_name='quality.check', string='Control')
@@ -61,7 +63,7 @@ class unispice_check_item(models.Model):
     porcentaje=fields.Float(string="Porcentaje aplicado",compute='compute_percentaje')
     proyectado=fields.Float(string="Cantidad proyectada",compute='compute_percentaje')
     rango=fields.Char(string='Rango valido',compute='compute_percentaje')
-    imagen=fields.Binary(string='imagen',attachment=True)
+    #imagen=fields.Binary(string='imagen',attachment=True)
 
     @api.depends('check_id','muestra_afectada')
     def compute_percentaje(self):

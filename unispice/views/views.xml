@@ -99,7 +99,7 @@
                             <field name="rango"/>
                             <field name="proyectado"  sum="Total"/>                            
                             <field name="aprobado" widget="boolean_toggle"/>
-                            <field name="imagen" widget="image" />
+                            <field name="image_1920" widget="image" options="{'preview_image': 'image_128'}" />
                         </tree>
                         <form>
                             <sheet>
