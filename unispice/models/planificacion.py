@@ -76,7 +76,7 @@ class unispice_turno(models.Model):
     _description='Turno de produccion'
     name=fields.Char(string='name',compute='get_name')
     inicio=fields.Datetime(string='Inicio',required=True)
-    horario=fields.Selection(selection=[('Diurno','Diurno'),('Nocturno','Nocturno')],string="Estado",default='Diurno')    
+    horario=fields.Selection(selection=[('Diurno','Diurno'),('Nocturno','Nocturno')],string="Horario",default='Diurno')    
     linea_ids=fields.Many2many(comodel_name="unispice.linea",string='Lineas a incluir en el turno')
     #fin=fields.Datetime(string='Fin',required=True)
     linea_turno_ids=fields.One2many(comodel_name='unispice.linea.turno',inverse_name='turno_id',string='Programaciones')
@@ -122,7 +122,7 @@ class unispice_linea_turno(models.Model):
     _description='Turno de linea de produccion'
     name=fields.Char(string='name',compute='get_name')
     inicio=fields.Datetime(string='Inicio',required=True)
-    horario=fields.Selection(selection=[('Matutino','Matutino'),('Vespertino','Vespertino')],string="Estado",default='Matutino',required=True)
+    horario=fields.Selection(selection=[('Diurno','Diurno'),('Nocturno','Nocturno')],string="Horario",default='Diurno',required=True)
     duracion=fields.Float(string='Duracion',required=True,default=12.0)
     empleados=fields.Integer(string='Cantidad de empleados',required=True)
     linea_id=fields.Many2one(comodel_name='unispice.linea',string='Linea de Produccion',required=True)
