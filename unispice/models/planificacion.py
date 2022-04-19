@@ -76,8 +76,7 @@ class unispice_turno(models.Model):
     _description='Turno de produccion'
     name=fields.Char(string='name',compute='get_name')
     inicio=fields.Datetime(string='Inicio',required=True)
-    horario=fields.Selection(selection=[('Matutino','Matutino'),('Vespertino','Vespertino')],string="Estado",default='Matutino')
-    duracion=fields.Float(string='Duracion')
+    horario=fields.Selection(selection=[('Diurno','Diurno'),('Nocturno','Nocturno')],string="Estado",default='Diurno')    
     linea_ids=fields.Many2many(comodel_name="unispice.linea",string='Lineas a incluir en el turno')
     #fin=fields.Datetime(string='Fin',required=True)
     linea_turno_ids=fields.One2many(comodel_name='unispice.linea.turno',inverse_name='turno_id',string='Programaciones')
@@ -131,7 +130,7 @@ class unispice_linea_turno(models.Model):
     turno_id=fields.Many2one(comodel_name='unispice.turno',string='Turno de Produccion',required=True)
     transformacion_ids=fields.One2many(comodel_name='unispice.transformacion',inverse_name='turno_id',string='Transformacion')
     version=fields.Integer(string='Version')
-    duracion=fields.Float(string='Duracion',compute='calcular_carga')
+    duracion=fields.Float(string='Duracion',default=12.0)
     state=fields.Selection(selection=[('abierto','Abierto'),('cerrado','Cerrado')],string="Estado",default='abierto')
 
     carga=fields.Float(string='Carga estimada',compute='calcular_carga')
@@ -142,13 +141,12 @@ class unispice_linea_turno(models.Model):
     @api.depends('linea_id','inicio','duracion','horario')
     def get_name(self):
         for r in self:
-            r.name=r.linea_id.name+':'+r.inicio.strftime('%Y-%m-%d')+'-'+r.horario+ '   CARGA:'+str(round(r.carga,2))
+            r.name=r.linea_id.name+' '+r.horario+' '+r.inicio.strftime('%Y-%m-%d')+ '   CARGA:'+str(round(r.carga,2))
 
     @api.depends('transformacion_ids')
     def calcular_carga(self):
-        for r in self:
-            datediff=r.fin-r.inicio
-            horas=datediff.total_seconds()/3600
+        for r in self:            
+            horas=r.duracion
             horas_hombre=r.empleados*horas
             horas_programadas=0
             for t in r.transformacion_ids:
@@ -157,7 +155,6 @@ class unispice_linea_turno(models.Model):
                 else:
                     horas_orden=0
                 horas_programadas=horas_programadas+horas_orden
-            r.duracion=horas
             r.horas_hombre=horas_hombre
             r.horas_programadas=horas_programadas
             if horas_hombre>0:
