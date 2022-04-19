@@ -75,7 +75,9 @@
         <field name="model">quality.check</field>
         <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
         <field name="arch" type="xml">
-
+            <xpath expr="//field[@name='lot_id']" position="after">
+                <field name="boleta_id" attrs="{'invisible':[('')]}"/>
+            </xpath>
             <xpath expr="//field[@name='alert_ids']" position="after">
                 <field name="lote_total"/>
                 <field name="porcentaje"/>
