@@ -65,14 +65,14 @@ class unispice_check_item(models.Model):
     rango=fields.Char(string='Rango valido',compute='compute_percentaje')
     #imagen=fields.Binary(string='imagen',attachment=True)
 
-    @api.depends('check_id','muestra_afectada')
+    @api.depends('check_id','muestra_afectada','write_date')
     def compute_percentaje(self):
         for r in self:
             r.rango=str(r.item_id.porcentaje_min)+'% - '+str(r.item_id.porcentaje_max)+'%'
             if r.check_id.muestra>0:
                 r.porcentaje=(r.muestra_afectada/r.check_id.muestra)*100.00
                 if r.check_id.lot_id:
-                    r.proyectado=r.check_id.lot_id.product_qty*(r.muestra_afectada/r.check_id.muestra)
+                    r.proyectado=r.check_id.lote_total*(r.muestra_afectada/r.check_id.muestra)
                 else:
                     r.proyectado=0.0
                 if r.porcentaje>=r.item_id.porcentaje_min and r.porcentaje<=r.item_id.porcentaje_max:
@@ -92,22 +92,33 @@ class unispice_product(models.Model):
     quality_ids=fields.One2many(comodel_name='unispice.quatily_check_item',inverse_name='check_id',string='Items de Calidad')
     muestra=fields.Float("Peso en lbs. de la muestra")
     uom_id=fields.Many2one(comodel_name='uom.uom',string='Unidad de medida',related='product_id.uom_id')
-    lote_total=fields.Float(string='Total del lote',related='lot_id.product_qty')
+    lote_total=fields.Float(string='Total del lote',compute='calcular_totales')
     porcentaje=fields.Float("Porcentaje total afectada",compute="calcular_totales")
     total_afectado=fields.Float("Total afectado",compute="calcular_totales")
+    boleta_id=fields.Many2one(comodel_name='unispice.recepcion',string='Boleta')
 
-    @api.depends('quality_ids')
+    @api.depends('quality_ids','product_id','lot_id','boleta_id'})
     def calcular_totales(self):
         for r in self:
+            total_producto=0
+            if r.product_id:
+                if 'Materia Prima' in r.product_id.categ_id.display_name:
+                    if r.boleta_id:
+                        lotes=self.env['stock.production.lot'].search([('boleta_id','=',r.boleta_id.id)])
+                        for l in lotes:
+                            total_producto=total_producto+l.product_qty
+                else:
+                    if r.lot_id:
+                        total_producto=total_producto+r.lot_id.product_qty
             porcentaje=0.0
             total=0.0
             for l in r.quality_ids:
                 total=total+l.proyectado
             r.total_afectado=total
-            if r.lot_id:
-                if r.lot_id.product_qty>0:
-                    porcentaje=total/r.lot_id.product_qty
+            if total_producto>0:
+                porcentaje=total/total_producto
             r.porcentaje=porcentaje
+            r.lote_total=total_producto
             
 
 
