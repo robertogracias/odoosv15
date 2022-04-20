@@ -19,7 +19,7 @@ _logger = logging.getLogger(__name__)
 class unispice_packing(models.Model):
     _name = 'unispice.packing'
     _description = 'Embalaje Producto terminado'
-    lote_pallet = Float(string = 'Lote Pallet')
+    lote_pallet = fields.Float(string = 'Lote Pallet')
 
     # Totales a calcular
     sum_cantidad = fields.Float(string = 'Suma cantidad', compute = '_get_sum_cantidad')
