@@ -41,6 +41,7 @@ class unispice_lote(models.Model):
     tipo_productor=fields.Char(related='boleta_id.x_tipo_productor', string='Tipo Productor')
     fecha_cosecha=fields.Date(related='boleta_id.fecha_cosecha', string='Fecha de cosecha')
     grupo_mp=fields.Char(string='Grupo MP',compute='get_grupo')
+    categ_id=fields.Many2one(comodel_name='product.category',related='product_id.categ_id', string='Categoria',store=True)
 
     def get_grupo(self):
         for r in self:
@@ -68,6 +69,8 @@ class unispice_workcenter(models.Model):
     location_input_id=fields.Many2one(comodel_name='stock.location', string='Ubicacion de entrada')
     #ubicacion de salida de producto terminado
     location_output_id=fields.Many2one(comodel_name='stock.location', string='Ubicacion de salida')
+    #ubicacion de production
+    location_factory_id=fields.Many2one(comodel_name='stock.location', string='Ubicacion de produccion')
     #Linea de produccion asociada
     linea_id=fields.Many2one(comodel_name='unispice.linea', string='Linea de produccion')
     #tipo de proceso

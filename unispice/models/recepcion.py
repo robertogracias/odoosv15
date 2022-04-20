@@ -109,10 +109,12 @@ class unispice_recepcion(models.Model):
         for r in self:
             r.renumerar_lineas()
             for l in r.detalle_ids:
+                product=r.x_producto_id.x_studio_many2one_field_5jIZO
                 #creando el lote
+
                 dic1={}
                 dic1['name']=l.name
-                dic1['product_id']=r.producto_id.id
+                dic1['product_id']=product.id
                 dic1['boleta_id']=r.id
                 dic1['company_id']=r.location_id.company_id.id
                 dic1['canastas']=l.canastas
@@ -136,8 +138,8 @@ class unispice_recepcion(models.Model):
                 dicl['location_id']=r.location_id.company_id.inbound_transfer_id.default_location_src_id.id
                 dicl['name']=l.name
                 dicl['origin']=r.name
-                dicl['product_id']=r.producto_id.id                
-                dicl['product_uom']=r.producto_id.uom_id.id
+                dicl['product_id']=product.id
+                dicl['product_uom']=product.uom_id.id
                 dicl['product_uom_qty']=l.peso_neto
                 dicl['picking_id']=pick.id
                 self.env['stock.move'].create(dicl)
@@ -179,11 +181,11 @@ class unispice_recepcion(models.Model):
                 lote.write({'canastas':l.canastas,'canasta_id':r.canasta_id.id,'pallet_id':r.pallet_id})
                 #ejecutando las etiquetas
                 dice={}
-                dice['name']=r.name+'-'+r.producto_id.name
+                dice['name']=r.name+'-'+product.name
                 dice['quantity']=1
                 dice['counter']=0
                 dice['tipo']=r.label_id.tipo
-                dice['content']=r.label_id.evaluate(r.producto_id,lote,r.location_id.company_id)
+                dice['content']=r.label_id.evaluate(product,lote,r.location_id.company_id)
                 label=self.env['etiquetas.run.item'].create(dice)
                 l.etiqueta_id=label.id
                 l.picking_id=pick.id

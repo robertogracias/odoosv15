@@ -17,7 +17,6 @@ _logger = logging.getLogger(__name__)
 
 
 
-
 #######################################################################################################################################################
 #######################################################################################################################################################
 #######################################################################################################################################################
@@ -46,6 +45,32 @@ class unispice_production_order(models.Model):
     ingresos_mp_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Materia Prima',inverse_name='transformacion_id')
     ingresos_me_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_me', string='Ingresos Material de Empaque',inverse_name='transformacion_id')
     ingresos_pt_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_pt', string='Ingresos Producto Terminado',inverse_name='transformacion_id')
+
+
+    saldo_mp_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_mp', string='Ingresos Materia Prima',compute='_compute_lines_mp', inverse='_inverse_lines')
+    saldo_me_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_me', string='Ingresos Material de Empaque',compute='_compute_lines_me', inverse='_inverse_lines')
+    saldo_pt_ids=fields.One2many(comodel_name='unispice.transformacion.ingreso_pt', string='Ingresos Producto Terminado',compute='_compute_lines_pt', inverse='_inverse_lines')
+
+
+    def _inverse_lines(self):
+        """ Little hack to make sure that when you change something on these objects, it gets saved"""
+        pass
+
+    @api.depends('ingresos_mp_ids')
+    def _compute_lines_mp(self):
+        for production in self:
+            production.saldo_mp_ids = production.ingresos_mp_ids
+
+    @api.depends('ingresos_me_ids')
+    def _compute_lines_me(self):
+        for production in self:
+            production.saldo_me_ids = production.ingresos_me_ids
+
+    @api.depends('ingresos_pt_ids')
+    def _compute_lines_pt(self):
+        for production in self:
+            production.saldo_pt_ids = production.ingresos_pt_ids
+
 
     salidas_mp_ids=fields.One2many(comodel_name='unispice.transformacion.salida_mp', string='Salidas Materia Prima',inverse_name='transformacion_id')
     salidas_pt_ids=fields.One2many(comodel_name='unispice.transformacion.salida_pt', string='Salidas Materia Prima',inverse_name='transformacion_id')
@@ -78,8 +103,164 @@ class unispice_production_order(models.Model):
     partner_id=fields.Many2one(comodel_name='res.partner',string='Cliente',related='order_line_id.order_partner_id')
 
 
+    def _get_quant(self,lot):        
+        quant=None
+        quants=self.env['stock.quant'].search([('lot_id', '=', lot.id)])
+        if quants:
+            x=0
+            for q in quants:
+                if q.location_id.usage=='internal' and q.available_quantity>0:
+                    x=x+1
+                    quant=q
+            if x>1:
+                raise UserError('El Lote ha sido divido:'+str(x))
+        return quant
 
-    def  iniciar(self):
+
+    def _crear_orden(self):
+        dp={}
+        dp['product_id']=self.product_id.id
+        dp['company_id']=self.proceso_id.company_id.id
+        dp['consumption']='flexible'
+        dp['date_planned_start']=datetime.now()            
+        dp['picking_type_id']=self.proceso_id.company_id.transform_transfer_id.id
+        dp['location_dest_id']=self.proceso_id.location_input_id.id
+        dp['location_src_id']=self.proceso_id.location_output_id.id
+        dp['product_qty']=self.cantidad_prodducida        
+        dp['product_uom_id']=self.product_id.uom_id.id
+        produccion=self.env['mrp.production'].create(dp)
+        return produccion
+    
+    def _crear_movimiento_prod(self,produccion,quant,cantidad,src,target):
+        dic1={}
+        dic1['product_id']=quant.product_id.id
+        dic1['location_id']=src.id
+        dic1['location_dest_id']=target.id
+        dic1['company_id']=src.company_id.id
+        dic1['date']=datetime.now()        
+        dic1['product_uom']=quant.product_uom_id.id
+        if cantidad<=quant.available_quantity:
+            dic1['product_uom_qty']=cantidad
+        else:
+            raise UserError('El lote de materia prima '+ quant.lot_id.name+ ' no tiene la cantidad requerida :'+str(cantidad)+ ' lote posee:'+str(quant.available_quantity))
+        dic1['name']=self.name+' - '+quant.lot_id.name
+        dic1['raw_material_production_id']=produccion.id
+        mov=self.env['stock.move'].create(dic1)
+        #creando el detalle del movimiento
+        dl={}
+        dl['location_id']=src.id
+        dl['product_id']=quant.product_id.id
+        dl['product_uom_id']=quant.product_uom_id.id
+        dl['location_dest_id']=target.id
+        dl['lot_id']=quant.lot_id.id
+        dl['product_uom_qty']=0
+        dl['qty_done']=0
+        dl['move_id']=mov.id
+        self.env['stock.move.line'].create(dl)
+        return mov
+
+    def _crear_lote(self,product,boleta,product_palet,product_canasta,canastas,lote_name,company):
+        dic1={}
+        dic1['name']=lote_name
+        dic1['product_id']=product.id
+        dic1['boleta_id']=boleta.id
+        dic1['company_id']=company.id
+        dic1['canastas']=canastas
+        dic1['canasta_id']=product_canasta.id
+        dic1['pallet_id']=product_palet.id
+        lote=self.env['stock.production.lot'].create(dic1)
+        return lote
+
+
+    def _crear_movimiento_sal(self,produccion,product,lote,cantidad,src,target):
+        dic1={}
+        dic1['product_id']=product.id
+        dic1['location_id']=src.id
+        dic1['location_dest_id']=target.id
+        dic1['company_id']=src.company_id.id
+        dic1['date']=datetime.now()
+        dic1['product_uom']=product.uom_id.id
+        
+        dic1['name']=self.name+' - '+lote.name
+        dic1['production_id']=produccion.id
+        mov=self.env['stock.move'].create(dic1)
+        #creando el detalle del movimiento
+        dl={}
+        dl['location_id']=src.id
+        dl['product_id']=product.id
+        dl['product_uom_id']=product.uom_id.id
+        dl['location_dest_id']=target.id
+        dl['lot_id']=lote.id
+        dl['product_uom_qty']=0
+        dl['qty_done']=cantidad
+        dl['move_id']=mov.id
+        self.env['stock.move.line'].create(dl)
+        return mov
+
+    def ejecutar_transformacion(self):
+        for r in self:
+            #creando la orden de produccion
+            produccion=r._crear_orden()
+            r.production_id=produccion.id
+            boleta=None
+
+            #Movimientos de materia prima
+            for l in r.ingresos_mp_ids:
+                quant=r._get_quant(l.lot_id)
+                if l.lot_id.boleta_id:
+                    boleta=l.lot_id.boleta_id
+                cantidad=l.peso_neto_in-l.peso_neto_out
+                #movimiento del producto
+                mov=r._crear_movimiento_prod(produccion,quant,l.peso_neto_in-l.peso_neto_out,r.proceso_id.location_input_id,r.proceso_id.location_factory_id)
+                l.move_id=mov.id
+            #Movimientos de material de empaque
+            for l in r.ingresos_me_ids:
+                quant=r._get_quant(l.lot_id)
+                if l.lot_id.boleta_id:
+                    boleta=l.lot_id.boleta_id
+                #movimiento del producto
+                mov=r._crear_movimiento_prod(produccion,quant,l.cantidad-l.cantidad_out,r.proceso_id.location_input_id,r.proceso_id.location_factory_id)
+                l.move_id=mov.id
+            for l in r.ingresos_pt_ids:
+                quant=r._get_quant(l.lot_id)
+                if l.lot_id.boleta_id:
+                    boleta=l.lot_id.boleta_id
+                cantidad=l.peso_neto_in-l.peso_neto_out
+                #movimiento del producto
+                mov=r._crear_movimiento_prod(produccion,quant,l.peso_neto_in-l.peso_neto_out,r.proceso_id.location_input_id,r.proceso_id.location_factory_id)
+                l.move_id=mov.id
+            
+            correlativo=0
+            for l in r.salidas_mp_ids:
+                correlativo=correlativo+1
+                lote=r._crear_lote(l.product_id,boleta,l.pallet_id,l.canasta_id,l.canastas_out,(boleta.name if boleta else '')+'-'+r.name+'-'+str(correlativo),r.proceso_id.company_id)
+                mov=r._crear_movimiento_sal(produccion,l.product_id,lote,l.peso_neto_out,r.proceso_id.location_factory_id,r.proceso_id.location_output_id)
+                l.move_id=mov.id
+
+            for l in r.salidas_pt_ids:
+                correlativo=correlativo+1
+                lote=r._crear_lote(l.product_id,boleta,l.pallet_id,l.canasta_id,l.canastas_out,(boleta.name if boleta else '')+'-'+r.name+'-'+str(correlativo),r.proceso_id.company_id)
+                mov=r._crear_movimiento_sal(produccion,l.product_id,lote,l.peso_neto_out,r.proceso_id.location_factory_id,r.proceso_id.location_output_id)
+                l.move_id=mov.id
+            produccion.action_confirm()
+
+            #produccion.action_toggle_is_locked()
+            #produccion.action_assign()
+            #for m in produccion.move_raw_ids:
+            #    if m.reserved_availability==0:
+            #        raise UserError('El Material no esta disponible')
+            for m in produccion.move_raw_ids:
+                if m.move_line_ids:
+                    for l in m.move_line_ids:
+                        l.qty_done=l.move_id.product_uom_qty
+            produccion.qty_producing=self.cantidad_prodducida
+            produccion.button_mark_done()
+            r.state='Finalizado'
+
+
+
+
+    def iniciar(self):
         for r in self:
             if not r.track_id:
                 dic={}
@@ -100,6 +281,17 @@ class unispice_production_order(models.Model):
             dic['time_of_id']=r.razon_pausa_id.id
             track=self.env['unispice.transformacion.time_track'].create(dic)
             r.track_id=track.id
+    
+    def reiniciar(self):
+        for r in self:
+            if r.track_id:
+                r.track_id.write({'fin':datetime.now()})
+            dic={}
+            dic['inicio']=datetime.now()
+            dic['transformacion_id']=r.id
+            track=self.env['unispice.transformacion.time_track'].create(dic)
+            r.track_id=track.id
+
     
     def finalizar(self):
         for r in self:
@@ -130,10 +322,8 @@ class unispice_production_line_ingreso_me(models.Model):
     ##Datos de ingreso
     cantidad=fields.Float(string='Cantidad ')
     cantidad_out=fields.Float(string='Saldo ')
-    
-
     transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
-    move_id=fields.Many2one(comodel_name='stoc.move', string='movimiento')
+    move_id=fields.Many2one(comodel_name='stock.move', string='movimiento')
 
     def get_name(self):
         for r in self:
@@ -165,7 +355,7 @@ class unispice_production_line_ingreso_mp(models.Model):
     
 
     transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
-    move_id=fields.Many2one(comodel_name='stoc.move', string='movimiento')
+    move_id=fields.Many2one(comodel_name='stock.move', string='movimiento')
 
     #picking de las canastas
     picking_canasta_in_id=fields.Many2one(comodel_name='stock.picking', string='Entrada de las canastas')
@@ -182,6 +372,11 @@ class unispice_production_line_ingreso_mp(models.Model):
             r.canastas_in=r.lot_id.canastas
             r.peso_neto_in=r.lot_id.product_qty
             r.peso_bruto_in=r.lot_id.product_qty+(r.lot_id.canastas*r.tara_canasta)+r.tara_pallet
+    
+    @api.onchange('peso_bruto_out','canastas_out')
+    def get_pesos_salida(self):
+        for r in self:
+            r.peso_neto_out=r.peso_bruto_out-(r.canastas_out*r.tara_canasta)-r.tara_pallet
 
 
     #Linea de ingreso de materia prima
@@ -249,8 +444,12 @@ class unispice_production_line_salida_mp(models.Model):
     #picking de las canastas
     picking_id=fields.Many2one(comodel_name='stock.picking', string='Entrada de las canastas')
     picking_canasta_id=fields.Many2one(comodel_name='stock.picking', string='Retorno de las canastas')
+    move_id=fields.Many2one(comodel_name='stoc.move', string='movimiento')
 
-
+    @api.onchange('peso_bruto_out','canastas_out','bascula_id','canasta_id')
+    def get_pesos_salida(self):
+        for r in self:
+            r.peso_neto_out=r.peso_bruto_out-(r.canastas_out*r.tara_canasta)-r.tara_pallet
 
 
 class unispice_production_line_salida_pt(models.Model):
@@ -268,10 +467,16 @@ class unispice_production_line_salida_pt(models.Model):
     bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
     canastas_out=fields.Integer('Canastas de salida')
     peso_bruto_out=fields.Float('Peso de retorno')
-    peso_neto_in=fields.Float('Peso neto',compute='get_pesos_salida')
+    peso_neto_out=fields.Float('Peso neto',compute='get_pesos_salida')
+
+    @api.onchange('peso_bruto_out','canastas_out','bascula_id','canasta_id')
+    def get_pesos_salida(self):
+        for r in self:
+            r.peso_neto_out=r.peso_bruto_out-(r.canastas_out*r.tara_canasta)-r.tara_pallet
     
 
     transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
+    move_id=fields.Many2one(comodel_name='stoc.move', string='movimiento')
 
     #picking de las canastas
     picking_id=fields.Many2one(comodel_name='stock.picking', string='Entrada de las canastas')
@@ -298,6 +503,7 @@ class unispice_production_line_rechazo(models.Model):
     bascula_id=fields.Many2one(comodel_name='basculas.bascula', string='Bascula')
 
     transformacion_id=fields.Many2one(comodel_name='unispice.transformacion', string='Transformacion')
+    move_id=fields.Many2one(comodel_name='stoc.move', string='movimiento')
 
     #picking de las canastas
     picking_id=fields.Many2one(comodel_name='stock.picking', string='Entrada de las canastas')
