@@ -154,14 +154,14 @@
                                   <field name="track_id" invisible="1"/>
                                   <field name="running_state" invisible="1"/>
                                 </group>
-                                <group attrs="{'invisible':[('r.running_state','!=','Finalizado')]}">
+                                <group attrs="{'invisible':[('running_state','!=','Finalizado')]}">
                                     <group>
-                                  <button name="iniciar" type="object" string="Iniciar" attrs="{'invisible':[('r.running_state','!=','Nuevo')]}"/>
-                                  <button name="reiniciar" type="object" string="Reanudar orden" attrs="{'invisible':[('r.running_state','!=','Pausado')]}"/>
+                                  <button name="iniciar" type="object" string="Iniciar" attrs="{'invisible':[('running_state','!=','Nuevo')]}"/>
+                                  <button name="reiniciar" type="object" string="Reanudar orden" attrs="{'invisible':[('running_state','!=','Pausado')]}"/>
                                   </group>
                                   <group>
-                                  <button name="detener" type="object" string="Pausar orden" attrs="{'invisible':[('r.running_state','!=','Iniciado')]}"/>
-                                  <button name="finalizar" type="object" string="Finalizar orden" attrs="{'invisible':[('r.running_state','!=','Iniciado')]}"/>
+                                  <button name="detener" type="object" string="Pausar orden" attrs="{'invisible':[('running_state','!=','Iniciado')]}"/>
+                                  <button name="finalizar" type="object" string="Finalizar orden" attrs="{'invisible':[('running_state','!=','Iniciado')]}"/>
                                   </group>
                                 </group>
                               </group>
