@@ -24,7 +24,7 @@
         </record>
 
         <!-- Vista de formulario -->
-        <record model="ir.ui.view" id="unispice_ingreso_form">
+        <record model="ir.ui.view" id="unispice_paking_form">
             <field name="name">unispice_packing_view_form</field>
             <field name="model">unispice.packing</field>
             <field name="arch" type="xml">
