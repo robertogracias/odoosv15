@@ -30,6 +30,7 @@
         'views/transformacion.xml',
         'views/configuration.xml',
         'views/quality_item.xml',
+        'views/unispice_packing.xml',
         'security/ir.model.access.csv',
     ],
     # only loaded in demonstration mode

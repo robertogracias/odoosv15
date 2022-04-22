@@ -136,7 +136,7 @@
                 <field name="product_qty"/>
                 <field name="canastas"/>
                 <field name="proveedor_id"/>
-                <field name="tipo_productor"/>
+                <!-- <field name="tipo_productor"/> -->
                 <field name="grupo_mp"/>
                 <field name="fecha_cosecha"/>
             </xpath>
