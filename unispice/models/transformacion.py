@@ -29,6 +29,7 @@ class unispice_production_order(models.Model):
     name=fields.Char('Orden de transformacion')
     #Estado de la transformacion
     state=fields.Selection(selection=[('draft','Borrador'),('Iniciado','Iniciado'),('Finalizado','Finalizado')],string="Estado",default='draft')
+    running_state=fields.Selection(selection=[('Nuevo','Nuevo'),('Iniciado','Iniciado'),('Pausado','Pausado'),('Finalizado','Finalizado')],string="Running State",default='Nuevo')
     tipo=fields.Selection(selection=[('mp','Materia Prima'),('pt','Producto Terminado')],string="Tipo",default='mp')
     #Proceso en el que se desarrollara la transformacion
     proceso_id=fields.Many2one(comodel_name='mrp.workcenter', string='Proceso')
@@ -289,6 +290,7 @@ class unispice_production_order(models.Model):
                 dic['transformacion_id']=r.id
                 track=self.env['unispice.transformacion.time_track'].create(dic)
                 r.track_id=track.id
+                r.running_state='Iniciado'
     
     def detener(self):
         for r in self:
@@ -303,6 +305,7 @@ class unispice_production_order(models.Model):
             track=self.env['unispice.transformacion.time_track'].create(dic)
             r.razon_pausa_id=None
             r.track_id=track.id
+            r.running_state='Pausado'
     
     def reiniciar(self):
         for r in self:
@@ -313,13 +316,14 @@ class unispice_production_order(models.Model):
             dic['transformacion_id']=r.id
             track=self.env['unispice.transformacion.time_track'].create(dic)
             r.track_id=track.id
+            r.running_state='Iniciado'
 
     
     def finalizar(self):
         for r in self:
             if r.track_id:
                 r.track_id.write({'fin':datetime.now()})
-                
+                r.running_state='Finalizado'
 
 
 
