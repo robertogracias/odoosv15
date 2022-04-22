@@ -89,7 +89,7 @@ class unispice_recepcion(models.Model):
                 }
             else:                
                 ctx={}
-                ctx['default_product_id']=r.producto_id.id
+                ctx['default_product_id']=r.x_producto_id.x_studio_many2one_field_5jIZO.id
                 ctx['default_boleta_id']=r.id
                 ctx['default_test_type_id']=3
                 return {

@@ -153,11 +153,15 @@
                                   <field name="razon_pausa_id"/>
                                   <field name="track_id" invisible="1"/>
                                 </group>
-                                <group>
+                                <group >
+                                    <group>
                                   <button name="iniciar" type="object" string="Iniciar" attrs="{'invisible':[('track_id','!=',False)]}"/>
                                   <button name="reiniciar" type="object" string="Reanudar orden" attrs="{'invisible':['|',('track_id','=',False),('razon_pausa_id','=',False)]}"/>
+                                  </group>
+                                  <group>
                                   <button name="detener" type="object" string="Pausar orden" attrs="{'invisible':[('razon_pausa_id','=',False)]}"/>
                                   <button name="finalizar" type="object" string="Finalizar orden" attrs="{'invisible':[('track_id','=',False)]}"/>
+                                  </group>
                                 </group>
                               </group>
                               <group string="tomas de timepo">

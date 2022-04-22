@@ -301,6 +301,7 @@ class unispice_production_order(models.Model):
             dic['transformacion_id']=r.id
             dic['time_of_id']=r.razon_pausa_id.id
             track=self.env['unispice.transformacion.time_track'].create(dic)
+            r.razon_pausa_id=None
             r.track_id=track.id
     
     def reiniciar(self):
