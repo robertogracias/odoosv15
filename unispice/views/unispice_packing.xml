@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <odoo>
+        <!-- Acción de ventana-->
+        <record model="ir.actions.act_window" id="unispice_packing_action">
+            <field name="name">Embalaje Producto Terminado</field>
+            <field name="res_model">unispice.packing</field>            
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Embalaje</p>
+            </field>            
+        </record>
+
+        <!-- Vista de árbol -->
+        <record model="ir.ui.view" id="unispice_packing_view_tree">
+            <field name="name">unispice_packing_view_tree</field>
+            <field name="model">unispice.packing</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="lote_pallet" />
+                    <field name="fecha" />
+                </tree>
+            </field>
+        </record>
+
+        <!-- Vista de formulario -->
+        <record model="ir.ui.view" id="unispice_ingreso_form">
+            <field name="name">unispice_packing_view_form</field>
+            <field name="model">unispice.packing</field>
+            <field name="arch" type="xml">
+                <form string="Embalaje">
+                    <header>
+                        <!-- <button name="confirmar" type="object" states="draft" string="Confirmar" class="oe_highlight"/> -->
+                        <field name="status" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="lote_pallet" />
+                                <field name="fecha" />
+                            </group>
+                            <group>
+                            </group>
+                        </group>
+
+                        <field name="packing_line_ids">
+                            <tree editable="top">
+                                <field name="lote_id"/>
+                                <field name="producto_id"/>
+                                <field name="cantidad" sum="Total"/>
+                                <field name="peso_referencia"/>
+                                <field name="peso_total" sum="Total"/>
+                            </tree>
+                        </field>
+                    </sheet>         
+                </form>
+            </field>
+        </record>
+    </odoo>
