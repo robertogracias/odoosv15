@@ -63,16 +63,13 @@
                                   <tree editable="botton">
                                     <field name="lot_id"  domain="[('categ_id','=',5)]"/>
                                     <field name="product_id" domain="[('categ_id','=',5)]"/>
-                                    <field name="peso_bruto_in"/>
-                                    <field name="canastas_in"/>
-                                    <field name="tara_canasta"/>
-                                    <field name="tara_pallet"/>
+                                    <field name="unidades_in"/>                                    
                                   </tree>
                                 </field>
                               </group>
                             </page>
                             <page string="Salidad">
-                              <group string="Materia Prima">
+                              <group string="Materia Prima" attrs="{'invisible':[('tipo','!=','mp')]}">
                                 <field name="salidas_mp_ids"  nolabel="1">
                                   <tree editable="botton">
                                     <field name="product_id" domain="[('categ_id','=',4)]"/>
@@ -84,10 +81,30 @@
                                   </tree>
                                 </field>
                               </group>
-                              <group string="Producto Terminado">
+                              <group string="Producto Terminado" attrs="{'invisible':[('tipo','!=','pt')]}">
                                 <field name="salidas_pt_ids"  nolabel="1">
                                   <tree editable="botton">
                                     <field name="product_id" domain="[('categ_id','=',5)]"/>
+                                    <field name="unidades_out"/>
+                                  </tree>
+                                </field>
+                              </group>
+                              <group string="Rechazo" >
+                                <field name="salidas_re_ids"  nolabel="1">
+                                  <tree editable="botton">
+                                    <field name="product_id" domain="[('categ_id','=',7)]"/>
+                                    <field name="pallet_id"/>
+                                    <field name="canasta_id"/>
+                                    <field name="canastas_out"/>
+                                    <field name="peso_bruto_out"/>
+                                    <field name="peso_neto_out"/>
+                                  </tree>
+                                </field>
+                              </group>
+                              <group string="Basura" >
+                                <field name="salidas_ba_ids"  nolabel="1">
+                                  <tree editable="botton">
+                                    <field name="product_id" domain="[('categ_id','=',8)]"/>
                                     <field name="pallet_id"/>
                                     <field name="canasta_id"/>
                                     <field name="canastas_out"/>
@@ -125,11 +142,7 @@
                                   <tree editable="botton">
                                     <field name="lot_id"/>
                                     <field name="product_id"/>
-                                    <field name="tara_canasta"/>
-                                    <field name="tara_pallet"/>
-                                    <field name="canastas_out"/>
-                                    <field name="peso_bruto_out"/>
-                                    <field name="peso_neto_out"/>
+                                    <field name="unidades_out"/>
                                   </tree>
                                 </field>
                               </group>
