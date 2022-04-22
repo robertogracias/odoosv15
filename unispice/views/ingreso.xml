@@ -36,6 +36,8 @@
                                 <field name="peso_campo"/>
                                 <field name="canasta_id"/>
                                 <field name="pallet_id"/>
+                                <field name="quality_check_id" readonly="1"/>
+                                <field name="porcentaje_afectacion" readonly="1" widget="percentage"/>
                             </group>
                             <label for="notas"/>
                             <field name="notas"/>                           
@@ -75,8 +77,9 @@
                 <tree>
                     <field name="name" />
                     <field name="proveedor_id" />
-                    <field name="producto_id" />
+                    <field name="x_producto_id" />
                     <field name="fecha_ingreso" />
+                    <button name="abrir_calidad" type="object" string="Control de Calidad"/>
                 </tree>
             </field>
         </record>
@@ -100,7 +103,22 @@
         <menuitem id="ingreso_menu" parent="stock.menu_stock_warehouse_mgmt" name="Ingreso Materia Prima" action="unispice_ingreso_action" sequence="50"/>
 
       
+        <record model="ir.actions.act_window" id="unispice_ingreso_nq_action">
+            <field name="name">Ingreso</field>
+            <field name="res_model">unispice.recepcion</field>
+            <!--field name="view_type">form</field-->
+            <field name="view_mode">tree,form</field>
+            <field name="target">current</field>
+            <field name="domain">[('quality_check_id','=',False)]</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Ingresos</p>
+            </field>
+            
+        </record>
 
+        <!--menu del objetivo-->
+        
+        <menuitem id="ingreso_qa_menu" parent="stock.menu_stock_warehouse_mgmt" name="Boletas sin QA" action="unispice_ingreso_nq_action" sequence="55"/>
       
       
 

@@ -64,9 +64,46 @@ class unispice_recepcion(models.Model):
     liquidacion_id=fields.Many2one(comodel_name='unispice.liquidacion', string='Liquidacion')
     liquidacion_batch_id=fields.Many2one(comodel_name='unispice.liquidacion.batch', string='Liquidacion batch')
     
+    porcentaje_afectacion=fields.Float("Porcentaje de defectos", related='quality_check_id.porcentaje')
+    quality_check_id=fields.Many2one(comodel_name='quality.check', string='Control de calidad Asociado')
+
+
     
-    
-    
+    def abrir_calidad(self):
+        for r in self:
+            compose_form = self.env.ref('quality_control.quality_check_view_form', False)
+            if r.quality_check_id:
+                ctx={}
+                return {
+                    'name': 'Control de calidad',
+                    'type': 'ir.actions.act_window',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'quality.check',
+                    'views': [(compose_form.id, 'form')],
+                    'res_id':r.quality_check_id.id,
+                    'target': 'new',
+                    'view_id': 'compose_form.id',
+                    'flags': {'action_buttons': True},
+                    'context': ctx
+                }
+            else:                
+                ctx={}
+                ctx['default_product_id']=r.producto_id.id
+                ctx['default_boleta_id']=r.id
+                ctx['default_test_type_id']=3
+                return {
+                    'name': 'Control de calidad',
+                    'type': 'ir.actions.act_window',
+                    'view_type': 'form',
+                    'view_mode': 'form',
+                    'res_model': 'quality.check',
+                    'views': [(compose_form.id, 'form')],                    
+                    'target': 'new',
+                    'view_id': 'compose_form.id',
+                    'flags': {'action_buttons': True},
+                    'context': ctx
+                }
 
 
     @api.depends('serie','numero')

@@ -76,11 +76,11 @@
         <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lot_id']" position="attributes">
-                <attribute name="attrs">{'invisible':[('x_product_category','=',4)]}</attribute>
+                <attribute name="attrs">{'invisible':[('x_product_category','=','Materia Prima')]}</attribute>
             </xpath>
             <xpath expr="//field[@name='lot_id']" position="after">
                 <field name="x_product_category" invisible="1"/>
-                <field name="boleta_id" attrs="{'invisible':[('x_product_category','!=',4)]}"/>
+                <field name="boleta_id" attrs="{'invisible':[('x_product_category','!=','Materia Prima')]}"/>
             </xpath>
             <xpath expr="//field[@name='alert_ids']" position="after">
                 <field name="lote_total"/>
@@ -103,20 +103,20 @@
                             <field name="muestra_afectada" sum="Total"/>
                             <field name="porcentaje"/>
                             <field name="rango"/>
-                            <field name="proyectado"  sum="Total"/>                            
+                            <field name="proyectado" sum="Total"/>                            
                             <field name="aprobado" widget="boolean_toggle"/>
-                            <field name="image_1920" widget="image" options="{'preview_image': 'image_128'}" />
+                            <field name="image_1920" widget="image" options="{'preview_image': 'image_128'}"/>
                         </tree>
                         <form>
                             <sheet>
                                 <group>
                                     <field name="name"/>
-                                    <field name="muestra_afectada" />
+                                    <field name="muestra_afectada"/>
                                     <field name="porcentaje"/>
                                     <field name="rango"/>
-                                    <field name="proyectado"  />                            
+                                    <field name="proyectado"/>                            
                                     <field name="aprobado" widget="boolean_toggle"/>
-                                    <field name="image_1920" widget="image" options="{'preview_image': 'image_512'}" />
+                                    <field name="image_1920" widget="image" options="{'preview_image': 'image_512'}"/>
                                 </group>
                             </sheet>
                         </form>
